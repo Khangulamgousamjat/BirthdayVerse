@@ -21,31 +21,10 @@ function AppContent() {
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden transition-colors duration-300">
-      {/* Video Background only for Surprise recipient experience */}
+      {/* Cosmic Aurora Ambient Background for Surprise Experience */}
       {isSurprisePage && (
         <div className="aurora-bg" aria-hidden="true">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            disablePictureInPicture
-            disableRemotePlayback
-            preload="auto"
-            className="fixed inset-0 w-full h-full object-cover z-0 pointer-events-none"
-            style={{
-              willChange: "auto",
-              opacity: 0.45,
-              transform: "translateZ(0)",
-            }}
-            onCanPlay={(e) => {
-              (e.target as HTMLVideoElement).playbackRate = 0.6;
-            }}
-          >
-            <source src="/background.mp4" type="video/mp4" />
-          </video>
-          {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50 pointer-events-none" />
         </div>
       )}
 

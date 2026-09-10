@@ -1,7 +1,7 @@
 .card-spotlight {
   position: relative;
   border-radius: 1.5rem;
-  /* Transparent glass — video BG shows through */
+  /* Transparent glass — aurora cosmic BG shows through */
   background: rgba(10, 2, 25, 0.28);
   backdrop-filter: blur(28px) saturate(150%) brightness(1.08);
   -webkit-backdrop-filter: blur(28px) saturate(150%) brightness(1.08);
