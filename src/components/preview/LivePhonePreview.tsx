@@ -1,0 +1,346 @@
+import React, { useState } from "react";
+import { Play, Pause, Smartphone, Monitor, Sparkles, Heart, Music, Shuffle } from "lucide-react";
+
+interface LivePhonePreviewProps {
+  name: string;
+  message?: string;
+  finaleText?: string;
+  vibe?: string;
+  theme?: string;
+  profilePhoto?: string | null;
+  photos?: string[];
+  selectedMusic?: string;
+  isPlayingMusic: boolean;
+  onToggleMusic: () => void;
+  onChangeTemplateClick?: () => void;
+}
+
+export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
+  name,
+  message,
+  finaleText,
+  vibe = "elegant",
+  theme = "midnight",
+  profilePhoto,
+  photos = [],
+  selectedMusic = "/Happy Birthday Song.mp3",
+  isPlayingMusic,
+  onToggleMusic,
+  onChangeTemplateClick,
+}) => {
+  const [previewDevice, setPreviewDevice] = useState<"mobile" | "desktop">("mobile");
+  const [audioProgress, setAudioProgress] = useState(18);
+
+  const displayName = name.trim() || "Ananya";
+  const displayMessage = message?.trim() || "May your day be as special and beautiful as you are! ✨";
+  
+  // Format song title from filename or path
+  const songTitle = selectedMusic === "custom" 
+    ? "Special Birthday Track" 
+    : selectedMusic.includes("Coldplay") 
+      ? "A Sky Full of Stars"
+      : selectedMusic.replace(/^\//, "").replace(/\.mp3$/, "").replace(/_/g, " ");
+
+  const artistName = selectedMusic.includes("Coldplay") ? "Coldplay" : "Birthdayverse Mix";
+
+  // Vibe styling palettes for preview
+  const vibeThemes: Record<string, { bg: string; accent: string; text: string; balloon1: string; balloon2: string }> = {
+    elegant: {
+      bg: "from-[#F3E8FF] via-[#E9D5FF] to-[#FCE7F3]",
+      accent: "#7952D6",
+      text: "#241B35",
+      balloon1: "#9D6BFF",
+      balloon2: "#F47FB5"
+    },
+    fun: {
+      bg: "from-[#FEF3C7] via-[#FEE2E2] to-[#EDE9FE]",
+      accent: "#EA580C",
+      text: "#1F2937",
+      balloon1: "#F59E0B",
+      balloon2: "#EC4899"
+    },
+    romantic: {
+      bg: "from-[#FFE4E6] via-[#FCE7F3] to-[#EDE9FE]",
+      accent: "#BE123C",
+      text: "#4C0519",
+      balloon1: "#FB7185",
+      balloon2: "#C084FC"
+    },
+    cute: {
+      bg: "from-[#FCE7F3] via-[#E0E7FF] to-[#FEF3C7]",
+      accent: "#DB2777",
+      text: "#374151",
+      balloon1: "#F47FB5",
+      balloon2: "#60A5FA"
+    },
+    dreamy: {
+      bg: "from-[#E0E7FF] via-[#EDE9FE] to-[#F5D0FE]",
+      accent: "#6366F1",
+      text: "#1E1B4B",
+      balloon1: "#818CF8",
+      balloon2: "#C084FC"
+    },
+    party: {
+      bg: "from-[#2E1065] via-[#4C1D95] to-[#701A75]",
+      accent: "#F47FB5",
+      text: "#FFFFFF",
+      balloon1: "#A855F7",
+      balloon2: "#EC4899"
+    },
+  };
+
+  const currentVibe = vibeThemes[vibe.toLowerCase()] || vibeThemes.elegant;
+  const isPartyDark = vibe.toLowerCase() === "party";
+
+  // Default sample memories if user hasn't added images
+  const samplePhoto1 = profilePhoto || photos[0] || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80";
+  const samplePhoto2 = photos[1] || photos[0] || "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80";
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      
+      {/* Live Preview Header & Device Selector */}
+      <div className="w-full flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+            Live Preview
+          </span>
+          <span className="flex h-2 w-2 relative">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9D6BFF] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9D6BFF]"></span>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1 bg-[#EDE7F6] dark:bg-[#1D162A] p-1 rounded-xl border border-[#EDE7F6] dark:border-[#2A203C]">
+          <button
+            onClick={() => setPreviewDevice("mobile")}
+            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              previewDevice === "mobile"
+                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
+                : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35]"
+            }`}
+          >
+            <Smartphone className="w-3.5 h-3.5" />
+            <span>Mobile</span>
+          </button>
+          <button
+            onClick={() => setPreviewDevice("desktop")}
+            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+              previewDevice === "desktop"
+                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
+                : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35]"
+            }`}
+          >
+            <Monitor className="w-3.5 h-3.5" />
+            <span>Desktop</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Phone Mockup Frame */}
+      <div className="relative flex items-center justify-center">
+        
+        {/* Subtle decorative annotation arrow (as in mock) */}
+        <div className="absolute -right-16 top-28 hidden xl:flex flex-col items-center pointer-events-none select-none text-[#9D6BFF]/80">
+          <span className="text-[11px] font-serif italic -rotate-12 transform">This is how it will look!</span>
+          <span className="text-xl -rotate-45">✨</span>
+        </div>
+
+        <div className={`transition-all duration-300 ${previewDevice === "mobile" ? "phone-mockup-frame" : "w-[380px] h-[640px] rounded-[32px] p-3 bg-black shadow-2xl"}`}>
+          
+          {/* Dynamic Island / Notch */}
+          <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-24 h-4 bg-black rounded-full z-30 flex items-center justify-center">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#111] mr-3"></div>
+            <div className="w-2 h-2 rounded-full bg-[#0a1020]"></div>
+          </div>
+
+          {/* Screen Content */}
+          <div className={`phone-mockup-screen bg-gradient-to-b ${currentVibe.bg} select-none relative flex flex-col justify-between overflow-y-auto no-scrollbar`}>
+            
+            {/* Ambient Animated Floating Balloons & Sparkles */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+              <div 
+                className="absolute -top-4 -left-4 w-28 h-36 rounded-full opacity-60 blur-[1px] animate-pulse"
+                style={{ backgroundColor: currentVibe.balloon1, filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))" }}
+              />
+              <div 
+                className="absolute top-12 -right-6 w-24 h-32 rounded-full opacity-65 blur-[1px] animate-pulse"
+                style={{ backgroundColor: currentVibe.balloon2, animationDelay: "1s" }}
+              />
+              <div 
+                className="absolute top-52 -left-5 w-20 h-28 rounded-full opacity-40 blur-[2px]"
+                style={{ backgroundColor: currentVibe.balloon1 }}
+              />
+              <div 
+                className="absolute bottom-40 -right-4 w-24 h-32 rounded-full opacity-50 blur-[1px]"
+                style={{ backgroundColor: currentVibe.balloon2 }}
+              />
+            </div>
+
+            {/* Status Bar */}
+            <div className="relative z-20 px-6 pt-3 pb-2 flex items-center justify-between text-[11px] font-semibold tracking-tight text-gray-800 dark:text-gray-200">
+              <span>9:41</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px]">📶</span>
+                <span className="text-[10px]">􀙇</span>
+                <div className="w-5 h-2.5 border border-gray-700 dark:border-gray-300 rounded-sm p-0.5 flex items-center">
+                  <div className="w-full h-full bg-gray-800 dark:bg-gray-200 rounded-[1px]"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Interactive Celebration Body */}
+            <div className="relative z-10 px-4 pt-4 pb-2 text-center flex flex-col items-center flex-1">
+              
+              {/* Sparkle Header */}
+              <div className="flex items-center justify-center gap-1.5 mb-1 text-[#9D6BFF]">
+                <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "6s" }} />
+                <span className="text-[10px] tracking-widest uppercase font-bold opacity-75">Birthdayverse</span>
+                <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "6s" }} />
+              </div>
+
+              {/* Happy Birthday Heading */}
+              <h2 className="text-xl font-display font-bold tracking-tight text-gray-900 leading-tight">
+                Happy
+              </h2>
+              <h1 className="text-2xl font-display font-black tracking-tight text-gray-900 -mt-1 leading-tight">
+                Birthday
+              </h1>
+
+              {/* Recipient Name in Signature Style */}
+              <div className="relative my-1">
+                <span className="font-serif italic text-3xl font-bold bg-gradient-to-r from-[#7952D6] via-[#9D6BFF] to-[#F47FB5] bg-clip-text text-transparent px-2">
+                  {displayName}
+                </span>
+                <div className="flex justify-center -mt-1">
+                  <Heart className="w-3.5 h-3.5 text-[#F47FB5] fill-[#F47FB5] animate-bounce" />
+                </div>
+              </div>
+
+              {/* Emotional Subtitle Message Card */}
+              <p className="text-[11px] leading-relaxed text-gray-700 max-w-[240px] mx-auto mt-1 mb-3 font-medium bg-white/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/60 shadow-xs">
+                {displayMessage}
+              </p>
+
+              {/* Floating Polaroid Photos Collage */}
+              <div className="relative w-full max-w-[260px] h-36 my-2 flex items-center justify-center">
+                {/* Photo 1: Left tilted */}
+                <div 
+                  className="polaroid-card absolute -left-1 bottom-1 w-24 transform -rotate-8 z-10"
+                  style={{ willChange: "transform" }}
+                >
+                  <div className="w-full h-20 bg-gray-200 overflow-hidden rounded-[3px]">
+                    <img 
+                      src={samplePhoto1} 
+                      alt="Memory" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                </div>
+
+                {/* Photo 2: Center elevated */}
+                <div 
+                  className="polaroid-card absolute left-14 top-0 w-28 transform rotate-3 z-20 shadow-md"
+                  style={{ willChange: "transform" }}
+                >
+                  <div className="w-full h-24 bg-gray-200 overflow-hidden rounded-[3px]">
+                    <img 
+                      src={profilePhoto || samplePhoto2} 
+                      alt="Recipient" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                </div>
+
+                {/* Photo 3: Right tilted with "Good Vibes Always" text */}
+                <div 
+                  className="polaroid-card absolute -right-1 bottom-1 w-24 transform rotate-6 z-10"
+                  style={{ willChange: "transform" }}
+                >
+                  <div className="w-full h-20 bg-[#FFF5F8] overflow-hidden rounded-[3px] flex flex-col items-center justify-center p-1 text-center border border-pink-100">
+                    <span className="font-serif italic text-xs font-bold text-[#BE123C] leading-tight">
+                      Good<br/>Vibes<br/>Always
+                    </span>
+                    <span className="text-[9px] mt-0.5">💖</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Audio Player Card */}
+            <div className="relative z-20 px-3 pb-3">
+              <div className="bg-white/85 dark:bg-[#1D162A]/90 backdrop-blur-xl rounded-2xl p-2.5 border border-white/80 dark:border-white/10 shadow-lg shadow-purple-900/10 flex flex-col gap-1.5">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    onClick={onToggleMusic}
+                    className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7952D6] to-[#9D6BFF] text-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer flex-shrink-0"
+                  >
+                    {isPlayingMusic ? (
+                      <Pause className="w-3.5 h-3.5" />
+                    ) : (
+                      <Play className="w-3.5 h-3.5 ml-0.5" />
+                    )}
+                  </button>
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] font-bold text-gray-900 dark:text-white truncate">
+                      {songTitle}
+                    </p>
+                    <p className="text-[9px] font-medium text-gray-500 dark:text-gray-400 truncate">
+                      {artistName}
+                    </p>
+                  </div>
+
+                  <span className="text-[9px] font-mono text-gray-500 dark:text-gray-400 tabular-nums">
+                    0:{audioProgress < 10 ? `0${audioProgress}` : audioProgress} / 4:28
+                  </span>
+                </div>
+
+                {/* Progress track */}
+                <div className="w-full bg-gray-200 dark:bg-gray-700 h-1 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#9D6BFF] to-[#F47FB5] transition-all duration-300"
+                    style={{ width: `${(audioProgress / 268) * 100}%` }}
+                  ></div>
+                </div>
+
+                <div className="text-[9px] text-center text-gray-500 dark:text-gray-400 font-medium">
+                  Made with <span className="text-[#F47FB5]">💖</span> by someone who cares
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* Under-Preview Controls */}
+      <div className="w-full max-w-[320px] mt-4 flex items-center justify-between text-xs font-semibold">
+        
+        {/* Toggle music in preview */}
+        <label className="flex items-center gap-2 text-[#241B35] dark:text-[#F7F3FC] cursor-pointer select-none">
+          <div className="relative inline-flex items-center">
+            <input 
+              type="checkbox" 
+              checked={isPlayingMusic} 
+              onChange={onToggleMusic}
+              className="sr-only peer" 
+            />
+            <div className="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9D6BFF]"></div>
+          </div>
+          <span className="text-xs font-medium">Play music in preview</span>
+        </label>
+
+        {/* Change template shortcut button */}
+        <button
+          onClick={onChangeTemplateClick}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] text-[#7952D6] dark:text-[#9D6BFF] hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35] transition-all shadow-2xs cursor-pointer text-xs font-semibold"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Change template</span>
+        </button>
+      </div>
+
+    </div>
+  );
+};
