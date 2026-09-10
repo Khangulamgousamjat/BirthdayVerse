@@ -14,14 +14,16 @@ import {
   Layers,
   Heart,
   PlusCircle,
-  Compass
+  Compass,
+  LayoutDashboard,
+  Calendar,
+  ShieldCheck
 } from "lucide-react";
-
-export type NavTab = "create" | "templates" | "wishes" | "explore";
+import { NavView } from "./Sidebar";
 
 interface NavbarProps {
-  activeTab: NavTab;
-  onTabChange: (tab: NavTab) => void;
+  activeTab: NavView;
+  onTabChange: (tab: NavView) => void;
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
 }
@@ -39,11 +41,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-[#F8F6FC]/85 dark:bg-[#100C18]/85 border-b border-[#EDE7F6] dark:border-[#251B35] transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
+      <div className="w-full px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4">
         
         {/* Brand Logo */}
         <div 
-          onClick={() => onTabChange("create")}
+          onClick={() => onTabChange("dashboard")}
           className="flex items-center gap-3 cursor-pointer select-none group"
         >
           <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#7952D6] via-[#9D6BFF] to-[#F47FB5] p-0.5 shadow-md shadow-purple-500/20 group-hover:scale-105 transition-transform">
@@ -59,34 +61,46 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="text-xl font-bold tracking-tight bv-gradient-text font-ui">
-                Birthdayverse
+                Birthday Verse
               </span>
             </div>
             <span className="text-[10px] font-medium text-[#746B80] dark:text-[#B8AEC5] tracking-wide -mt-0.5 hidden sm:block">
-              Make Every Birthday Magical ✨
+              Turn a birthday into a memory ✨
             </span>
           </div>
         </div>
 
-        {/* Navigation Tabs (Desktop) */}
+        {/* Navigation Tabs (Desktop Top Bar) */}
         <nav className="hidden md:flex items-center gap-1 bg-[#EDE7F6]/60 dark:bg-[#171122] p-1.5 rounded-full border border-[#EDE7F6] dark:border-[#251B35]">
           <button
-            onClick={() => onTabChange("create")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
-              activeTab === "create"
-                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-sm shadow-purple-500/10"
+            onClick={() => onTabChange("dashboard")}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              activeTab === "dashboard"
+                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
                 : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35] dark:hover:text-white"
             }`}
           >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>Create a Wish</span>
+            <LayoutDashboard className="w-3.5 h-3.5" />
+            <span>Dashboard</span>
+          </button>
+
+          <button
+            onClick={() => onTabChange("create")}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              activeTab === "create"
+                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
+                : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35] dark:hover:text-white"
+            }`}
+          >
+            <PlusCircle className="w-3.5 h-3.5 text-[#9D6BFF]" />
+            <span>Create Verse</span>
           </button>
 
           <button
             onClick={() => onTabChange("templates")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === "templates"
-                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-sm shadow-purple-500/10"
+                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
                 : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35] dark:hover:text-white"
             }`}
           >
@@ -96,26 +110,38 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={() => onTabChange("wishes")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
               activeTab === "wishes"
-                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-sm shadow-purple-500/10"
+                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
                 : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35] dark:hover:text-white"
             }`}
           >
             <Heart className="w-3.5 h-3.5" />
-            <span>My Wishes</span>
+            <span>My Verses</span>
           </button>
 
           <button
-            onClick={() => onTabChange("explore")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
-              activeTab === "explore"
-                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-sm shadow-purple-500/10"
+            onClick={() => onTabChange("calendar")}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              activeTab === "calendar"
+                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
                 : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35] dark:hover:text-white"
             }`}
           >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Explore</span>
+            <Calendar className="w-3.5 h-3.5" />
+            <span>Calendar</span>
+          </button>
+
+          <button
+            onClick={() => onTabChange("admin")}
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              activeTab === "admin"
+                ? "bg-white dark:bg-[#251B35] text-emerald-600 dark:text-emerald-400 shadow-xs"
+                : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35] dark:hover:text-white"
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <span>Admin</span>
           </button>
         </nav>
 
@@ -123,14 +149,14 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-3">
           
           {/* Search Bar */}
-          <div className="relative hidden lg:block w-48 xl:w-56">
+          <div className="relative hidden xl:block w-48">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#746B80] dark:text-[#B8AEC5]" />
             <input
               type="text"
               placeholder="Search templates..."
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-full bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] text-[#241B35] dark:text-[#F7F3FC] placeholder-[#746B80] dark:placeholder-[#B8AEC5]/60 focus:outline-none focus:ring-2 focus:ring-[#9D6BFF]/40 transition-all shadow-sm"
+              className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-full bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] text-[#241B35] dark:text-[#F7F3FC] placeholder-[#746B80] dark:placeholder-[#B8AEC5]/60 focus:outline-none focus:ring-2 focus:ring-[#9D6BFF]/40 transition-all shadow-xs"
             />
           </div>
 
@@ -175,18 +201,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="text-[10px] text-[#9D6BFF] font-semibold cursor-pointer">Mark all read</span>
                 </div>
                 <div className="py-2 space-y-2">
-                  <div className="p-2 rounded-xl bg-[#EDE7F6]/40 dark:bg-[#251B35]/50 flex gap-2.5 items-start">
-                    <span className="text-base">✨</span>
+                  <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 flex gap-2.5 items-start">
+                    <span className="text-base">⏳</span>
                     <div>
-                      <p className="text-xs font-medium text-[#241B35] dark:text-[#F7F3FC]">Welcome to Birthdayverse!</p>
-                      <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">Create your first personalized digital experience.</p>
+                      <p className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC]">Rahul's Verse</p>
+                      <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">Auto-deletes in 24h as per 72h privacy promise.</p>
                     </div>
                   </div>
                   <div className="p-2 rounded-xl hover:bg-[#EDE7F6]/30 dark:hover:bg-[#251B35]/30 flex gap-2.5 items-start transition-colors">
-                    <span className="text-base">🎉</span>
+                    <span className="text-base">✨</span>
                     <div>
-                      <p className="text-xs font-medium text-[#241B35] dark:text-[#F7F3FC]">New templates released</p>
-                      <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">Check out the Dreamy & Romantic styles.</p>
+                      <p className="text-xs font-medium text-[#241B35] dark:text-[#F7F3FC]">Welcome to Birthday Verse!</p>
+                      <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">Create your first personalized digital memory.</p>
                     </div>
                   </div>
                 </div>
@@ -200,7 +226,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
               className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] hover:bg-[#EDE7F6]/40 dark:hover:bg-[#251B35] transition-all cursor-pointer"
             >
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#9D6BFF] to-[#F47FB5] text-white flex items-center justify-center font-bold text-xs shadow-sm">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-[#9D6BFF] to-[#F47FB5] text-white flex items-center justify-center font-bold text-xs shadow-xs">
                 M
               </div>
               <span className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC] hidden sm:block">
@@ -213,19 +239,25 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] shadow-xl p-2 z-50 animate-in fade-in zoom-in-95">
                 <div className="px-3 py-2 border-b border-[#EDE7F6] dark:border-[#251B35] mb-1">
                   <p className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC]">Megha Sharma</p>
-                  <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] truncate">megha@birthdayverse.com</p>
+                  <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] truncate">Free Plan · 72h Ephemeral</p>
                 </div>
+                <button 
+                  onClick={() => { onTabChange("dashboard"); setUserDropdownOpen(false); }}
+                  className="w-full text-left px-3 py-2 text-xs text-[#241B35] dark:text-[#F7F3FC] hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35] rounded-xl transition-colors cursor-pointer"
+                >
+                  Dashboard
+                </button>
                 <button 
                   onClick={() => { onTabChange("wishes"); setUserDropdownOpen(false); }}
                   className="w-full text-left px-3 py-2 text-xs text-[#241B35] dark:text-[#F7F3FC] hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35] rounded-xl transition-colors cursor-pointer"
                 >
-                  My Saved Wishes
+                  My Verses
                 </button>
                 <button 
-                  onClick={() => { onTabChange("templates"); setUserDropdownOpen(false); }}
+                  onClick={() => { onTabChange("admin"); setUserDropdownOpen(false); }}
                   className="w-full text-left px-3 py-2 text-xs text-[#241B35] dark:text-[#F7F3FC] hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35] rounded-xl transition-colors cursor-pointer"
                 >
-                  Template Gallery
+                  Admin Cockpit
                 </button>
                 <div className="border-t border-[#EDE7F6] dark:border-[#251B35] my-1"></div>
                 <button 
@@ -251,59 +283,59 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden px-4 pt-2 pb-4 border-t border-[#EDE7F6] dark:border-[#251B35] bg-[#F8F6FC] dark:bg-[#100C18] space-y-2">
-          <div className="relative mb-3">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#746B80] dark:text-[#B8AEC5]" />
-            <input
-              type="text"
-              placeholder="Search templates..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange?.(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2 text-xs rounded-xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] text-[#241B35] dark:text-[#F7F3FC]"
-            />
-          </div>
+          <button
+            onClick={() => { onTabChange("dashboard"); setMobileMenuOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold ${
+              activeTab === "dashboard" ? "bg-[#7952D6] text-white" : "text-[#241B35] dark:text-[#F7F3FC]"
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span>Dashboard</span>
+          </button>
           <button
             onClick={() => { onTabChange("create"); setMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold ${
-              activeTab === "create"
-                ? "bg-[#7952D6] text-white"
-                : "text-[#241B35] dark:text-[#F7F3FC] hover:bg-[#EDE7F6] dark:hover:bg-[#251B35]"
+              activeTab === "create" ? "bg-[#7952D6] text-white" : "text-[#241B35] dark:text-[#F7F3FC]"
             }`}
           >
             <PlusCircle className="w-4 h-4" />
-            <span>Create a Wish</span>
+            <span>Create Verse</span>
+          </button>
+          <button
+            onClick={() => { onTabChange("wishes"); setMobileMenuOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold ${
+              activeTab === "wishes" ? "bg-[#7952D6] text-white" : "text-[#241B35] dark:text-[#F7F3FC]"
+            }`}
+          >
+            <Heart className="w-4 h-4" />
+            <span>My Verses</span>
           </button>
           <button
             onClick={() => { onTabChange("templates"); setMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold ${
-              activeTab === "templates"
-                ? "bg-[#7952D6] text-white"
-                : "text-[#241B35] dark:text-[#F7F3FC] hover:bg-[#EDE7F6] dark:hover:bg-[#251B35]"
+              activeTab === "templates" ? "bg-[#7952D6] text-white" : "text-[#241B35] dark:text-[#F7F3FC]"
             }`}
           >
             <Layers className="w-4 h-4" />
             <span>Templates</span>
           </button>
           <button
-            onClick={() => { onTabChange("wishes"); setMobileMenuOpen(false); }}
+            onClick={() => { onTabChange("calendar"); setMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold ${
-              activeTab === "wishes"
-                ? "bg-[#7952D6] text-white"
-                : "text-[#241B35] dark:text-[#F7F3FC] hover:bg-[#EDE7F6] dark:hover:bg-[#251B35]"
+              activeTab === "calendar" ? "bg-[#7952D6] text-white" : "text-[#241B35] dark:text-[#F7F3FC]"
             }`}
           >
-            <Heart className="w-4 h-4" />
-            <span>My Wishes</span>
+            <Calendar className="w-4 h-4" />
+            <span>Calendar</span>
           </button>
           <button
-            onClick={() => { onTabChange("explore"); setMobileMenuOpen(false); }}
+            onClick={() => { onTabChange("admin"); setMobileMenuOpen(false); }}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-semibold ${
-              activeTab === "explore"
-                ? "bg-[#7952D6] text-white"
-                : "text-[#241B35] dark:text-[#F7F3FC] hover:bg-[#EDE7F6] dark:hover:bg-[#251B35]"
+              activeTab === "admin" ? "bg-[#7952D6] text-white" : "text-[#241B35] dark:text-[#F7F3FC]"
             }`}
           >
-            <Compass className="w-4 h-4" />
-            <span>Explore</span>
+            <ShieldCheck className="w-4 h-4" />
+            <span>Admin</span>
           </button>
         </div>
       )}
