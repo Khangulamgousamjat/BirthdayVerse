@@ -1,310 +1,356 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Plus, 
   Sparkles, 
-  Calendar, 
+  Calendar as CalendarIcon, 
   Clock, 
   Heart, 
   Eye, 
-  ExternalLink, 
+  ArrowRight, 
+  Gift, 
+  Layers, 
   Share2, 
-  ShieldCheck, 
-  ArrowRight,
-  TrendingUp,
-  Gift
+  Crown,
+  ChevronRight,
+  Send
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { StatCard } from "@/components/ui/StatCard";
+import { TEMPLATES_DATA } from "@/components/templates/TemplatesView";
 
 interface MainDashboardViewProps {
   onCreateClick: () => void;
   onSelectRecipient: (name: string, date: string, rel?: string) => void;
   onViewWishes: () => void;
+  onExploreTemplatesClick: () => void;
+  onSelectTemplate?: (templateId: string) => void;
 }
 
 export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
   onCreateClick,
   onSelectRecipient,
   onViewWishes,
+  onExploreTemplatesClick,
+  onSelectTemplate,
 }) => {
+  const [localWishes, setLocalWishes] = useState<any[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("birthdayverse_my_wishes");
+      if (saved) {
+        setLocalWishes(JSON.parse(saved));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  // Compute real totals from saved wishes
+  const totalCreated = localWishes.length;
+  const totalViews = localWishes.reduce((sum, w) => sum + (w.views || 0), 0);
+  const totalReactions = localWishes.reduce((sum, w) => sum + (w.reactions || 0), 0);
+
   const upcomingBirthdays = [
     { name: "Aanya", date: "Sep 20", daysLeft: 10, rel: "Best Friend", avatar: "🌸" },
     { name: "Rahul", date: "Oct 02", daysLeft: 22, rel: "Brother", avatar: "⚡" },
     { name: "Priya", date: "Nov 14", daysLeft: 65, rel: "Partner", avatar: "💖" },
   ];
 
-  const recentVerses = [
-    {
-      id: "aanya-bday",
-      name: "Aanya",
-      status: "Draft",
-      expiryChip: "Draft",
-      chipColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 border-amber-200 dark:border-amber-800",
-      theme: "Golden Elegance",
-      date: "Sep 20",
-      views: 0,
-      loves: 0,
-      bg: "from-[#2D1654] to-[#120824]",
-      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-    },
-    {
-      id: "rahul-live",
-      name: "Rahul",
-      status: "Live",
-      expiryChip: "Expires in 24h",
-      chipColor: "bg-purple-100 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300 border-purple-200 dark:border-purple-800",
-      theme: "Confetti Fiesta",
-      date: "Oct 02",
-      views: 42,
-      loves: 18,
-      bg: "from-[#EA580C] to-[#EC4899]",
-      photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-    },
-    {
-      id: "priya-live",
-      name: "Priya",
-      status: "Live",
-      expiryChip: "Kept forever",
-      chipColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
-      theme: "Sweet Romance",
-      date: "Nov 14",
-      views: 89,
-      loves: 54,
-      bg: "from-[#BE123C] to-[#FB7185]",
-      photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-    },
-  ];
+  const featuredTemplates = TEMPLATES_DATA.slice(0, 3);
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
+    <div className="w-full max-w-7xl mx-auto space-y-10 animate-in fade-in duration-300 pb-12">
       
-      {/* Top Greeting & Action Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-white via-purple-50/40 to-white dark:from-[#1D162A] dark:via-[#251B35]/40 dark:to-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] shadow-sm">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] text-[11px] font-bold mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Creator Studio Godmode</span>
+      {/* 1. Hero Section */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-[#F8F6FC] to-purple-50/50 dark:from-[#1D162A] dark:via-[#171122] dark:to-[#251B35]/40 border border-[#EDE7F6] dark:border-[#251B35] p-6 sm:p-10 shadow-xs text-left">
+        {/* Decorative ambient orb */}
+        <div className="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-[#9D6BFF]/20 to-[#F47FB5]/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-2xl space-y-4 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] text-xs font-bold tracking-wide">
+            <Sparkles className="w-3.5 h-3.5 text-[#9D6BFF]" />
+            <span>Digital Birthday Studio</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
-            Good afternoon, Megha 👋
+
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC] leading-tight tracking-tight">
+            Create something <br className="hidden sm:block" />
+            <span className="bv-gradient-text">they&apos;ll remember.</span>
           </h1>
-          <p className="text-xs sm:text-sm text-[#746B80] dark:text-[#B8AEC5] mt-1">
-            Create, manage and share your digital birthday experiences.
+
+          <p className="text-sm sm:text-base text-[#746B80] dark:text-[#B8AEC5] leading-relaxed">
+            Turn ordinary birthday wishes into cinematic, music-infused digital experiences with interactive memories, cake celebrations, and private 72-hour magic links.
           </p>
+
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={onCreateClick}
+              leftIcon={<Plus className="w-4 h-4" />}
+            >
+              Create Birthday Experience
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={onExploreTemplatesClick}
+              leftIcon={<Layers className="w-4 h-4" />}
+            >
+              Explore Templates
+            </Button>
+          </div>
         </div>
+      </section>
 
-        <button
-          onClick={onCreateClick}
-          className="bv-gradient-btn px-6 py-3.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-purple-500/20 w-fit"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Birthday Verse</span>
-        </button>
-      </div>
+      {/* 2. Quick Stats Row */}
+      <section className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <StatCard
+          label="Celebrations Created"
+          value={totalCreated > 0 ? totalCreated : "0"}
+          icon={<Gift className="w-4 h-4" />}
+          description="In your workspace"
+        />
+        <StatCard
+          label="Total Views"
+          value={totalViews > 0 ? totalViews.toLocaleString() : "0"}
+          icon={<Eye className="w-4 h-4 text-purple-500" />}
+          description="Recipient link opens"
+        />
+        <StatCard
+          label="Love Reactions"
+          value={totalReactions > 0 ? totalReactions.toLocaleString() : "0"}
+          icon={<Heart className="w-4 h-4 text-rose-500" />}
+          description="Hearts received"
+        />
+        <StatCard
+          label="Upcoming Birthdays"
+          value="3"
+          icon={<CalendarIcon className="w-4 h-4 text-emerald-500" />}
+          description="Next in 10 days"
+        />
+      </section>
 
-      {/* Grid: Upcoming Birthdays + Quick Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* 3. Grid: Recent Creations + Upcoming Birthdays */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 text-left">
         
-        {/* Left Widget: Upcoming Birthdays (Cols 1-7) */}
-        <div className="lg:col-span-7 bg-white dark:bg-[#1D162A] rounded-3xl border border-[#EDE7F6] dark:border-[#2A203C] p-6 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[#7952D6] dark:text-[#9D6BFF]" />
-                <h2 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
-                  Upcoming Birthdays
-                </h2>
-              </div>
-              <span className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] font-semibold">
-                Sync with Calendar
-              </span>
+        {/* Left: Recent Creations (Cols 1-8) */}
+        <section className="lg:col-span-8 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                Recent Creations
+              </h2>
+              <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+                Your published and saved birthday experiences
+              </p>
             </div>
+            {localWishes.length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onViewWishes}
+                rightIcon={<ChevronRight className="w-3.5 h-3.5" />}
+              >
+                View all ({localWishes.length})
+              </Button>
+            )}
+          </div>
 
-            <div className="space-y-3">
-              {upcomingBirthdays.map((bday, i) => (
+          {localWishes.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {localWishes.slice(0, 4).map((verse, idx) => (
                 <div
-                  key={i}
-                  className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F8F6FC] dark:bg-[#171122] border border-[#EDE7F6] dark:border-[#2A203C] hover:border-[#9D6BFF]/40 transition-all"
+                  key={verse.id || idx}
+                  className="p-5 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] hover:shadow-md transition-all space-y-3 group"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{bday.avatar}</span>
-                    <div>
-                      <p className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC]">
-                        {bday.name}
-                      </p>
-                      <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">
-                        {bday.rel} · {bday.date}
-                      </p>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                      {verse.name}
+                    </span>
+                    <Badge variant={verse.status === "Published" ? "success" : "warning"}>
+                      {verse.status || "Draft"}
+                    </Badge>
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <span className="text-[11px] font-semibold text-[#7952D6] dark:text-[#9D6BFF] bg-[#EDE7F6] dark:bg-[#251B35] px-2.5 py-1 rounded-full">
-                      {bday.daysLeft} days
-                    </span>
-                    <button
-                      onClick={() => onSelectRecipient(bday.name, bday.date, bday.rel)}
-                      className="bv-gradient-btn px-4 py-1.5 rounded-xl text-xs font-bold cursor-pointer"
-                    >
-                      Create
-                    </button>
+                  <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] line-clamp-2">
+                    {verse.relationship ? `${verse.relationship} celebration` : "Personal birthday verse"}
+                  </p>
+
+                  <div className="flex items-center justify-between text-xs text-[#746B80] dark:text-[#B8AEC5] pt-2 border-t border-[#EDE7F6] dark:border-[#251B35]/60">
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center gap-1">
+                        <Eye className="w-3.5 h-3.5" /> {verse.views || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Heart className="w-3.5 h-3.5 text-rose-500" /> {verse.reactions || 0}
+                      </span>
+                    </div>
+
+                    {verse.url ? (
+                      <a
+                        href={verse.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-[#7952D6] dark:text-[#9D6BFF] hover:underline inline-flex items-center gap-1"
+                      >
+                        Open <ArrowRight className="w-3 h-3" />
+                      </a>
+                    ) : (
+                      <button
+                        onClick={onCreateClick}
+                        className="text-xs font-semibold text-[#7952D6] dark:text-[#9D6BFF] hover:underline"
+                      >
+                        Edit
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="pt-4 mt-4 border-t border-[#EDE7F6] dark:border-[#251B35] flex items-center justify-between text-xs text-[#746B80] dark:text-[#B8AEC5]">
-            <span>Never miss a moment with automated reminders</span>
-            <button onClick={onCreateClick} className="font-bold text-[#7952D6] dark:text-[#9D6BFF] hover:underline cursor-pointer">
-              + Add contact
-            </button>
-          </div>
-        </div>
-
-        {/* Right Widget: Platform Privacy & Storage Meter (Cols 8-12) */}
-        <div className="lg:col-span-5 space-y-6">
-          
-          {/* 72h Ephemeral Lifecycle Box */}
-          <div className="bg-white dark:bg-[#1D162A] rounded-3xl border border-[#EDE7F6] dark:border-[#2A203C] p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#7952D6] dark:text-[#9D6BFF]" />
-                <h2 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
-                  72-Hour Data Promise
-                </h2>
+          ) : (
+            <div className="p-8 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] text-center space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] flex items-center justify-center mx-auto">
+                <Gift className="w-6 h-6" />
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 text-[10px] font-bold">
-                100% Active
-              </span>
+              <div className="max-w-md mx-auto space-y-1">
+                <h3 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                  No celebrations created yet
+                </h3>
+                <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+                  Create your first birthday surprise in less than 2 minutes with photos, music, and an interactive cake.
+                </p>
+              </div>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={onCreateClick}
+                leftIcon={<Plus className="w-4 h-4" />}
+              >
+                Create Your First Verse
+              </Button>
             </div>
+          )}
+        </section>
 
-            <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] leading-relaxed">
-              Every verse created auto-deletes in 72 hours from all databases and CDN caches for complete peace of mind, unless upgraded to permanent.
-            </p>
-
-            {/* Storage Progress */}
-            <div className="space-y-1.5 pt-2">
-              <div className="flex justify-between text-[11px] font-semibold text-[#241B35] dark:text-[#F7F3FC]">
-                <span>Active Verses</span>
-                <span>2 / 5 (Free Plan)</span>
-              </div>
-              <div className="w-full bg-gray-100 dark:bg-gray-800 h-2 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#9D6BFF] to-[#7952D6] w-2/5 rounded-full"></div>
-              </div>
+        {/* Right: Upcoming Birthdays (Cols 9-12) */}
+        <section className="lg:col-span-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                Upcoming Birthdays
+              </h2>
+              <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+                Never miss a friend or family celebration
+              </p>
             </div>
           </div>
 
-          {/* Quick Stats Pill Deck */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 rounded-2xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] shadow-2xs">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] uppercase font-bold text-[#746B80] dark:text-[#B8AEC5]">Total Views</span>
-                <Eye className="w-3.5 h-3.5 text-[#9D6BFF]" />
-              </div>
-              <p className="text-xl font-bold text-[#241B35] dark:text-[#F7F3FC]">131</p>
-              <span className="text-[9px] text-emerald-600 font-semibold">+18% this week</span>
-            </div>
+          <div className="p-5 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] space-y-3">
+            {upcomingBirthdays.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F6FC] dark:hover:bg-[#251B35]/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] flex items-center justify-center text-base">
+                    {item.avatar}
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                      {item.name}
+                    </h4>
+                    <span className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">
+                      {item.rel} &bull; {item.date}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="p-4 rounded-2xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] shadow-2xs">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] uppercase font-bold text-[#746B80] dark:text-[#B8AEC5]">Love Reactions</span>
-                <Heart className="w-3.5 h-3.5 text-[#F47FB5]" />
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => onSelectRecipient(item.name, item.date, item.rel)}
+                  className="text-[11px] h-7 px-3"
+                >
+                  Wish Now
+                </Button>
               </div>
-              <p className="text-xl font-bold text-[#241B35] dark:text-[#F7F3FC]">72</p>
-              <span className="text-[9px] text-pink-500 font-semibold">From 3 verses</span>
-            </div>
+            ))}
           </div>
-
-        </div>
+        </section>
 
       </div>
 
-      {/* Your Birthday Verses Deck (Board 1 Panel 2) */}
-      <div className="bg-white dark:bg-[#1D162A] rounded-3xl border border-[#EDE7F6] dark:border-[#2A203C] p-6 sm:p-8 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
+      {/* 4. Featured Templates Showcase */}
+      <section className="space-y-4 text-left">
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#241B35] dark:text-[#F7F3FC]">
-              Your Birthday Verses
+            <h2 className="text-lg font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+              Featured Visual Styles
             </h2>
             <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
-              Active, expiring and saved celebrations.
+              Handcrafted templates for memorable celebrations
             </p>
           </div>
-
-          <button
-            onClick={onViewWishes}
-            className="text-xs font-bold text-[#7952D6] dark:text-[#9D6BFF] hover:underline cursor-pointer flex items-center gap-1"
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onExploreTemplatesClick}
+            rightIcon={<ChevronRight className="w-3.5 h-3.5" />}
           >
-            <span>View all</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+            Browse all templates
+          </Button>
         </div>
 
-        {/* Verses Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {recentVerses.map((verse) => (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          {featuredTemplates.map((template) => (
             <div
-              key={verse.id}
-              className="rounded-2xl border border-[#EDE7F6] dark:border-[#2A203C] bg-[#F8F6FC] dark:bg-[#171122] overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between"
+              key={template.id}
+              className="rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] overflow-hidden group hover:shadow-lg transition-all"
             >
-              {/* Header preview banner */}
-              <div className={`h-24 bg-gradient-to-r ${verse.bg} p-3 flex items-start justify-between relative overflow-hidden`}>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${verse.chipColor} z-10`}>
-                  {verse.expiryChip}
-                </span>
-
-                <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden shadow-sm z-10">
-                  <img src={verse.photo} alt={verse.name} className="w-full h-full object-cover" />
-                </div>
-              </div>
-
-              {/* Body */}
-              <div className="p-4 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-bold text-sm text-[#241B35] dark:text-[#F7F3FC]">
-                    {verse.name}
-                  </h3>
-                  <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5] mt-0.5">
-                    {verse.theme} · Birthday {verse.date}
-                  </p>
-
-                  {verse.status === "Live" && (
-                    <div className="flex items-center gap-3 text-xs text-[#746B80] dark:text-[#B8AEC5] mt-3">
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-3.5 h-3.5 text-[#9D6BFF]" />
-                        <span>{verse.views}</span>
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="w-3.5 h-3.5 text-[#F47FB5]" />
-                        <span>{verse.loves}</span>
-                      </span>
-                    </div>
+              {/* Preview Banner */}
+              <div className={`h-28 w-full ${template.previewBg} p-4 flex flex-col justify-between relative overflow-hidden`}>
+                <div className="flex items-center justify-between z-10">
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-white backdrop-blur-md">
+                    {template.category}
+                  </span>
+                  {template.badge && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-400 text-amber-950">
+                      {template.badge}
+                    </span>
                   )}
                 </div>
-
-                <div className="pt-3 mt-3 border-t border-[#EDE7F6] dark:border-[#251B35] flex items-center justify-between">
-                  <button
-                    onClick={onCreateClick}
-                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#251B35] text-xs font-bold text-[#7952D6] dark:text-[#9D6BFF] border border-[#EDE7F6] dark:border-[#2A203C] hover:opacity-80 cursor-pointer"
-                  >
-                    Edit
-                  </button>
-
-                  <a
-                    href={`/surprise/${verse.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs font-bold text-[#241B35] dark:text-[#F7F3FC] hover:text-[#7952D6] cursor-pointer"
-                  >
-                    <span>View</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                <div className="text-white font-display font-bold text-sm tracking-wide z-10">
+                  {template.previewText}
                 </div>
               </div>
 
+              {/* Info Body */}
+              <div className="p-5 space-y-3">
+                <div>
+                  <h3 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                    {template.name}
+                  </h3>
+                  <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1 leading-relaxed line-clamp-2">
+                    {template.description}
+                  </p>
+                </div>
+
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => onSelectTemplate ? onSelectTemplate(template.id) : onCreateClick()}
+                  className="w-full"
+                >
+                  Use Template
+                </Button>
+              </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
     </div>
   );

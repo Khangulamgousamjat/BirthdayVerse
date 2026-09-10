@@ -5,12 +5,10 @@ import {
   Heart, 
   Layers, 
   Calendar, 
-  ShieldCheck, 
   Settings, 
   Compass, 
-  Gift, 
-  ChevronRight,
-  Clock
+  Clock,
+  Sparkles
 } from "lucide-react";
 
 export type NavView = 
@@ -32,15 +30,14 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   activeView,
   onViewChange,
-  expiringCount = 1,
+  expiringCount = 0,
 }) => {
   const navItems: { id: NavView; label: string; icon: React.ReactNode; badge?: string | number }[] = [
     { id: "dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
     { id: "create", label: "Create New", icon: <PlusCircle className="w-4 h-4 text-[#9D6BFF]" />, badge: "New" },
-    { id: "wishes", label: "My Verses", icon: <Heart className="w-4 h-4" />, badge: expiringCount > 0 ? `${expiringCount} exp` : undefined },
     { id: "templates", label: "Templates", icon: <Layers className="w-4 h-4" /> },
+    { id: "wishes", label: "My Wishes", icon: <Heart className="w-4 h-4" />, badge: expiringCount > 0 ? `${expiringCount} exp` : undefined },
     { id: "calendar", label: "Calendar", icon: <Calendar className="w-4 h-4" /> },
-    { id: "admin", label: "Admin", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" /> },
     { id: "explore", label: "Explore", icon: <Compass className="w-4 h-4" /> },
     { id: "settings", label: "Settings", icon: <Settings className="w-4 h-4" /> },
   ];
@@ -84,37 +81,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
 
-        {/* 72h Ephemeral Retention Trust Callout (Board 1 & Part D §34) */}
-        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-[#EDE7F6]/60 to-purple-50 dark:from-[#1D162A] dark:to-[#251B35] border border-purple-200/60 dark:border-purple-900/40">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#7952D6] dark:text-[#9D6BFF] mb-1">
+        {/* 72h Ephemeral Retention Trust Callout */}
+        <div className="p-4 rounded-3xl bg-gradient-to-br from-[#EDE7F6]/60 to-purple-50 dark:from-[#1D162A] dark:to-[#251B35] border border-purple-200/60 dark:border-purple-900/40 text-left">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#7952D6] dark:text-[#9D6BFF] mb-1.5">
             <Clock className="w-3.5 h-3.5" />
-            <span>72h Ephemeral Link</span>
+            <span>72h Ephemeral Privacy</span>
           </div>
-          <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] leading-relaxed">
-            Every verse auto-purges after 72h for pure privacy, unless you choose to keep it forever.
+          <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5] leading-relaxed">
+            Every verse automatically self-cleans after 72 hours for privacy, unless marked to keep forever.
           </p>
         </div>
 
       </div>
 
-      {/* User Profile Footer */}
-      <div className="pt-4 border-t border-[#EDE7F6] dark:border-[#251B35]">
-        <div className="flex items-center justify-between p-2 rounded-2xl hover:bg-[#EDE7F6]/40 dark:hover:bg-[#251B35]/40 transition-colors">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#9D6BFF] to-[#F47FB5] text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              M
-            </div>
-            <div className="text-left">
-              <p className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC] leading-none">
-                Megha
-              </p>
-              <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] mt-0.5">
-                Free Plan · Active
-              </p>
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-[#746B80] dark:text-[#B8AEC5]" />
+      {/* Footer info */}
+      <div className="pt-4 border-t border-[#EDE7F6] dark:border-[#251B35] text-left">
+        <div className="flex items-center gap-2 text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC]">
+          <Sparkles className="w-3.5 h-3.5 text-[#9D6BFF]" />
+          <span>BirthdayVerse Studio</span>
         </div>
+        <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] mt-0.5">
+          Turn birthdays into memories ✨
+        </p>
       </div>
     </aside>
   );

@@ -1,33 +1,24 @@
 import React, { Suspense } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { ThemeProvider } from "./context/ThemeContext";
 
-// Lazy load both pages — Home loads fast, Surprise loads only when navigated to
+// Lazy load pages for fast initial bundle
 const Home = React.lazy(() => import("./pages/Home"));
 const Surprise = React.lazy(() => import("./pages/Surprise"));
+const Admin = React.lazy(() => import("./pages/Admin"));
 
 const LoadingScreen = () => (
   <div className="min-h-screen bg-[#F8F6FC] dark:bg-[#100C18] flex items-center justify-center text-[#7952D6] dark:text-[#9D6BFF]">
-    <Sparkles className="animate-spin w-8 h-8 mr-2" />
-    <span className="text-sm font-semibold">Loading Birthdayverse...</span>
+    <Sparkles className="animate-spin w-8 h-8 mr-2 text-[#9D6BFF]" />
+    <span className="text-sm font-semibold tracking-wide">Loading BirthdayVerse...</span>
   </div>
 );
 
 function AppContent() {
-  const location = useLocation();
-  const isSurprisePage = location.pathname.startsWith("/surprise");
-
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden transition-colors duration-300">
-      {/* Cosmic Aurora Ambient Background for Surprise Experience */}
-      {isSurprisePage && (
-        <div className="aurora-bg" aria-hidden="true">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/50 pointer-events-none" />
-        </div>
-      )}
-
       <Routes>
         <Route
           path="/"
@@ -42,6 +33,14 @@ function AppContent() {
           element={
             <Suspense fallback={<LoadingScreen />}>
               <Surprise />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <Suspense fallback={<LoadingScreen />}>
+              <Admin />
             </Suspense>
           }
         />

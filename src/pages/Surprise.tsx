@@ -1,9 +1,21 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { getSurpriseData, incrementViewCount, incrementReactions } from "@/lib/db";
 import { m, AnimatePresence } from "framer-motion";
-import { Music, Music4, Play, Share2, Copy, RefreshCw, CheckCircle2, Sparkles, ArrowRight, Heart } from "lucide-react";
-// Import components and assets
+import { 
+  Music, 
+  VolumeX, 
+  Sparkles, 
+  Heart, 
+  Share2, 
+  Copy, 
+  Check, 
+  RotateCcw, 
+  Gift, 
+  Flame, 
+  ArrowRight,
+  ExternalLink
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
 
@@ -45,835 +57,646 @@ export default function Surprise() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-white/50">
-        <Sparkles className="animate-spin w-8 h-8 mr-2" />
-        Loading your magic...
+      <div className="min-h-screen bg-[#0E0817] flex flex-col items-center justify-center text-[#E7B85C] space-y-4">
+        <div className="w-12 h-12 rounded-full border-2 border-[#E7B85C]/30 border-t-[#E7B85C] animate-spin" />
+        <span className="text-xs font-semibold tracking-widest uppercase text-[#B8AEC5]">
+          Preparing your birthday celebration...
+        </span>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
-        <h1 className="text-2xl mb-4 text-white/80">Oops! This magic link doesn't exist or has expired.</h1>
-        <Button
-          onClick={() => navigate("/")}
-          className="text-sm font-semibold select-none"
-        >
-          Create One
-        </Button>
+      <div className="min-h-screen bg-[#0E0817] flex flex-col items-center justify-center text-white px-4 text-center">
+        <div className="p-8 rounded-3xl bg-[#1D162A]/80 border border-[#251B35] max-w-md space-y-4">
+          <Gift className="w-10 h-10 text-[#9D6BFF] mx-auto opacity-70" />
+          <h1 className="text-xl font-display font-bold text-white">
+            This celebration link has expired or doesn&apos;t exist.
+          </h1>
+          <p className="text-xs text-[#B8AEC5] leading-relaxed">
+            BirthdayVerse experiences are protected by private 72-hour ephemeral retention.
+          </p>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => navigate("/")}
+            className="w-full mt-2"
+          >
+            Create a New Birthday Verse
+          </Button>
+        </div>
       </div>
     );
   }
 
-  return <ExperienceClient data={data} />;
+  return <CinematicExperience data={data} surpriseId={id || ""} />;
 }
 
-const themeMap: Record<string, { primary: string; accent: string; particle: string }> = {
-  midnight: { primary: "#6d28d9", accent: "#a78bfa", particle: "#c084fc" },
-  rosegold: { primary: "#be123c", accent: "#fb7185", particle: "#fda4af" },
-  ocean: { primary: "#1d4ed8", accent: "#60a5fa", particle: "#93c5fd" },
-  emerald: { primary: "#065f46", accent: "#34d399", particle: "#6ee7b7" },
-};
+// ── Cinematic Experience Engine ──────────────────────────────────────────────
 
-const confettiColors: Record<string, string[]> = {
-  midnight: ['#a855f7', '#ec4899', '#eab308', '#ffffff'],
-  rosegold: ['#fb7185', '#be123c', '#fda4af', '#ffffff'],
-  ocean: ['#60a5fa', '#1d4ed8', '#93c5fd', '#ffffff'],
-  emerald: ['#34d399', '#065f46', '#6ee7b7', '#ffffff'],
-};
-
-
-
-function ExperienceClient({ data }: { data: ExperienceData }) {
-  const navigate = useNavigate();
-  const [scene, setScene] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpriseId: string }) {
+  const [scene, setScene] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [showContinue, setShowContinue] = useState(false);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [hasSentLove, setHasSentLove] = useState<boolean>(false);
+  const [loveToast, setLoveToast] = useState<boolean>(false);
 
-  // Upgrade States
-  const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
-  const [burstTrigger, setBurstTrigger] = useState<{ x: number; y: number; time: number } | null>(null);
-  const [hasSentReaction, setHasSentReaction] = useState(false);
-  const [showReactionToast, setShowReactionToast] = useState(false);
+  // Cake Scene states
+  const [candlesBlown, setCandlesBlown] = useState<boolean>(false);
 
-  // Cake Scene 6 states
-  const [areCandlesBlown, setAreCandlesBlown] = useState(false);
-  const [showSmoke, setShowSmoke] = useState(false);
-  const [showFinalSummary, setShowFinalSummary] = useState(false);
-  const sceneTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Parse custom parameters
+  // Parse custom parameters from creator message
   let bodyText = data.message;
   let finaleText = "HAPPY BIRTHDAY! 🎂";
   let customMusic = "";
-  let imageBase64 = "";
-  let theme = "midnight";
+  let imageBase64 = data.image_path || "";
+  let nickname = "";
 
-  // 1. Get URLs directly if they exist
-  if (data.image_path) {
-    imageBase64 = data.image_path;
-  }
-
-  if (data.music_path) {
-    customMusic = data.music_path;
-  }
-
-  // 2. Fallback to JSON-embedded data
   try {
     const parsed = JSON.parse(data.message);
-    if (parsed && typeof parsed === 'object') {
-      bodyText = parsed.body || "";
+    if (parsed && typeof parsed === "object") {
+      bodyText = parsed.body || data.message;
       if (parsed.finaleText) finaleText = parsed.finaleText;
-      if (parsed.theme) theme = parsed.theme;
-      
-      // Only use JSON base64 if storage version doesn't exist
+      if (parsed.nickname) nickname = parsed.nickname;
       if (parsed.imageBase64 && !imageBase64) imageBase64 = parsed.imageBase64;
-
       if (parsed.selectedMusic && parsed.selectedMusic !== "custom") {
         customMusic = parsed.selectedMusic;
       } else if (parsed.musicBase64 && !customMusic) {
         customMusic = parsed.musicBase64;
       }
     }
-  } catch (e) {
-    // Legacy plain text message fallback
+  } catch {
+    // Fallback for plain text message
   }
 
-  // Apply Theme CSS Custom Variables
-  useEffect(() => {
-    const currentTheme = themeMap[theme] || themeMap.midnight;
-    document.documentElement.style.setProperty('--theme-primary', currentTheme.primary);
-    document.documentElement.style.setProperty('--theme-accent', currentTheme.accent);
-    document.documentElement.style.setProperty('--theme-particle', currentTheme.particle);
-  }, [theme]);
+  if (data.music_path) {
+    customMusic = data.music_path;
+  }
 
   // Audio lifecycle
   useEffect(() => {
     if (customMusic === "none") return;
-
-    audioRef.current = new Audio(customMusic || "/Happy Birthday Song.mp3");
+    const trackSrc = customMusic || "/Happy Birthday Song.mp3";
+    audioRef.current = new Audio(trackSrc);
     audioRef.current.loop = true;
     audioRef.current.preload = "auto";
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
-        audioRef.current.src = ''; // Release memory
+        audioRef.current.src = "";
         audioRef.current = null;
       }
     };
   }, [customMusic]);
 
+  // Audio unlock and progressive volume ramp
+  const unlockAudio = () => {
+    if (customMusic === "none" || !audioRef.current) return;
+    audioRef.current.volume = 0;
+    audioRef.current.play().then(() => {
+      setIsPlaying(true);
+      let vol = 0;
+      const ramp = setInterval(() => {
+        vol += 0.05;
+        if (vol >= 0.85) {
+          vol = 0.85;
+          clearInterval(ramp);
+        }
+        if (audioRef.current) audioRef.current.volume = vol;
+      }, 100);
+    }).catch(() => {
+      // Autoplay policy restrictions
+    });
+  };
+
   const toggleMusic = () => {
-    if (customMusic === "none") return;
-
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
     }
   };
 
-  const handleEnvelopeClick = (e: React.MouseEvent) => {
-    if (isEnvelopeOpen) return;
-
-    // Autoplay gate workaround - play audio with volume ramp from 0 to 1 over 2000ms
-    if (customMusic !== "none" && audioRef.current && !isPlaying) {
-      audioRef.current.volume = 0;
-      audioRef.current.play().catch(() => { /* Browser autoplay policy */ });
-      setIsPlaying(true);
-      
-      let currentVolume = 0;
-      const volumeInterval = setInterval(() => {
-        currentVolume += 0.05;
-        if (currentVolume >= 1.0) {
-          currentVolume = 1.0;
-          clearInterval(volumeInterval);
-        }
-        if (audioRef.current) {
-          audioRef.current.volume = currentVolume;
-        }
-      }, 100); // 20 steps of 100ms = 2000ms
-    }
-
-    setIsEnvelopeOpen(true);
-    
-    // Transition to scene 1 after envelope flap animation completes
-    setTimeout(() => {
-      setScene(1);
-    }, 800);
-  };
-
-  const startExperience = () => {
-    // Legacy fallback (no envelope clicked)
-    if (customMusic !== "none" && audioRef.current && !isPlaying) {
-      audioRef.current.play().catch(() => { /* Browser autoplay policy */ });
-      setIsPlaying(true);
-    }
+  // Scene 0 -> Scene 1 Transition (The Opening)
+  const handleOpenGift = () => {
+    unlockAudio();
     setScene(1);
   };
 
-  // Scene transition timers
+  // Auto-advance scenes with timer
   useEffect(() => {
+    let timer: NodeJS.Timeout;
     if (scene === 1) {
-      sceneTimerRef.current = setTimeout(() => setScene(2), 5000);
+      // Scene 1: Preface -> Scene 2: Name reveal after 4s
+      timer = setTimeout(() => setScene(2), 4000);
     } else if (scene === 2) {
-      sceneTimerRef.current = setTimeout(() => setScene(3), 5000);
-    } else if (scene === 3) {
-      const typeDuration = Math.max(2000, bodyText.length * 50 + 1000);
-      sceneTimerRef.current = setTimeout(() => setShowContinue(true), typeDuration);
-    } else if (scene === 4) {
-      sceneTimerRef.current = setTimeout(() => setScene(5), 10000); // 10 seconds of auto-wait
+      // Scene 2: Name reveal -> Scene 3: Letter after 4.5s
+      timer = setTimeout(() => setScene(3), 4500);
     }
+    return () => clearTimeout(timer);
+  }, [scene]);
 
-    return () => {
-      if (sceneTimerRef.current) {
-        clearTimeout(sceneTimerRef.current);
-      }
-    };
-  }, [scene, bodyText.length]);
+  // Send Love interaction
+  const handleSendLove = (e?: React.MouseEvent) => {
+    if (hasSentLove) return;
+    setHasSentLove(true);
+    incrementReactions(surpriseId);
 
+    // Confetti spark from center
+    confetti({
+      particleCount: 30,
+      spread: 60,
+      origin: { x: 0.5, y: 0.6 },
+      colors: ["#F47FB5", "#E7B85C", "#9D6BFF"],
+    });
 
-  // Auto-scroll as text types
-  useEffect(() => {
-    if (scene === 3) {
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
-  }, [scene, bodyText.length, showContinue]);
-
-  // Scene 4 Auto Confetti
-  useEffect(() => {
-    let interval: NodeJS.Timeout | undefined;
-    if (scene === 4) {
-      interval = setInterval(() => {
-        const x = Math.random() * 0.8 + 0.1;
-        const y = Math.random() * 0.8 + 0.1;
-        confetti({
-          particleCount: 15,
-          spread: 80,
-          origin: { x, y },
-          colors: confettiColors[theme] || confettiColors.midnight
-        });
-      }, 700);
-    }
-    return () => clearInterval(interval);
-  }, [scene, theme]);
-
-  // Scene 5 Confetti Fountain
-  useEffect(() => {
-    if (scene === 5) {
-      const duration = 15 * 1000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { 
-        startVelocity: 30, 
-        spread: 360, 
-        ticks: 60, 
-        zIndex: 0,
-        colors: confettiColors[theme] || confettiColors.midnight
-      };
-
-      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-      const interval: NodeJS.Timeout = setInterval(function () {
-        const timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-          return clearInterval(interval);
-        }
-
-        const particleCount = 50 * (timeLeft / duration);
-        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-      }, 250);
-
-      return () => clearInterval(interval);
-    }
-  }, [scene, theme]);
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (scene >= 3) {
-      confetti({
-        particleCount: 20,
-        spread: 70,
-        origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
-        colors: confettiColors[theme] || confettiColors.midnight
-      });
-    }
+    setLoveToast(true);
+    setTimeout(() => setLoveToast(false), 2500);
   };
 
-  const copyLink = () => {
+  // Blow out candles
+  const handleBlowCandles = () => {
+    if (candlesBlown) return;
+    setCandlesBlown(true);
+
+    // Grand celebration confetti burst
+    confetti({
+      particleCount: 100,
+      spread: 100,
+      origin: { x: 0.5, y: 0.5 },
+      colors: ["#E7B85C", "#9D6BFF", "#F47FB5", "#9AD8C2"],
+    });
+
+    // Advance to final screen after 2.5s
+    setTimeout(() => {
+      setScene(7);
+    }, 2500);
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `A Birthday Surprise for ${data.name}`,
+          url: window.location.href,
+        });
+        return;
+      } catch {
+        // Fallback to copy
+      }
+    }
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareLink = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'A Magic Web Link For You',
-          url: window.location.href,
-        });
-      } catch {
-        copyLink();
-      }
-    } else {
-      copyLink();
-    }
-  };
-
-  const replay = () => {
-    setAreCandlesBlown(false);
-    setShowSmoke(false);
-    setShowFinalSummary(false);
-    setHasSentReaction(false);
-    setShowReactionToast(false);
+  const handleReplay = () => {
+    setCandlesBlown(false);
     setScene(1);
   };
 
-  // Reactions Update
-  const handleSendReaction = async (e: React.MouseEvent) => {
-    if (hasSentReaction) return;
-    setHasSentReaction(true);
-
-    // Trigger Mode B heart burst at cursor center
-    setBurstTrigger({ x: e.clientX, y: e.clientY, time: Date.now() });
-
-    // Update Firestore Reactions
-    const id = window.location.pathname.split("/").pop();
-    if (id) {
-      await incrementReactions(id);
-    }
-
-    setShowReactionToast(true);
-    setTimeout(() => {
-      setShowReactionToast(false);
-    }, 2500);
-  };
-
-  // Blow out candles (Scene 6)
-  const blowOutCandles = () => {
-    if (areCandlesBlown) return;
-    setAreCandlesBlown(true);
-    setShowSmoke(true);
-
-    // Blow out Confetti Burst
-    confetti({
-      particleCount: 85,
-      spread: 85,
-      origin: { x: 0.5, y: 0.5 },
-      colors: confettiColors[theme] || confettiColors.midnight
-    });
-
-    // Advance to final summary screen
-    setTimeout(() => {
-      setShowFinalSummary(true);
-    }, 2500);
-  };
-
   return (
-    <div
-      className="relative min-h-screen w-full overflow-x-hidden flex flex-col items-center justify-between p-4 sm:p-8 selection:bg-[var(--theme-accent)]/30"
-    >
+    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0B0614] via-[#140A22] to-[#0A0512] text-[#F7F3FC] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none font-sans">
+      
+      {/* Subtle Atmospheric Ambient Lighting */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#7952D6]/15 via-[#E7B85C]/10 to-transparent rounded-full filter blur-[140px] pointer-events-none" />
 
-      <AnimatePresence>
-        {scene > 0 && customMusic !== "none" && (
-          <m.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="absolute top-6 right-6 z-50 flex gap-4"
+      {/* Floating Starlight Dust Particles */}
+      <div className="absolute inset-0 pointer-events-none opacity-40">
+        <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-[#E7B85C] rounded-full animate-ping" />
+        <div className="absolute top-3/4 left-4/5 w-1.5 h-1.5 bg-[#9D6BFF] rounded-full animate-pulse" />
+        <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full animate-ping" />
+        <div className="absolute top-1/5 right-1/4 w-1 h-1 bg-[#F47FB5] rounded-full animate-pulse" />
+      </div>
+
+      {/* Persistent Audio Controller */}
+      {scene > 0 && customMusic !== "none" && (
+        <div className="fixed top-5 right-5 z-50">
+          <button
+            onClick={toggleMusic}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 dark:bg-[#1D162A]/80 backdrop-blur-md border border-white/15 text-white text-xs font-semibold hover:bg-white/20 transition-all shadow-lg cursor-pointer"
+            aria-label="Toggle music"
           >
-            <button
-              onClick={toggleMusic}
-              className="neon-btn neon-icon-btn"
-            >
-              {isPlaying ? <Music className="w-5 h-5" /> : <Music4 className="w-5 h-5 opacity-50" />}
-            </button>
+            {isPlaying ? (
+              <>
+                <Music className="w-3.5 h-3.5 text-[#E7B85C] animate-bounce" />
+                <span className="text-[11px] hidden sm:inline">Playing Soundtrack</span>
+              </>
+            ) : (
+              <>
+                <VolumeX className="w-3.5 h-3.5 opacity-60" />
+                <span className="text-[11px] opacity-60 hidden sm:inline">Music Paused</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
+      {/* Love Toast Notification */}
+      <AnimatePresence>
+        {loveToast && (
+          <m.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#9D6BFF] to-[#F47FB5] text-white text-xs font-bold shadow-xl flex items-center gap-2"
+          >
+            <Heart className="w-4 h-4 fill-white" />
+            <span>Your love was sent to {data.name}!</span>
           </m.div>
         )}
       </AnimatePresence>
 
-      <div className="flex-1 flex flex-col items-center justify-center z-10 w-full max-w-4xl text-center py-8">
+      {/* Main Experience Container */}
+      <div className="flex-1 w-full max-w-3xl mx-auto flex flex-col items-center justify-center text-center my-auto z-10 py-6 sm:py-12">
         <AnimatePresence mode="wait">
-          {/* Reaction toast notification */}
-          <AnimatePresence>
-            {showReactionToast && (
-              <m.div
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.9 }}
-                className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-tr from-purple-900/90 to-pink-900/90 border border-pink-500/30 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-lg backdrop-blur-md flex items-center gap-2"
-              >
-                <span>💌</span> Your love was sent!
-              </m.div>
-            )}
-          </AnimatePresence>
-
-          {/* Scene 0: Sealed Envelope Autoplay Gate */}
+          
+          {/* ── SCENE 0: The Sealed Keepsake Gift ── */}
           {scene === 0 && (
             <m.div
-              key="start"
+              key="scene-0"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-              transition={{ duration: 0.8 }}
-              className="flex flex-col items-center gap-8 py-8"
+              transition={{ duration: 0.6 }}
+              className="space-y-8 max-w-md w-full px-4"
             >
-              <h2 className="text-2xl md:text-3xl font-light text-white/80 font-serif tracking-wide mb-4 animate-pulse">
-                You received a sealed letter...
-              </h2>
+              <div className="space-y-2">
+                <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+                  A personal celebration awaits
+                </span>
+                <h1 className="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">
+                  Something special is waiting for you.
+                </h1>
+              </div>
 
-              <m.div
-                whileHover={{ rotateY: 5, scale: 1.03 }}
-                animate={{ scale: [1, 1.03, 1] }}
-                transition={{
-                  scale: { repeat: Infinity, duration: 2, ease: "easeInOut" },
-                  type: "spring", stiffness: 200, damping: 15
-                }}
-                onClick={handleEnvelopeClick}
-                className="relative w-64 h-44 md:w-80 md:h-56 bg-white/5 border border-white/10 rounded-2xl shadow-[0_0_30px_rgba(244,63,94,0.15)] flex items-center justify-center cursor-pointer perspective-1000 transform-style-3d hover:shadow-[0_0_40px_rgba(244,63,94,0.3)]"
+              {/* Luxury Sealed Envelope Card */}
+              <div 
+                onClick={handleOpenGift}
+                className="relative mx-auto w-72 sm:w-80 h-48 sm:h-52 rounded-3xl bg-gradient-to-br from-[#1C1230] to-[#251540] border border-[#E7B85C]/35 shadow-[0_15px_45px_rgba(157,107,255,0.15)] flex flex-col items-center justify-center p-6 cursor-pointer group hover:scale-[1.02] hover:border-[#E7B85C]/60 transition-all"
               >
-                {/* Envelope Back/Inside Body */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-950/40 to-slate-900/40 rounded-2xl overflow-hidden z-10 border border-white/5 shadow-inner" />
+                {/* Gold foil border inner */}
+                <div className="absolute inset-2 rounded-2xl border border-[#E7B85C]/15 pointer-events-none" />
 
-                {/* Golden light burst from inside */}
-                {isEnvelopeOpen && (
-                  <m.div 
-                    initial={{ opacity: 0, scale: 0.2 }}
-                    animate={{ opacity: [0, 0.9, 0], scale: [0.2, 2.5, 4] }}
-                    transition={{ duration: 0.8 }}
-                    className="absolute inset-0 bg-gradient-to-tr from-amber-400/80 to-yellow-300/80 rounded-full filter blur-xl z-20 pointer-events-none"
-                  />
-                )}
+                {/* Wax Seal Emblem */}
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#E7B85C] via-[#D97706] to-[#92400E] p-0.5 shadow-lg shadow-amber-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-full h-full rounded-full bg-[#1C1230] flex items-center justify-center border border-[#E7B85C]/40">
+                    <Sparkles className="w-7 h-7 text-[#E7B85C]" />
+                  </div>
+                </div>
 
-                {/* Envelope Flap (Triangle) */}
-                <m.div
-                  animate={isEnvelopeOpen ? { rotateX: -180 } : { rotateX: 0 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-[#3b2269] to-[#28144b] z-30 rounded-t-2xl shadow-md transform-style-3d"
-                  style={{
-                    clipPath: "polygon(0 0, 50% 65%, 100% 0)",
-                    transformOrigin: "top center",
-                  }}
-                />
-
-                {/* Left and Right Fold Overlays */}
-                <div 
-                  className="absolute inset-0 bg-gradient-to-r from-white/2 to-transparent z-15 pointer-events-none rounded-2xl" 
-                  style={{ clipPath: "polygon(0 0, 50% 50%, 0 100%)" }}
-                />
-                <div 
-                  className="absolute inset-0 bg-gradient-to-l from-white/2 to-transparent z-15 pointer-events-none rounded-2xl" 
-                  style={{ clipPath: "polygon(100% 0, 50% 50%, 100% 100%)" }}
-                />
-                <div 
-                  className="absolute inset-0 bg-[#1d0e3a]/10 border-t border-white/5 z-16 pointer-events-none rounded-2xl" 
-                  style={{ clipPath: "polygon(0 100%, 50% 45%, 100% 100%)" }}
-                />
-
-                {/* Wax Seal */}
-                <m.div
-                  animate={isEnvelopeOpen ? { scale: 0, opacity: 0 } : { scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-gradient-to-br from-red-600 to-rose-700 border border-rose-500 flex items-center justify-center text-white text-xl font-bold shadow-[0_4px_10px_rgba(220,38,38,0.4)] z-40 cursor-pointer"
-                >
-                  ♥
-                </m.div>
-
-                {/* Sealed Text Label */}
-                {!isEnvelopeOpen && (
-                  <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/35 text-[10px] tracking-widest font-mono uppercase z-20">
-                    Click to Open
+                <div className="mt-4 text-center">
+                  <p className="text-xs font-serif italic text-white/90">
+                    Crafted with love for {data.name}
+                  </p>
+                  <span className="text-[10px] text-[#B8AEC5] tracking-widest uppercase mt-1 block">
+                    Tap to unlock
                   </span>
-                )}
-              </m.div>
+                </div>
+              </div>
+
+              <Button
+                variant="gold"
+                size="lg"
+                onClick={handleOpenGift}
+                className="w-full max-w-xs mx-auto shadow-lg"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+              >
+                Open Your Surprise ✨
+              </Button>
             </m.div>
           )}
 
-          {/* Scene 1: Cinematic Preface */}
+          {/* ── SCENE 1: Soft Cinematic Transition ── */}
           {scene === 1 && (
             <m.div
-              key="intro"
-              initial={{ opacity: 0, filter: "blur(20px)", scale: 0.95 }}
-              animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-              exit={{ opacity: 0, filter: "blur(10px)", scale: 1.05 }}
-              transition={{ duration: 2, ease: "easeInOut" }}
+              key="scene-1"
+              initial={{ opacity: 0, filter: "blur(20px)" }}
+              animate={{ opacity: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, filter: "blur(15px)" }}
+              transition={{ duration: 1.5 }}
+              onClick={() => setScene(2)}
+              className="space-y-4 max-w-lg cursor-pointer px-4"
             >
-              <h2 className="text-3xl md:text-5xl font-light text-white/90 font-serif leading-relaxed tracking-wide">
-                Someone created something<br />
-                <span className="text-gradient font-medium italic mt-2 inline-block">truly special for you...</span>
+              <span className="text-xs font-bold tracking-widest uppercase text-[#9D6BFF]">
+                Today is your day
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-display font-light text-white leading-relaxed">
+                Some people make the world brighter simply by being in it...
               </h2>
             </m.div>
           )}
 
-          {/* Scene 2: Name Reveal */}
+          {/* ── SCENE 2: The Name Reveal ── */}
           {scene === 2 && (
             <m.div
-              key="name"
-              initial={{ opacity: 0, scale: 0.5, filter: "brightness(0) blur(20px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "brightness(1) blur(0px)" }}
-              exit={{ opacity: 0, scale: 1.5, filter: "blur(10px)", y: -50 }}
-              transition={{ duration: 2.5, ease: "easeOut" }}
-              className="relative px-4 w-full"
+              key="scene-2"
+              initial={{ opacity: 0, scale: 0.85, filter: "blur(15px)" }}
+              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
+              transition={{ duration: 1.2 }}
+              onClick={() => setScene(3)}
+              className="space-y-4 max-w-xl cursor-pointer px-4"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--theme-primary)]/30 via-[var(--theme-accent)]/20 to-[var(--theme-primary)]/10 blur-[100px] z-[-1]" />
-              <h2 className="text-4xl md:text-6xl text-white/80 font-serif mb-4">Dear</h2>
-              <h1 className="text-6xl sm:text-7xl md:text-9xl font-bold text-gradient-gold drop-shadow-[0_0_30px_rgba(234,179,8,0.5)] whitespace-normal break-words leading-tight">
-                {data.name}
+              <span className="text-xs font-serif italic tracking-wider text-[#B8AEC5]">
+                Celebrating the one and only
+              </span>
+              
+              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif italic font-bold tracking-tight bg-gradient-to-r from-[#FFFBEB] via-[#E7B85C] to-[#F59E0B] bg-clip-text text-transparent drop-shadow-[0_10px_30px_rgba(231,184,92,0.3)]">
+                {nickname ? `${data.name} (${nickname})` : data.name}
               </h1>
+
+              <p className="text-xs sm:text-sm text-[#B8AEC5] font-light max-w-sm mx-auto">
+                Here is a special message written from the heart.
+              </p>
             </m.div>
           )}
 
-          {/* Scene 3: Message Typing */}
+          {/* ── SCENE 3: Personal Letter ── */}
           {scene === 3 && (
             <m.div
-              key="message"
-              initial={{ opacity: 0, y: 30 }}
+              key="scene-3"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, filter: "blur(10px)", y: -30 }}
-              transition={{ duration: 1.5 }}
-              className="max-w-full md:max-w-2xl mx-auto px-4 sm:px-6 relative w-full"
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.8 }}
+              className="w-full max-w-xl px-4 space-y-6"
             >
-              <div className="absolute inset-0 bg-[var(--theme-primary)]/10 blur-[60px] z-[-1]" />
-              <m.p
-                className="text-2xl md:text-4xl leading-relaxed font-light text-white/90"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 2, staggerChildren: 0.1 }}
+              {/* Luxury Letter Card */}
+              <div className="p-6 sm:p-10 rounded-3xl bg-[#1D162A]/90 border border-[#E7B85C]/25 shadow-2xl backdrop-blur-xl text-left space-y-4">
+                <div className="flex items-center justify-between border-b border-[#251B35] pb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#E7B85C]">
+                    Personal Birthday Message
+                  </span>
+                  <Sparkles className="w-3.5 h-3.5 text-[#E7B85C]" />
+                </div>
+
+                <div className="text-base sm:text-lg font-serif leading-relaxed text-[#F7F3FC] whitespace-pre-wrap">
+                  {bodyText}
+                </div>
+
+                <div className="pt-2 text-right">
+                  <span className="text-xs font-serif italic text-[#B8AEC5]">
+                    With all my warmest love &bull; BirthdayVerse
+                  </span>
+                </div>
+              </div>
+
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setScene(4)}
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+                className="mx-auto"
               >
-                {bodyText.split(/(\n|\s+)/).map((word, index) => {
-                  if (word === "\n") {
-                    return <br key={index} />;
-                  }
-                  if (word.trim() === "") {
-                    return <span key={index}> </span>;
-                  }
-                  return (
-                    <m.span
-                      key={index}
-                      initial={{ opacity: 0, y: 5, filter: "blur(3px)" }}
-                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                      transition={{ delay: index * 0.03, duration: 0.35 }}
-                      className="inline-block"
-                    >
-                      {word}
-                    </m.span>
-                  );
-                })}
-              </m.p>
-              <AnimatePresence>
-                {showContinue && (
-                  <m.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="mt-12"
-                  >
-                    <Button
-                      onClick={() => setScene(4)}
-                      containerClassName="mx-auto"
-                      className="text-lg font-semibold select-none"
-                    >
-                      Continue Magic
-                    </Button>
-                  </m.div>
-                )}
-              </AnimatePresence>
+                Continue &rarr;
+              </Button>
             </m.div>
           )}
 
-          {/* Scene 4: Beating heart click interactive */}
+          {/* ── SCENE 4: Interactive Heart Moment ── */}
           {scene === 4 && (
             <m.div
-              key="interactive"
+              key="scene-4"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, filter: "blur(20px)" }}
-              transition={{ duration: 1 }}
-              onPointerDown={handlePointerDown}
-              className="cursor-pointer py-12"
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.6 }}
+              className="space-y-6 max-w-md px-4"
             >
-              <div className="flex flex-col items-center gap-8">
-                <div className="relative w-40 h-40 md:w-56 md:h-56 flex items-center justify-center mb-4">
-                  {/* Smooth Performance Aura Background for the icon */}
-                  <div className="absolute inset-[-20px] md:inset-[-40px] z-[-1] pointer-events-none flex items-center justify-center">
-                    <div 
-                      className="absolute w-full h-full opacity-70 rounded-full"
-                      style={{ background: `radial-gradient(circle at center, var(--theme-accent) 0%, var(--theme-primary) 50%, rgba(0,0,0,0) 80%)` }}
-                    />
-                    {/* Smooth rotating outer ring */}
-                    <div className="absolute w-[110%] h-[110%] rounded-full border border-[var(--theme-accent)]/50 border-t-white/80 border-r-[var(--theme-accent)]/60 shadow-[0_0_25px_var(--theme-accent)] animate-spin-clockwise" />
-                    {/* Counter rotating inner dashed/glow ring */}
-                    <div className="absolute w-[95%] h-[95%] rounded-full border border-dashed border-[var(--theme-accent)]/40 border-b-white/80 animate-spin-counter-clockwise" />
-                  </div>
-                  
-                  {/* The Beating Neon Heart */}
-                  <m.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
-                    onClick={(e) => {
-                      e.stopPropagation(); // prevent triggering general confetti
-                      setBurstTrigger({ x: e.clientX, y: e.clientY, time: Date.now() });
-                      if (sceneTimerRef.current) {
-                        clearTimeout(sceneTimerRef.current);
-                      }
-                      setTimeout(() => {
-                        setScene(5);
-                      }, 1200);
-                    }}
-                    className="relative z-10 flex items-center justify-center p-6 bg-white/10 rounded-full backdrop-blur-md border border-[var(--theme-accent)]/40 cursor-pointer shadow-[0_0_35px_rgba(255,255,255,0.1)] hover:border-white/60 transition-all duration-300"
-                  >
-                    <Heart className="w-16 h-16 md:w-20 md:h-20 text-[var(--theme-accent)] fill-[var(--theme-accent)]/90 drop-shadow-[0_0_20px_var(--theme-accent)]" />
-                  </m.div>
-                </div>
-                <h2 className="text-3xl md:text-4xl font-light text-white/80 tracking-widest uppercase">
-                  Tap or click for magic
+              <div className="space-y-2">
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
+                  Some people make ordinary days extraordinary.
                 </h2>
-                <p className="text-white/50 italic">The real surprise is waiting...</p>
+                <p className="text-xs sm:text-sm text-[#B8AEC5]">
+                  Tap the heart to send your reaction back to the creator
+                </p>
+              </div>
+
+              {/* Beating Jewel Heart */}
+              <button
+                onClick={handleSendLove}
+                className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#BE123C] via-[#F47FB5] to-[#FB7185] p-1 shadow-[0_0_50px_rgba(244,127,181,0.35)] flex items-center justify-center mx-auto hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+                aria-label="Send love"
+              >
+                <div className="w-full h-full rounded-full bg-[#1A0B22] flex items-center justify-center">
+                  <Heart className="w-12 h-12 text-[#F47FB5] group-hover:scale-110 transition-transform fill-[#F47FB5]" />
+                </div>
+              </button>
+
+              <div className="pt-4">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => setScene(5)}
+                  rightIcon={<ArrowRight className="w-4 h-4" />}
+                >
+                  Continue to Memories &rarr;
+                </Button>
               </div>
             </m.div>
           )}
 
-          {/* Scene 5: Photo + Climax Message */}
+          {/* ── SCENE 5: Memory Reveal ── */}
           {scene === 5 && (
             <m.div
-              key="finale"
-              initial={{ opacity: 0, scale: 0.8 }}
+              key="scene-5"
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
-              className="flex flex-col items-center gap-6 animate-pulse-reduced"
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6 max-w-md px-4"
             >
-              {imageBase64 && (
-                <m.img
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.5 }}
-                  src={imageBase64}
-                  alt="Surprise Photo"
-                  loading="lazy"
-                  decoding="async"
-                  className="relative z-20 mx-auto max-w-[85vw] md:max-w-lg max-h-[40vh] md:max-h-[50vh] w-auto h-auto object-contain rounded-3xl border-2 border-white/20 drop-shadow-[0_0_25px_var(--theme-accent)] shadow-2xl"
-                />
-              )}
+              <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+                Cherished Moments
+              </span>
 
-              <div className="relative mb-8 mt-4">
-                {/* Smooth Performance Aura Background */}
-                <div className="absolute inset-[-40px] md:inset-[-80px] z-[-1] pointer-events-none flex items-center justify-center">
-                  <div 
-                    className="absolute w-full h-full opacity-60 rounded-full"
-                    style={{ background: `radial-gradient(circle at center, var(--theme-primary) 0%, var(--theme-accent) 50%, rgba(0,0,0,0) 80%)` }}
-                  />
-                  {/* Smooth rotating ring */}
-                  <div className="absolute w-[110%] h-[110%] rounded-full border border-[var(--theme-primary)]/20 border-t-[var(--theme-accent)]/50 border-r-[var(--theme-primary)]/30 shadow-[0_0_15px_var(--theme-primary)] animate-spin-clockwise" />
-                  {/* Counter rotating inner ring */}
-                  <div className="absolute w-[100%] h-[100%] rounded-full border border-[var(--theme-accent)]/10 border-b-[var(--theme-primary)]/40 animate-spin-counter-clockwise" />
-                </div>
-                <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-4">
-                  {finaleText}
-                </h2>
+              {/* Framed Photo or Monogram Card */}
+              <div className="p-3 sm:p-4 rounded-3xl bg-gradient-to-b from-[#E7B85C]/20 to-[#9D6BFF]/10 border border-[#E7B85C]/40 shadow-2xl">
+                {imageBase64 ? (
+                  <div className="rounded-2xl overflow-hidden aspect-square max-h-80 w-full bg-black">
+                    <img
+                      src={imageBase64}
+                      alt={data.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-2xl aspect-square max-h-80 w-full bg-[#1D162A] flex flex-col items-center justify-center p-8 text-center space-y-3">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#7952D6] to-[#E7B85C] flex items-center justify-center text-3xl font-serif font-bold text-white shadow-lg">
+                      {data.name.charAt(0).toUpperCase()}
+                    </div>
+                    <h3 className="text-lg font-serif italic text-white font-bold">
+                      A celebration of {data.name}
+                    </h3>
+                    <p className="text-xs text-[#B8AEC5] max-w-xs">
+                      May every day of this new year bring you happiness, joy, and peace.
+                    </p>
+                  </div>
+                )}
               </div>
 
-              {/* Continue to Cake Button */}
-              <m.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.5, type: "spring", stiffness: 200, damping: 15 }}
-                className="my-4 relative z-20 flex justify-center w-full"
+              <Button
+                variant="gold"
+                size="md"
+                onClick={() => setScene(6)}
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+                className="mx-auto"
               >
-                <Button
-                  onClick={() => setScene(6)}
-                  containerClassName="mx-auto"
-                  className="text-sm font-semibold select-none"
-                >
-                  <span>Continue to Cake 🎂</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </m.div>
+                Make a Birthday Wish 🎂
+              </Button>
             </m.div>
           )}
 
-          {/* Scene 6: Interactive Birthday Cake Blowout */}
+          {/* ── SCENE 6: Interactive Birthday Cake ── */}
           {scene === 6 && (
             <m.div
-              key="cakeScene"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              className="flex flex-col items-center gap-6 py-6"
+              key="scene-6"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8 max-w-md px-4"
             >
-              {!showFinalSummary ? (
-                <>
-                  <div 
-                    onClick={blowOutCandles}
-                    className="relative cursor-pointer transition-transform hover:scale-105 active:scale-98"
-                  >
-                    <svg viewBox="0 0 200 200" className="w-48 h-48 md:w-64 md:h-64 mx-auto overflow-visible">
-                      {/* Cake Platform */}
-                      <rect x="20" y="170" width="160" height="10" rx="5" fill="#e2e8f0" />
-                      
-                      {/* Tier 1 (Bottom) */}
-                      <rect x="30" y="110" width="140" height="60" rx="8" fill="var(--theme-primary)" opacity="0.9" />
-                      <path d="M 30 130 C 50 140, 70 120, 90 135 C 110 120, 130 140, 150 130 C 160 125, 170 135, 170 135 L 170 110 L 30 110 Z" fill="#ffffff" opacity="0.25" />
-                      
-                      {/* Tier 2 (Top) */}
-                      <rect x="50" y="60" width="100" height="50" rx="6" fill="var(--theme-accent)" opacity="0.95" />
-                      <path d="M 50 80 C 70 85, 90 75, 110 85 C 130 75, 150 80, 150 80 L 150 60 L 50 60 Z" fill="#ffffff" opacity="0.25" />
+              <div className="space-y-2">
+                <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+                  Make a Wish
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
+                  Happy Birthday, {data.name}!
+                </h2>
+                <p className="text-xs text-[#B8AEC5]">
+                  {candlesBlown ? "Wish made! Celebrating..." : "Tap the candles to blow them out ✨"}
+                </p>
+              </div>
 
-                      {/* Frosting details */}
-                      <circle cx="45" cy="140" r="3" fill="#f43f5e" />
-                      <circle cx="75" cy="150" r="3" fill="#eab308" />
-                      <circle cx="105" cy="135" r="3" fill="#3b82f6" />
-                      <circle cx="135" cy="145" r="3" fill="#10b981" />
-                      <circle cx="155" cy="130" r="3" fill="#a855f7" />
-
-                      <circle cx="65" cy="85" r="2.5" fill="#f43f5e" />
-                      <circle cx="95" cy="95" r="2.5" fill="#eab308" />
-                      <circle cx="125" cy="80" r="2.5" fill="#3b82f6" />
-
-                      {/* Candles */}
-                      <rect x="70" y="35" width="6" height="25" rx="2" fill="#3b82f6" />
-                      <rect x="97" y="30" width="6" height="30" rx="2" fill="#f43f5e" />
-                      <rect x="124" y="35" width="6" height="25" rx="2" fill="#10b981" />
-
-                      {/* Candle Flames */}
-                      {!areCandlesBlown && (
-                        <>
-                          {/* Flame 1 */}
-                          <path 
-                            d="M 73 15 C 68 25, 78 25, 73 15 Z" 
-                            fill="#f97316" 
-                            className="animate-flicker" 
-                            style={{ transformOrigin: '73px 25px' }} 
-                          />
-                          <path 
-                            d="M 73 18 C 70 23, 76 23, 73 18 Z" 
-                            fill="#eab308" 
-                            className="animate-flicker" 
-                            style={{ transformOrigin: '73px 23px' }} 
-                          />
-
-                          {/* Flame 2 */}
-                          <path 
-                            d="M 100 8 C 95 18, 105 18, 100 8 Z" 
-                            fill="#f97316" 
-                            className="animate-flicker" 
-                            style={{ transformOrigin: '100px 18px', animationDelay: '0.1s' }} 
-                          />
-                          <path 
-                            d="M 100 11 C 97 16, 103 16, 100 11 Z" 
-                            fill="#eab308" 
-                            className="animate-flicker" 
-                            style={{ transformOrigin: '100px 16px', animationDelay: '0.1s' }} 
-                          />
-
-                          {/* Flame 3 */}
-                          <path 
-                            d="M 127 15 C 122 25, 132 25, 127 15 Z" 
-                            fill="#f97316" 
-                            className="animate-flicker" 
-                            style={{ transformOrigin: '127px 25px', animationDelay: '0.2s' }} 
-                          />
-                          <path 
-                            d="M 127 18 C 124 23, 130 23, 127 18 Z" 
-                            fill="#eab308" 
-                            className="animate-flicker" 
-                            style={{ transformOrigin: '127px 23px', animationDelay: '0.2s' }} 
-                          />
-                        </>
-                      )}
-
-                      {/* Smoke puffs */}
-                      {showSmoke && (
-                        <>
-                          <circle cx="73" cy="20" r="3" fill="#cbd5e1" className="animate-smoke animate-smoke-delay-0" />
-                          <circle cx="100" cy="15" r="3" fill="#cbd5e1" className="animate-smoke animate-smoke-delay-1" />
-                          <circle cx="127" cy="20" r="3" fill="#cbd5e1" className="animate-smoke animate-smoke-delay-2" />
-                        </>
-                      )}
-                    </svg>
-                  </div>
-                  
-                  <h3 className="text-2xl md:text-3xl font-light text-white/80 tracking-wide font-serif">
-                    {!areCandlesBlown ? "Make a wish... then blow! 🎂" : "Wish made! ✨"}
-                  </h3>
-                  <p className="text-sm text-white/40 italic">
-                    {!areCandlesBlown ? "Click or tap on the cake to blow out the candles" : "Enjoy your special day!"}
-                  </p>
-                </>
-              ) : (
-                <m.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="space-y-8 py-8"
-                >
-                  <h2 className="text-4xl md:text-6xl font-bold tracking-tight mb-2 font-serif text-white">
-                    Happy Birthday
-                  </h2>
-                  <h1 className="text-6xl sm:text-7xl md:text-9xl font-extrabold gold-shimmer drop-shadow-[0_0_35px_rgba(234,179,8,0.3)] select-none">
-                    {data.name}
-                  </h1>
-
-                  <div className="flex flex-wrap justify-center gap-4 pt-8">
-                    <Button
-                      onClick={handleSendReaction}
-                      disabled={hasSentReaction}
-                      className="text-sm font-semibold select-none"
-                    >
-                      {hasSentReaction ? (
-                        <>
-                          <span>💌</span>
-                          <span>Love sent!</span>
-                        </>
+              {/* Handcrafted Cake Visual with Flickering Candles */}
+              <div
+                onClick={handleBlowCandles}
+                className="relative mx-auto w-64 h-56 flex flex-col items-center justify-end cursor-pointer group"
+              >
+                {/* 3 Candles */}
+                <div className="flex items-end justify-center gap-6 mb-1 z-20">
+                  {[0, 1, 2].map((candleIndex) => (
+                    <div key={candleIndex} className="flex flex-col items-center">
+                      {/* Flame */}
+                      {!candlesBlown ? (
+                        <div className="w-3.5 h-6 rounded-full bg-gradient-to-t from-amber-500 via-yellow-400 to-amber-200 animate-pulse shadow-[0_0_15px_#F59E0B]" />
                       ) : (
-                        <>
-                          <Heart className="h-4 w-4 text-rose-500 fill-rose-500 animate-pulse" />
-                          <span>Send love back</span>
-                        </>
+                        <div className="w-1.5 h-3 bg-gray-400/50 rounded-full animate-ping" />
                       )}
-                    </Button>
-                    <Button
-                      onClick={shareLink}
-                      className="text-sm font-semibold select-none"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      <span>Share This Moment</span>
-                    </Button>
-                    <Button
-                      onClick={copyLink}
-                      className="text-sm font-semibold select-none"
-                    >
-                      {copied ? <CheckCircle2 className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                      <span>{copied ? 'Copied!' : 'Copy Link'}</span>
-                    </Button>
-                    <Button
-                      onClick={replay}
-                      className="text-sm font-semibold select-none"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      <span>Replay Surprise</span>
-                    </Button>
-                    <Button
-                      onClick={() => navigate("/")}
-                      className="text-sm font-semibold select-none"
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      <span>Create Your Own</span>
-                    </Button>
-                  </div>
-                </m.div>
-              )}
+                      {/* Candle Stick */}
+                      <div className="w-2.5 h-10 bg-gradient-to-b from-white to-purple-200 rounded-sm border border-purple-300/40" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Cake Tier 1 (Top) */}
+                <div className="w-36 h-12 bg-gradient-to-r from-[#D946EF] to-[#9D6BFF] rounded-t-2xl border-t-2 border-white/40 shadow-md z-10 flex items-center justify-center text-[10px] font-bold text-white/80">
+                  &bull; &bull; &bull; &bull;
+                </div>
+
+                {/* Cake Tier 2 (Middle) */}
+                <div className="w-48 h-14 bg-gradient-to-r from-[#7952D6] via-[#9D6BFF] to-[#7952D6] rounded-t-xl border-t border-white/20 shadow-md flex items-center justify-center text-xs font-bold text-white">
+                  {data.name}
+                </div>
+
+                {/* Cake Plate */}
+                <div className="w-60 h-4 bg-gradient-to-r from-[#E7B85C] via-[#FDE68A] to-[#D97706] rounded-full shadow-lg" />
+              </div>
+
+              <div className="pt-2">
+                <Button
+                  variant="gold"
+                  size="md"
+                  onClick={handleBlowCandles}
+                  className="mx-auto"
+                >
+                  {candlesBlown ? "Wish Granted! ✨" : "Blow Out Candles 🎂"}
+                </Button>
+              </div>
             </m.div>
           )}
+
+          {/* ── SCENE 7: Final Keepsake Screen ── */}
+          {scene === 7 && (
+            <m.div
+              key="scene-7"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-8 max-w-lg px-4"
+            >
+              <div className="space-y-3">
+                <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+                  Celebration Keepsake
+                </span>
+                <h1 className="text-3xl sm:text-5xl font-serif italic font-bold tracking-tight text-white leading-tight">
+                  {finaleText}
+                </h1>
+                <p className="text-xs sm:text-sm text-[#B8AEC5] max-w-md mx-auto leading-relaxed">
+                  Here&apos;s to another beautiful chapter filled with unforgettable memories, love, and laughter.
+                </p>
+              </div>
+
+              {/* Action Buttons Row */}
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={handleReplay}
+                  leftIcon={<RotateCcw className="w-4 h-4" />}
+                >
+                  Replay
+                </Button>
+
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleSendLove}
+                  leftIcon={<Heart className="w-4 h-4 text-rose-300" />}
+                >
+                  Send Love ❤️
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={handleShare}
+                  leftIcon={<Share2 className="w-4 h-4" />}
+                >
+                  {copied ? "Link Copied!" : "Share"}
+                </Button>
+              </div>
+
+              {/* Discreet CTA to create own verse */}
+              <div className="pt-8 border-t border-[#251B35]/60">
+                <p className="text-xs text-[#746B80]">
+                  Turn birthdays into unforgettable memories.
+                </p>
+                <a
+                  href="/"
+                  className="text-xs font-semibold text-[#9D6BFF] hover:underline inline-flex items-center gap-1 mt-1"
+                >
+                  Create your own Birthday Verse <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </m.div>
+          )}
+
         </AnimatePresence>
       </div>
+
+      {/* Subtle Bottom Watermark */}
+      <footer className="w-full max-w-5xl mx-auto py-3 text-center text-[10px] text-[#746B80] z-10">
+        BirthdayVerse &bull; The Digital Birthday Experience
+      </footer>
     </div>
   );
 }
-

@@ -3,14 +3,15 @@ import {
   Calendar as CalendarIcon, 
   Plus, 
   Bell, 
-  Sparkles, 
-  Check, 
   Trash2, 
-  Clock, 
   ChevronLeft, 
   ChevronRight,
   Gift
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Modal } from "@/components/ui/Modal";
+import { Badge } from "@/components/ui/Badge";
 
 interface CalendarViewProps {
   onCreateForContact: (name: string, date: string, rel: string) => void;
@@ -61,165 +62,147 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onCreateForContact }
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
+    <div className="w-full max-w-7xl mx-auto space-y-8 text-left animate-in fade-in duration-300">
       
-      {/* Top Header */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EDE7F6] dark:border-[#251B35]">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] text-xs font-bold mb-2">
-            <CalendarIcon className="w-3.5 h-3.5" />
-            <span>Smart Birthday Calendar</span>
-          </div>
           <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
-            Upcoming Birthdays & Reminders
+            Birthday Calendar
           </h1>
           <p className="text-xs sm:text-sm text-[#746B80] dark:text-[#B8AEC5] mt-1">
-            Keep track of special dates and prepare surprise verses well in advance.
+            Keep track of upcoming birthdays and schedule celebrations in advance.
           </p>
         </div>
 
-        <button
+        <Button
+          variant="primary"
+          size="md"
           onClick={() => setShowAddModal(true)}
-          className="bv-gradient-btn px-5 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-md w-fit"
+          leftIcon={<Plus className="w-4 h-4" />}
         >
-          <Plus className="w-4 h-4" />
-          <span>Add Birthday</span>
-        </button>
+          Add Birthday
+        </Button>
       </div>
 
-      {/* Add Birthday Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white dark:bg-[#1D162A] rounded-3xl p-6 border border-[#EDE7F6] dark:border-[#2A203C] shadow-2xl space-y-4">
-            <h3 className="text-lg font-bold text-[#241B35] dark:text-[#F7F3FC]">
-              Add Someone's Birthday
-            </h3>
-            <form onSubmit={handleAdd} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC]">Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Aanya"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="w-full px-3.5 py-2 text-xs rounded-xl bg-[#F8F6FC] dark:bg-[#171122] border border-[#EDE7F6] dark:border-[#2A203C] text-[#241B35] dark:text-[#F7F3FC] focus:outline-none focus:ring-2 focus:ring-[#9D6BFF]/40"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC]">Date</label>
-                  <input
-                    type="date"
-                    required
-                    value={newDate}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl bg-[#F8F6FC] dark:bg-[#171122] border border-[#EDE7F6] dark:border-[#2A203C] text-[#241B35] dark:text-[#F7F3FC] focus:outline-none focus:ring-2 focus:ring-[#9D6BFF]/40"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC]">Relationship</label>
-                  <select
-                    value={newRel}
-                    onChange={(e) => setNewRel(e.target.value)}
-                    className="w-full px-3 py-2 text-xs rounded-xl bg-[#F8F6FC] dark:bg-[#171122] border border-[#EDE7F6] dark:border-[#2A203C] text-[#241B35] dark:text-[#F7F3FC]"
-                  >
-                    <option value="Friend">Friend</option>
-                    <option value="Best Friend">Best Friend</option>
-                    <option value="Partner">Partner</option>
-                    <option value="Sister">Sister</option>
-                    <option value="Brother">Brother</option>
-                    <option value="Mother">Mother</option>
-                    <option value="Father">Father</option>
-                    <option value="Colleague">Colleague</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5] hover:bg-gray-100 dark:hover:bg-[#251B35] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bv-gradient-btn px-5 py-2 rounded-xl text-xs font-bold cursor-pointer"
-                >
-                  Save Birthday
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Birthday Contacts List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Contacts List Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {contacts.map((contact) => (
           <div
             key={contact.id}
-            className="p-5 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+            className="p-5 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
           >
-            <div>
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#9D6BFF] to-[#F47FB5] text-white flex items-center justify-center font-bold text-sm shadow-xs">
-                    {contact.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm text-[#241B35] dark:text-[#F7F3FC]">
-                      {contact.name}
-                    </h3>
-                    <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">
-                      {contact.rel}
-                    </p>
-                  </div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] flex items-center justify-center text-[#7952D6] dark:text-[#9D6BFF]">
+                  <Gift className="w-5 h-5" />
                 </div>
-
-                <span className="px-2.5 py-1 rounded-full bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] text-[11px] font-bold">
-                  {contact.daysLeft} days
-                </span>
-              </div>
-
-              <div className="space-y-1.5 text-xs text-[#746B80] dark:text-[#B8AEC5] my-3 p-3 rounded-2xl bg-[#F8F6FC] dark:bg-[#171122]">
-                <div className="flex items-center justify-between">
-                  <span>Birthday Date:</span>
-                  <span className="font-bold text-[#241B35] dark:text-[#F7F3FC]">{contact.date}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1">
-                    <Bell className="w-3 h-3 text-[#9D6BFF]" />
-                    <span>Reminder:</span>
+                <div>
+                  <h3 className="font-bold text-sm text-[#241B35] dark:text-[#F7F3FC]">
+                    {contact.name}
+                  </h3>
+                  <span className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+                    {contact.rel}
                   </span>
-                  <span className="font-medium text-[#7952D6] dark:text-[#9D6BFF]">{contact.reminder}</span>
                 </div>
               </div>
+
+              <Badge variant="purple">
+                in {contact.daysLeft} days
+              </Badge>
             </div>
 
-            <div className="pt-3 border-t border-[#EDE7F6] dark:border-[#251B35] flex items-center justify-between">
-              <button
-                onClick={() => onCreateForContact(contact.name, contact.date, contact.rel)}
-                className="bv-gradient-btn px-4 py-2 rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5 shadow-xs"
-              >
-                <Gift className="w-3.5 h-3.5" />
-                <span>Create Verse</span>
-              </button>
+            <div className="flex items-center justify-between text-xs text-[#746B80] dark:text-[#B8AEC5] pt-2 border-t border-[#EDE7F6] dark:border-[#251B35]/60">
+              <div className="flex items-center gap-1.5">
+                <CalendarIcon className="w-3.5 h-3.5" />
+                <span>{contact.date}</span>
+              </div>
 
-              <button
-                onClick={() => handleDelete(contact.id)}
-                className="p-2 rounded-xl text-[#746B80] dark:text-[#B8AEC5] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
-                title="Delete"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => onCreateForContact(contact.name, contact.date, contact.rel)}
+                  className="text-[11px] h-7 px-3"
+                >
+                  Create Verse
+                </Button>
+                <button
+                  onClick={() => handleDelete(contact.id)}
+                  className="p-1.5 rounded-lg text-[#746B80] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                  title="Remove contact"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Add Birthday Modal */}
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        title="Add Upcoming Birthday"
+        description="Add a friend or family member to your celebration calendar."
+        maxWidth="sm"
+      >
+        <form onSubmit={handleAdd} className="space-y-4 pt-2">
+          <Input
+            label="Name *"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            placeholder="e.g. Maya"
+            required
+            autoFocus
+          />
+
+          <Input
+            label="Birthday Date *"
+            type="date"
+            value={newDate}
+            onChange={(e) => setNewDate(e.target.value)}
+            required
+          />
+
+          <div className="space-y-1.5 text-left">
+            <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+              Relationship
+            </label>
+            <select
+              value={newRel}
+              onChange={(e) => setNewRel(e.target.value)}
+              className="w-full rounded-2xl bg-white dark:bg-[#1D162A] text-[#241B35] dark:text-[#F7F3FC] border border-[#EDE7F6] dark:border-[#251B35] px-4 py-2.5 text-sm outline-none focus:border-[#9D6BFF]"
+            >
+              <option value="Best Friend">Best Friend</option>
+              <option value="Partner">Partner</option>
+              <option value="Sister">Sister</option>
+              <option value="Brother">Brother</option>
+              <option value="Mother">Mother</option>
+              <option value="Father">Father</option>
+              <option value="Colleague">Colleague</option>
+              <option value="Friend">Friend</option>
+            </select>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-3">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setShowAddModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+            >
+              Save to Calendar
+            </Button>
+          </div>
+        </form>
+      </Modal>
 
     </div>
   );
