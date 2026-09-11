@@ -22,7 +22,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
   message,
   finaleText,
   signOff,
-  accentColor = "#9D6BFF",
+  accentColor = "#7659E4",
   vibe = "elegant",
   theme = "midnight",
   profilePhoto,
@@ -61,60 +61,60 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
   // Vibe styling palettes for preview
   const vibeThemes: Record<string, { bg: string; accent: string; text: string; balloon1: string; balloon2: string }> = {
     elegant: {
-      bg: "from-[#F3E8FF] via-[#E9D5FF] to-[#FCE7F3]",
-      accent: "#7952D6",
-      text: "#241B35",
-      balloon1: "#9D6BFF",
-      balloon2: "#F47FB5"
+      bg: "from-[#F5F1FD] via-[#ECE5FC] to-[#F2ECFE]",
+      accent: "#7659E4",
+      text: "#211A30",
+      balloon1: "#8E72F0",
+      balloon2: "#C495C8"
     },
     fun: {
-      bg: "from-[#FEF3C7] via-[#FEE2E2] to-[#EDE9FE]",
-      accent: "#EA580C",
-      text: "#1F2937",
-      balloon1: "#F59E0B",
-      balloon2: "#EC4899"
+      bg: "from-[#FDF8EC] via-[#F8EDF8] to-[#EDE9FE]",
+      accent: "#D97706",
+      text: "#211A30",
+      balloon1: "#E0A842",
+      balloon2: "#C495C8"
     },
     romantic: {
-      bg: "from-[#FFE4E6] via-[#FCE7F3] to-[#EDE9FE]",
-      accent: "#BE123C",
-      text: "#4C0519",
-      balloon1: "#FB7185",
-      balloon2: "#C084FC"
+      bg: "from-[#FAF0F5] via-[#F5EBF5] to-[#EDE9FE]",
+      accent: "#A83868",
+      text: "#3B1225",
+      balloon1: "#DE7A9E",
+      balloon2: "#A28DF8"
     },
     cute: {
-      bg: "from-[#FCE7F3] via-[#E0E7FF] to-[#FEF3C7]",
-      accent: "#DB2777",
-      text: "#374151",
-      balloon1: "#F47FB5",
-      balloon2: "#60A5FA"
+      bg: "from-[#F7F2FD] via-[#EDE7FD] to-[#F5EDF5]",
+      accent: "#9333EA",
+      text: "#211A30",
+      balloon1: "#C495C8",
+      balloon2: "#8E72F0"
     },
     dreamy: {
-      bg: "from-[#E0E7FF] via-[#EDE9FE] to-[#F5D0FE]",
-      accent: "#6366F1",
-      text: "#1E1B4B",
-      balloon1: "#818CF8",
-      balloon2: "#C084FC"
+      bg: "from-[#EDE9FE] via-[#E8E2FC] to-[#F3EBFC]",
+      accent: "#7659E4",
+      text: "#1E182A",
+      balloon1: "#8E72F0",
+      balloon2: "#A28DF8"
     },
     party: {
-      bg: "from-[#2E1065] via-[#4C1D95] to-[#701A75]",
-      accent: "#F47FB5",
-      text: "#FFFFFF",
-      balloon1: "#A855F7",
-      balloon2: "#EC4899"
+      bg: "from-[#1B1428] via-[#261B3B] to-[#341F48]",
+      accent: "#C495C8",
+      text: "#F9F7FD",
+      balloon1: "#8E72F0",
+      balloon2: "#E0A842"
     },
     pastel: {
-      bg: "from-[#FCE7F3] via-[#EDE9FE] to-[#E0E7FF]",
-      accent: "#DB2777",
-      text: "#374151",
-      balloon1: "#F47FB5",
-      balloon2: "#818CF8"
+      bg: "from-[#F7F2FD] via-[#EDE9FE] to-[#F5EFFE]",
+      accent: "#8E72F0",
+      text: "#211A30",
+      balloon1: "#C495C8",
+      balloon2: "#A28DF8"
     },
     midnight: {
-      bg: "from-[#1A0B2E] via-[#2E1065] to-[#4C1D95]",
-      accent: "#C084FC",
-      text: "#FFFFFF",
-      balloon1: "#A855F7",
-      balloon2: "#EC4899"
+      bg: "from-[#13101C] via-[#1E182A] to-[#261F36]",
+      accent: "#A28DF8",
+      text: "#F9F7FD",
+      balloon1: "#7659E4",
+      balloon2: "#C495C8"
     },
   };
 
@@ -149,7 +149,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
       {/* Main Interactive Celebration Body */}
       <div className="relative z-10 flex flex-col items-center flex-1">
         {/* Sparkle Header */}
-        <div className="flex items-center justify-center gap-1.5 mb-1 text-[#9D6BFF]">
+        <div className="flex items-center justify-center gap-1.5 mb-1 text-[#7659E4] dark:text-[#A28DF8]">
           <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "6s" }} />
           <span className="text-[10px] tracking-widest uppercase font-bold opacity-75">Birthdayverse</span>
           <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "6s" }} />
@@ -165,11 +165,11 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
 
         {/* Recipient Name in Signature Style */}
         <div className="relative my-1">
-          <span className="font-serif italic text-3xl font-bold bg-gradient-to-r from-[#7952D6] via-[#9D6BFF] to-[#F47FB5] bg-clip-text text-transparent px-2">
+          <span className="font-serif italic text-3xl font-bold bg-gradient-to-r from-[#7659E4] via-[#8E72F0] to-[#C495C8] bg-clip-text text-transparent px-2">
             {displayName}
           </span>
           <div className="flex justify-center -mt-1">
-            <Heart className="w-3.5 h-3.5 text-[#F47FB5] fill-[#F47FB5] animate-bounce" />
+            <Heart className="w-3.5 h-3.5 text-[#C495C8] fill-[#C495C8] animate-bounce" />
           </div>
         </div>
 
@@ -230,7 +230,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
               style={{ willChange: "transform" }}
               title="Next photo"
             >
-              <div className="w-full h-20 bg-[#FFF5F8] overflow-hidden rounded-[3px] flex flex-col items-center justify-center p-1 text-center border border-pink-100">
+              <div className="w-full h-20 bg-[#FAF0F5] overflow-hidden rounded-[3px] flex flex-col items-center justify-center p-1 text-center border border-purple-100">
                 {activePhotos.length > 2 ? (
                   <img 
                     src={activePhotos[(previewPhotoIndex + 1) % activePhotos.length]} 
@@ -239,10 +239,10 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
                   />
                 ) : (
                   <>
-                    <span className="font-serif italic text-xs font-bold text-[#BE123C] leading-tight">
+                    <span className="font-serif italic text-xs font-bold text-[#7659E4] leading-tight">
                       Good<br/>Vibes<br/>Always
                     </span>
-                    <span className="text-[9px] mt-0.5">💖</span>
+                    <span className="text-[9px] mt-0.5">💜</span>
                   </>
                 )}
               </div>
@@ -251,7 +251,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
 
           {/* Swipe / Click Hint Pill */}
           {activePhotos.length > 1 && (
-            <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-[#7952D6] dark:text-[#9D6BFF] bg-white/70 dark:bg-black/40 px-2.5 py-0.5 rounded-full border border-purple-200/50 shadow-2xs">
+            <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-[#7659E4] dark:text-[#C495C8] bg-white/70 dark:bg-black/40 px-2.5 py-0.5 rounded-full border border-[#E8DFFA]/50 shadow-2xs">
               <span>👈 Click or swipe photos 👉</span>
             </div>
           )}
@@ -260,11 +260,11 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
 
       {/* Bottom Audio Player Card */}
       <div className="relative z-20 pt-2">
-        <div className="bg-white/85 dark:bg-[#1D162A]/90 backdrop-blur-xl rounded-2xl p-2.5 border border-white/80 dark:border-white/10 shadow-lg shadow-purple-900/10 flex flex-col gap-1.5">
+        <div className="bg-white/85 dark:bg-[#1E182A]/90 backdrop-blur-xl rounded-2xl p-2.5 border border-white/80 dark:border-white/10 shadow-lg shadow-black/10 flex flex-col gap-1.5">
           <div className="flex items-center gap-2.5">
             <button
               onClick={onToggleMusic}
-              className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7952D6] to-[#9D6BFF] text-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer flex-shrink-0"
+              className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#8E72F0] text-white flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform cursor-pointer flex-shrink-0"
               aria-label={isPlayingMusic ? "Pause preview music" : "Play preview music"}
             >
               {isPlayingMusic ? (
@@ -291,13 +291,13 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
           {/* Progress track */}
           <div className="w-full bg-gray-200 dark:bg-gray-700 h-1 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-[#9D6BFF] to-[#F47FB5] transition-all duration-300"
+              className="h-full bg-gradient-to-r from-[#7659E4] to-[#A28DF8] transition-all duration-300"
               style={{ width: `${(audioProgress / 268) * 100}%` }}
             />
           </div>
 
           <div className="text-[9px] text-center text-gray-500 dark:text-gray-400 font-medium">
-            Made with <span className="text-[#F47FB5]">💖</span> by someone who cares
+            Made with <span className="text-[#C495C8]">💜</span> by someone who cares
           </div>
         </div>
       </div>
@@ -310,22 +310,22 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
       {/* Live Preview Header & Device Selector */}
       <div className="w-full flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+          <span className="text-sm font-bold text-[#211A30] dark:text-[#F9F7FD]">
             Live Preview
           </span>
           <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9D6BFF] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9D6BFF]"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#7659E4] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#7659E4]"></span>
           </span>
         </div>
 
-        <div className="flex items-center gap-1 bg-[#EDE7F6] dark:bg-[#1D162A] p-1 rounded-xl border border-[#EDE7F6] dark:border-[#2A203C]">
+        <div className="flex items-center gap-1 bg-[#F1EBFD] dark:bg-[#1E182A] p-1 rounded-xl border border-[#E8DFFA] dark:border-[#282038]">
           <button
             onClick={() => setPreviewDevice("mobile")}
             className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               previewDevice === "mobile"
-                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
-                : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35]"
+                ? "bg-white dark:bg-[#261F36] text-[#7659E4] dark:text-[#C495C8] shadow-xs"
+                : "text-[#736886] dark:text-[#A89EC0] hover:text-[#211A30]"
             }`}
           >
             <Smartphone className="w-3.5 h-3.5" />
@@ -335,8 +335,8 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
             onClick={() => setPreviewDevice("desktop")}
             className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               previewDevice === "desktop"
-                ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
-                : "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35]"
+                ? "bg-white dark:bg-[#261F36] text-[#7659E4] dark:text-[#C495C8] shadow-xs"
+                : "text-[#736886] dark:text-[#A89EC0] hover:text-[#211A30]"
             }`}
           >
             <Monitor className="w-3.5 h-3.5" />
@@ -375,20 +375,20 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
           </div>
         ) : (
           /* Desktop Browser Window Mockup Frame */
-          <div className="w-full max-w-[420px] h-[640px] rounded-3xl p-3 bg-[#171122] shadow-2xl border border-[#EDE7F6] dark:border-[#251B35] flex flex-col transition-all duration-300">
+          <div className="w-full max-w-[420px] h-[640px] rounded-3xl p-3 bg-[#161220] shadow-2xl border border-[#E8DFFA] dark:border-[#282038] flex flex-col transition-all duration-300">
             {/* Desktop Browser Chrome Topbar */}
-            <div className="flex items-center justify-between px-2 pb-2.5 border-b border-[#EDE7F6]/20 dark:border-[#251B35] select-none">
+            <div className="flex items-center justify-between px-2 pb-2.5 border-b border-[#E8DFFA]/20 dark:border-[#282038] select-none">
               <div className="flex items-center gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-[#FF5F56] shadow-xs" />
                 <div className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E] shadow-xs" />
                 <div className="w-2.5 h-2.5 rounded-full bg-[#27C93F] shadow-xs" />
               </div>
-              <div className="flex-1 mx-3 px-2.5 py-1 rounded-lg bg-black/30 border border-white/10 text-[10px] text-[#B8AEC5] flex items-center justify-center gap-1.5 font-mono truncate">
+              <div className="flex-1 mx-3 px-2.5 py-1 rounded-lg bg-black/30 border border-white/10 text-[10px] text-[#A89EC0] flex items-center justify-center gap-1.5 font-mono truncate">
                 <Lock className="w-2.5 h-2.5 text-emerald-400" />
                 <span className="truncate">birthdayverse.app/surprise/{displayName.toLowerCase().replace(/\s+/g, '-')}</span>
               </div>
-              <div className="flex items-center gap-1 text-[10px] text-[#746B80]">
-                <Monitor className="w-3 h-3 text-[#9D6BFF]" />
+              <div className="flex items-center gap-1 text-[10px] text-[#736886]">
+                <Monitor className="w-3 h-3 text-[#7659E4]" />
               </div>
             </div>
 
@@ -403,7 +403,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
       {/* Under-Preview Controls */}
       <div className="w-full max-w-[320px] mt-4 flex items-center justify-between text-xs font-semibold">
         {/* Toggle music in preview */}
-        <label className="flex items-center gap-2 text-[#241B35] dark:text-[#F7F3FC] cursor-pointer select-none">
+        <label className="flex items-center gap-2 text-[#211A30] dark:text-[#F9F7FD] cursor-pointer select-none">
           <div className="relative inline-flex items-center">
             <input 
               type="checkbox" 
@@ -411,7 +411,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
               onChange={onToggleMusic}
               className="sr-only peer" 
             />
-            <div className="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#9D6BFF]"></div>
+            <div className="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#7659E4]"></div>
           </div>
           <span className="text-xs font-medium">Play music in preview</span>
         </label>
@@ -419,7 +419,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
         {/* Change template shortcut button */}
         <button
           onClick={onChangeTemplateClick}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C] text-[#7952D6] dark:text-[#9D6BFF] hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35] transition-all shadow-2xs cursor-pointer text-xs font-semibold"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] text-[#7659E4] dark:text-[#C495C8] hover:bg-[#F1EBFD]/50 dark:hover:bg-[#261F36] transition-all shadow-2xs cursor-pointer text-xs font-semibold"
         >
           <Sparkles className="w-3.5 h-3.5" />
           <span>Change template</span>

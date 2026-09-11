@@ -28,21 +28,21 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium tracking-tight rounded-2xl transition-all duration-200 cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9D6BFF] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed";
+      "inline-flex items-center justify-center font-medium tracking-tight rounded-2xl transition-all duration-200 cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8E72F0] focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed";
 
     const variantStyles = {
       primary:
-        "bg-gradient-to-r from-[#7952D6] via-[#8B5CF6] to-[#9D6BFF] text-white shadow-md shadow-purple-500/20 hover:shadow-lg hover:shadow-purple-500/30 hover:brightness-105 active:scale-[0.98]",
+        "bg-gradient-to-r from-[#7659E4] via-[#8569EC] to-[#967EF2] text-white shadow-md shadow-[#7659E4]/20 hover:shadow-lg hover:shadow-[#7659E4]/30 hover:brightness-105 active:scale-[0.98]",
       secondary:
-        "bg-white dark:bg-[#1D162A] text-[#241B35] dark:text-[#F7F3FC] border border-[#EDE7F6] dark:border-[#251B35] hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35] active:scale-[0.98] shadow-xs",
+        "bg-white dark:bg-[#1E182A] text-[#211A30] dark:text-[#F7F5FC] border border-[#E8DFFA] dark:border-[#282038] hover:bg-[#F3EEFA]/80 dark:hover:bg-[#261F36] active:scale-[0.98] shadow-xs",
       outline:
-        "border border-[#9D6BFF]/40 text-[#7952D6] dark:text-[#9D6BFF] hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35]/50 active:scale-[0.98]",
+        "border border-[#8E72F0]/35 text-[#7659E4] dark:text-[#A28DF8] hover:bg-[#EFEAFB]/60 dark:hover:bg-[#261F36] active:scale-[0.98]",
       ghost:
-        "text-[#746B80] dark:text-[#B8AEC5] hover:text-[#241B35] dark:hover:text-white hover:bg-[#EDE7F6]/50 dark:hover:bg-[#251B35]/50 active:scale-[0.98]",
+        "text-[#736886] dark:text-[#ACA2BE] hover:text-[#211A30] dark:hover:text-[#F7F5FC] hover:bg-[#EFEAFB]/50 dark:hover:bg-[#261F36] active:scale-[0.98]",
       gold:
-        "bg-gradient-to-r from-[#D97706] via-[#E7B85C] to-[#F59E0B] text-white font-semibold shadow-md shadow-amber-500/20 hover:brightness-105 active:scale-[0.98]",
+        "bg-gradient-to-r from-[#C2923A] via-[#D8BE75] to-[#E2BC72] text-white font-semibold shadow-md shadow-amber-500/15 hover:brightness-105 active:scale-[0.98]",
       danger:
-        "bg-rose-500 text-white hover:bg-rose-600 active:scale-[0.98] shadow-sm shadow-rose-500/20",
+        "bg-[#D34B5A] text-white hover:bg-[#C23C4B] active:scale-[0.98] shadow-sm",
     };
 
     const sizeStyles = {

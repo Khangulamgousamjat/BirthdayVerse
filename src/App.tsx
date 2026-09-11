@@ -10,8 +10,8 @@ const Surprise = React.lazy(() => import("./pages/Surprise"));
 const Admin = React.lazy(() => import("./pages/Admin"));
 
 const LoadingScreen = () => (
-  <div className="min-h-screen bg-[#F8F6FC] dark:bg-[#100C18] flex items-center justify-center text-[#7952D6] dark:text-[#9D6BFF]">
-    <Sparkles className="animate-spin w-8 h-8 mr-2 text-[#9D6BFF]" />
+  <div className="min-h-screen bg-[#F9F7FD] dark:bg-[#13101C] flex items-center justify-center text-[#7659E4] dark:text-[#A28DF8]">
+    <Sparkles className="animate-spin w-8 h-8 mr-2 text-[#7659E4]" />
     <span className="text-sm font-semibold tracking-wide">Loading BirthdayVerse...</span>
   </div>
 );

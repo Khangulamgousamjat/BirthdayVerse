@@ -65,12 +65,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onCreateForContact }
     <div className="w-full max-w-7xl mx-auto space-y-8 text-left animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EDE7F6] dark:border-[#251B35]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8DFFA] dark:border-[#282038]">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#211A30] dark:text-[#F9F7FD]">
             Birthday Calendar
           </h1>
-          <p className="text-xs sm:text-sm text-[#746B80] dark:text-[#B8AEC5] mt-1">
+          <p className="text-xs sm:text-sm text-[#736886] dark:text-[#A89EC0] mt-1">
             Keep track of upcoming birthdays and schedule celebrations in advance.
           </p>
         </div>
@@ -90,18 +90,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onCreateForContact }
         {contacts.map((contact) => (
           <div
             key={contact.id}
-            className="p-5 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
+            className="p-5 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group"
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] flex items-center justify-center text-[#7952D6] dark:text-[#9D6BFF]">
+                <div className="w-11 h-11 rounded-2xl bg-[#F1EBFD] dark:bg-[#261F36] flex items-center justify-center text-[#7659E4] dark:text-[#C495C8]">
                   <Gift className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-[#241B35] dark:text-[#F7F3FC]">
+                  <h3 className="font-bold text-sm text-[#211A30] dark:text-[#F9F7FD]">
                     {contact.name}
                   </h3>
-                  <span className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+                  <span className="text-xs text-[#736886] dark:text-[#A89EC0]">
                     {contact.rel}
                   </span>
                 </div>
@@ -112,7 +112,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onCreateForContact }
               </Badge>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-[#746B80] dark:text-[#B8AEC5] pt-2 border-t border-[#EDE7F6] dark:border-[#251B35]/60">
+            <div className="flex items-center justify-between text-xs text-[#736886] dark:text-[#A89EC0] pt-2 border-t border-[#E8DFFA] dark:border-[#282038]/60">
               <div className="flex items-center gap-1.5">
                 <CalendarIcon className="w-3.5 h-3.5" />
                 <span>{contact.date}</span>
@@ -129,7 +129,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onCreateForContact }
                 </Button>
                 <button
                   onClick={() => handleDelete(contact.id)}
-                  className="p-1.5 rounded-lg text-[#746B80] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-[#736886] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                   title="Remove contact"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -167,13 +167,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ onCreateForContact }
           />
 
           <div className="space-y-1.5 text-left">
-            <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+            <label className="block text-xs font-semibold text-[#736886] dark:text-[#A89EC0]">
               Relationship
             </label>
             <select
               value={newRel}
               onChange={(e) => setNewRel(e.target.value)}
-              className="w-full rounded-2xl bg-white dark:bg-[#1D162A] text-[#241B35] dark:text-[#F7F3FC] border border-[#EDE7F6] dark:border-[#251B35] px-4 py-2.5 text-sm outline-none focus:border-[#9D6BFF]"
+              className="w-full rounded-2xl bg-white dark:bg-[#1E182A] text-[#211A30] dark:text-[#F9F7FD] border border-[#E8DFFA] dark:border-[#282038] px-4 py-2.5 text-sm outline-none focus:border-[#7659E4]"
             >
               <option value="Best Friend">Best Friend</option>
               <option value="Partner">Partner</option>

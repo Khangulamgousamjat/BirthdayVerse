@@ -78,12 +78,12 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
     <div className="w-full max-w-7xl mx-auto space-y-6 text-left animate-in fade-in duration-300">
       
       {/* Top Header Row */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EDE7F6] dark:border-[#251B35]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8DFFA] dark:border-[#282038]">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#211A30] dark:text-[#F9F7FD]">
             My Birthday Verses
           </h1>
-          <p className="text-xs sm:text-sm text-[#746B80] dark:text-[#B8AEC5] mt-1">
+          <p className="text-xs sm:text-sm text-[#736886] dark:text-[#A89EC0] mt-1">
             Manage your created birthday experiences, track views, and share live links.
           </p>
         </div>
@@ -101,14 +101,14 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
       {/* Wishes List or Empty State */}
       {wishes.length === 0 ? (
         <div className="text-center py-16 px-4 max-w-md mx-auto flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 rounded-3xl bg-[#EDE7F6] dark:bg-[#251B35] flex items-center justify-center text-3xl text-[#7952D6] dark:text-[#9D6BFF]">
+          <div className="w-16 h-16 rounded-3xl bg-[#F1EBFD] dark:bg-[#261F36] flex items-center justify-center text-3xl text-[#7659E4] dark:text-[#C495C8]">
             🎂
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#241B35] dark:text-[#F7F3FC] font-display">
+            <h2 className="text-lg font-bold text-[#211A30] dark:text-[#F9F7FD] font-display">
               No birthday verses created yet
             </h2>
-            <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1 leading-relaxed">
+            <p className="text-xs text-[#736886] dark:text-[#A89EC0] mt-1 leading-relaxed">
               Create your first personalized birthday experience with photos, music, and heartwarming words.
             </p>
           </div>
@@ -126,15 +126,15 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
           {wishes.map((wish) => (
             <div
               key={wish.id}
-              className="rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+              className="rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] p-6 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4"
             >
               <div>
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div>
-                    <h3 className="font-bold text-base text-[#241B35] dark:text-[#F7F3FC]">
+                    <h3 className="font-bold text-base text-[#211A30] dark:text-[#F9F7FD]">
                       {wish.name}
                     </h3>
-                    <div className="flex items-center gap-1.5 text-[11px] text-[#746B80] dark:text-[#B8AEC5] mt-0.5">
+                    <div className="flex items-center gap-1.5 text-[11px] text-[#736886] dark:text-[#A89EC0] mt-0.5">
                       <Calendar className="w-3 h-3" />
                       <span>{wish.date}</span>
                     </div>
@@ -154,19 +154,19 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
                 </div>
 
                 {wish.relationship && (
-                  <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] bg-[#EDE7F6]/50 dark:bg-[#251B35]/60 px-3 py-1 rounded-xl w-fit">
-                    Relationship: <span className="font-semibold text-[#241B35] dark:text-[#F7F3FC]">{wish.relationship}</span>
+                  <p className="text-xs text-[#736886] dark:text-[#A89EC0] bg-[#F1EBFD]/50 dark:bg-[#261F36]/60 px-3 py-1 rounded-xl w-fit">
+                    Relationship: <span className="font-semibold text-[#211A30] dark:text-[#F9F7FD]">{wish.relationship}</span>
                   </p>
                 )}
 
                 {wish.status === "Published" && (
-                  <div className="flex items-center gap-4 text-xs text-[#746B80] dark:text-[#B8AEC5] pt-3">
+                  <div className="flex items-center gap-4 text-xs text-[#736886] dark:text-[#A89EC0] pt-3">
                     <span className="flex items-center gap-1">
-                      <Eye className="w-3.5 h-3.5 text-[#9D6BFF]" />
+                      <Eye className="w-3.5 h-3.5 text-[#8E72F0]" />
                       <span>{wish.views || 0} views</span>
                     </span>
                     <span className="flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5 text-[#E7B85C]" />
+                      <Sparkles className="w-3.5 h-3.5 text-[#E0A842]" />
                       <span>{wish.reactions || 0} loves</span>
                     </span>
                   </div>
@@ -174,7 +174,7 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
               </div>
 
               {/* Action Buttons Row */}
-              <div className="flex items-center justify-between gap-2 pt-3 border-t border-[#EDE7F6] dark:border-[#251B35]/60">
+              <div className="flex items-center justify-between gap-2 pt-3 border-t border-[#E8DFFA] dark:border-[#282038]/60">
                 <div className="flex items-center gap-1.5">
                   {wish.url && (
                     <>
@@ -191,7 +191,7 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
                         href={wish.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 rounded-xl bg-[#EDE7F6]/60 dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] hover:bg-[#7952D6] hover:text-white transition-all inline-flex items-center justify-center"
+                        className="p-2 rounded-xl bg-[#F1EBFD] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C495C8] hover:bg-[#7659E4] hover:text-white transition-all inline-flex items-center justify-center"
                         title="Open surprise"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
@@ -202,7 +202,7 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
 
                 <button
                   onClick={() => handleDelete(wish.id)}
-                  className="p-2 rounded-xl text-[#746B80] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                  className="p-2 rounded-xl text-[#736886] hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                   title="Delete from list"
                 >
                   <Trash2 className="w-3.5 h-3.5" />

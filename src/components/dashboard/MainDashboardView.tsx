@@ -64,22 +64,22 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
     <div className="w-full max-w-7xl mx-auto space-y-10 animate-in fade-in duration-300 pb-12">
       
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-[#F8F6FC] to-purple-50/50 dark:from-[#1D162A] dark:via-[#171122] dark:to-[#251B35]/40 border border-[#EDE7F6] dark:border-[#251B35] p-6 sm:p-10 shadow-xs text-left">
-        {/* Decorative ambient orb */}
-        <div className="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-[#9D6BFF]/20 to-[#F47FB5]/10 rounded-full blur-3xl pointer-events-none" />
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-white via-[#F9F7FD] to-purple-50/40 dark:from-[#1E182A] dark:via-[#181323] dark:to-[#261F36]/50 border border-[#E8DFFA] dark:border-[#282038] p-6 sm:p-10 shadow-xs text-left">
+        {/* Decorative subtle ambient lavender orb */}
+        <div className="absolute -right-20 -top-20 w-80 h-80 bg-gradient-to-br from-[#7659E4]/12 via-[#A28DF8]/06 to-transparent rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-2xl space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] text-xs font-bold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-[#9D6BFF]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] text-xs font-semibold tracking-wide">
+            <Sparkles className="w-3.5 h-3.5 text-[#7659E4] dark:text-[#A28DF8]" />
             <span>Digital Birthday Studio</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC] leading-tight tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC] leading-tight tracking-tight">
             Create something <br className="hidden sm:block" />
             <span className="bv-gradient-text">they&apos;ll remember.</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-[#746B80] dark:text-[#B8AEC5] leading-relaxed">
+          <p className="text-sm sm:text-base text-[#736886] dark:text-[#ACA2BE] leading-relaxed">
             Turn ordinary birthday wishes into cinematic, music-infused digital experiences with interactive memories, cake celebrations, and private 72-hour magic links.
           </p>
 
@@ -110,25 +110,25 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
         <StatCard
           label="Celebrations Created"
           value={totalCreated > 0 ? totalCreated : "0"}
-          icon={<Gift className="w-4 h-4" />}
+          icon={<Gift className="w-4 h-4 text-[#7659E4] dark:text-[#A28DF8]" />}
           description="In your workspace"
         />
         <StatCard
           label="Total Views"
           value={totalViews > 0 ? totalViews.toLocaleString() : "0"}
-          icon={<Eye className="w-4 h-4 text-purple-500" />}
+          icon={<Eye className="w-4 h-4 text-[#8E72F0]" />}
           description="Recipient link opens"
         />
         <StatCard
           label="Love Reactions"
           value={totalReactions > 0 ? totalReactions.toLocaleString() : "0"}
-          icon={<Heart className="w-4 h-4 text-rose-500" />}
+          icon={<Heart className="w-4 h-4 text-[#C495C8]" />}
           description="Hearts received"
         />
         <StatCard
           label="Upcoming Birthdays"
           value="3"
-          icon={<CalendarIcon className="w-4 h-4 text-emerald-500" />}
+          icon={<CalendarIcon className="w-4 h-4 text-[#A28DF8]" />}
           description="Next in 10 days"
         />
       </section>
@@ -140,10 +140,10 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
         <section className="lg:col-span-8 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+              <h2 className="text-lg font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                 Recent Creations
               </h2>
-              <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+              <p className="text-xs text-[#736886] dark:text-[#ACA2BE]">
                 Your published and saved birthday experiences
               </p>
             </div>
@@ -164,10 +164,10 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
               {localWishes.slice(0, 4).map((verse, idx) => (
                 <div
                   key={verse.id || idx}
-                  className="p-5 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] hover:shadow-md transition-all space-y-3 group"
+                  className="p-5 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] hover:shadow-md transition-all space-y-3 group"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-base font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                    <span className="text-base font-bold text-[#211A30] dark:text-[#F7F5FC]">
                       {verse.name}
                     </span>
                     <Badge variant={verse.status === "Published" ? "success" : "warning"}>
@@ -175,17 +175,17 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
                     </Badge>
                   </div>
 
-                  <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] line-clamp-2">
+                  <p className="text-xs text-[#736886] dark:text-[#ACA2BE] line-clamp-2">
                     {verse.relationship ? `${verse.relationship} celebration` : "Personal birthday verse"}
                   </p>
 
-                  <div className="flex items-center justify-between text-xs text-[#746B80] dark:text-[#B8AEC5] pt-2 border-t border-[#EDE7F6] dark:border-[#251B35]/60">
+                  <div className="flex items-center justify-between text-xs text-[#736886] dark:text-[#ACA2BE] pt-2 border-t border-[#E8DFFA] dark:border-[#282038]/60">
                     <div className="flex items-center gap-3">
                       <span className="flex items-center gap-1">
-                        <Eye className="w-3.5 h-3.5" /> {verse.views || 0}
+                        <Eye className="w-3.5 h-3.5 text-[#8E72F0]" /> {verse.views || 0}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Heart className="w-3.5 h-3.5 text-rose-500" /> {verse.reactions || 0}
+                        <Heart className="w-3.5 h-3.5 text-[#C495C8]" /> {verse.reactions || 0}
                       </span>
                     </div>
 
@@ -194,14 +194,14 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
                         href={verse.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs font-semibold text-[#7952D6] dark:text-[#9D6BFF] hover:underline inline-flex items-center gap-1"
+                        className="text-xs font-semibold text-[#7659E4] dark:text-[#C7BAFA] hover:underline inline-flex items-center gap-1"
                       >
                         Open <ArrowRight className="w-3 h-3" />
                       </a>
                     ) : (
                       <button
                         onClick={onCreateClick}
-                        className="text-xs font-semibold text-[#7952D6] dark:text-[#9D6BFF] hover:underline"
+                        className="text-xs font-semibold text-[#7659E4] dark:text-[#C7BAFA] hover:underline"
                       >
                         Edit
                       </button>
@@ -211,15 +211,15 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
               ))}
             </div>
           ) : (
-            <div className="p-8 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] text-center space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] flex items-center justify-center mx-auto">
+            <div className="p-8 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] text-center space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] flex items-center justify-center mx-auto">
                 <Gift className="w-6 h-6" />
               </div>
               <div className="max-w-md mx-auto space-y-1">
-                <h3 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                <h3 className="text-sm font-bold text-[#211A30] dark:text-[#F7F5FC]">
                   No celebrations created yet
                 </h3>
-                <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+                <p className="text-xs text-[#736886] dark:text-[#ACA2BE]">
                   Create your first birthday surprise in less than 2 minutes with photos, music, and an interactive cake.
                 </p>
               </div>
@@ -239,30 +239,30 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
         <section className="lg:col-span-4 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+              <h2 className="text-lg font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                 Upcoming Birthdays
               </h2>
-              <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+              <p className="text-xs text-[#736886] dark:text-[#ACA2BE]">
                 Never miss a friend or family celebration
               </p>
             </div>
           </div>
 
-          <div className="p-5 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] space-y-3">
+          <div className="p-5 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] space-y-3">
             {upcomingBirthdays.map((item, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F6FC] dark:hover:bg-[#251B35]/50 transition-colors"
+                className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F9F7FD] dark:hover:bg-[#261F36]/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] flex items-center justify-center text-base">
+                  <div className="w-9 h-9 rounded-2xl bg-[#EFEAFB] dark:bg-[#261F36] flex items-center justify-center text-base">
                     {item.avatar}
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                    <h4 className="text-xs font-bold text-[#211A30] dark:text-[#F7F5FC]">
                       {item.name}
                     </h4>
-                    <span className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">
+                    <span className="text-[10px] text-[#736886] dark:text-[#ACA2BE]">
                       {item.rel} &bull; {item.date}
                     </span>
                   </div>
@@ -287,10 +287,10 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
       <section className="space-y-4 text-left">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+            <h2 className="text-lg font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
               Featured Visual Styles
             </h2>
-            <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+            <p className="text-xs text-[#736886] dark:text-[#ACA2BE]">
               Handcrafted templates for memorable celebrations
             </p>
           </div>
@@ -308,7 +308,7 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
           {featuredTemplates.map((template) => (
             <div
               key={template.id}
-              className="rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] overflow-hidden group hover:shadow-lg transition-all"
+              className="rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] overflow-hidden group hover:shadow-lg transition-all"
             >
               {/* Preview Banner */}
               <div className={`h-28 w-full ${template.previewBg} p-4 flex flex-col justify-between relative overflow-hidden`}>
@@ -330,10 +330,10 @@ export const MainDashboardView: React.FC<MainDashboardViewProps> = ({
               {/* Info Body */}
               <div className="p-5 space-y-3">
                 <div>
-                  <h3 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                  <h3 className="text-sm font-bold text-[#211A30] dark:text-[#F7F5FC]">
                     {template.name}
                   </h3>
-                  <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1 leading-relaxed line-clamp-2">
                     {template.description}
                   </p>
                 </div>

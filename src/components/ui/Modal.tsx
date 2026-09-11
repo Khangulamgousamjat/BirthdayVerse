@@ -58,14 +58,14 @@ export const Modal: React.FC<ModalProps> = ({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "relative w-full rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] p-6 sm:p-8 shadow-2xl transition-all animate-in zoom-in-95 duration-200 z-10 overflow-hidden text-left",
+          "relative w-full rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] p-6 sm:p-8 shadow-2xl transition-all animate-in zoom-in-95 duration-200 z-10 overflow-hidden text-left",
           maxWidthStyles[maxWidth]
         )}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 p-2 rounded-full text-[#746B80] dark:text-[#B8AEC5] hover:bg-[#EDE7F6]/60 dark:hover:bg-[#251B35] transition-colors cursor-pointer"
+          className="absolute top-5 right-5 p-2 rounded-full text-[#736886] dark:text-[#ACA2BE] hover:bg-[#EFEAFB]/60 dark:hover:bg-[#261F36] transition-colors cursor-pointer"
           aria-label="Close dialog"
         >
           <X className="w-5 h-5" />
@@ -75,12 +75,12 @@ export const Modal: React.FC<ModalProps> = ({
         {(title || description) && (
           <div className="mb-5 pr-8">
             {title && (
-              <h3 className="text-lg sm:text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+              <h3 className="text-lg sm:text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                 {title}
               </h3>
             )}
             {description && (
-              <p className="text-xs sm:text-sm text-[#746B80] dark:text-[#B8AEC5] mt-1">
+              <p className="text-xs sm:text-sm text-[#736886] dark:text-[#ACA2BE] mt-1">
                 {description}
               </p>
             )}

@@ -15,19 +15,19 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   const variantStyles = {
     primary:
-      "bg-gradient-to-r from-[#9D6BFF] to-[#F47FB5] text-white shadow-2xs font-bold",
+      "bg-gradient-to-r from-[#7659E4] to-[#9278F2] text-white shadow-2xs font-semibold",
     secondary:
-      "bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] border border-[#EDE7F6] dark:border-[#251B35]",
+      "bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] border border-[#DDD4F5] dark:border-[#382E50]",
     success:
-      "bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800",
+      "bg-[#E8F5EE] dark:bg-[#1A2E24] text-[#2E7D52] dark:text-[#7ED4A6] border border-[#BDE3CC] dark:border-[#2A4D3B]",
     warning:
-      "bg-amber-100 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800",
+      "bg-[#FEF5E7] dark:bg-[#2E2413] text-[#9E6E1E] dark:text-[#E6C075] border border-[#F5DCAB] dark:border-[#4D3A1F]",
     danger:
-      "bg-rose-100 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800",
+      "bg-[#FBECEE] dark:bg-[#2F161B] text-[#B83244] dark:text-[#ECA5AF] border border-[#F4BAC2] dark:border-[#52252D]",
     purple:
-      "bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800",
+      "bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] border border-[#DDD4F5] dark:border-[#382E50]",
     outline:
-      "bg-transparent text-[#746B80] dark:text-[#B8AEC5] border border-[#EDE7F6] dark:border-[#251B35]",
+      "bg-transparent text-[#736886] dark:text-[#ACA2BE] border border-[#E8DFFA] dark:border-[#282038]",
   };
 
   const sizeStyles = {

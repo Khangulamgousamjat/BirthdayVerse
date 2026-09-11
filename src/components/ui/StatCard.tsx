@@ -24,22 +24,22 @@ export const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       className={cn(
-        "p-6 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] shadow-xs hover:shadow-md transition-all duration-200 group text-left",
+        "p-6 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] shadow-xs hover:shadow-md transition-all duration-200 group text-left",
         className
       )}
     >
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5] tracking-wide uppercase">
+        <span className="text-xs font-semibold text-[#736886] dark:text-[#ACA2BE] tracking-wide uppercase">
           {label}
         </span>
         {icon && (
-          <div className="p-2.5 rounded-2xl bg-[#EDE7F6]/60 dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] group-hover:scale-105 transition-transform">
+          <div className="p-2.5 rounded-2xl bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] border border-[#DDD4F5]/50 dark:border-[#382E50]/60 group-hover:scale-105 transition-transform">
             {icon}
           </div>
         )}
       </div>
 
-      <div className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC] tracking-tight mb-1">
+      <div className="text-2xl sm:text-3xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC] tracking-tight mb-1">
         {value}
       </div>
 
@@ -52,7 +52,7 @@ export const StatCard: React.FC<StatCardProps> = ({
                 ? "text-emerald-600 dark:text-emerald-400"
                 : trend === "down"
                 ? "text-rose-600 dark:text-rose-400"
-                : "text-[#746B80] dark:text-[#B8AEC5]"
+                : "text-[#736886] dark:text-[#ACA2BE]"
             )}
           >
             {trend === "up" ? (
@@ -64,7 +64,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           </span>
         )}
         {description && (
-          <span className="text-[11px] text-[#746B80] dark:text-[#B8AEC5]">
+          <span className="text-[11px] text-[#736886] dark:text-[#ACA2BE]">
             {description}
           </span>
         )}

@@ -59,9 +59,9 @@ export default function Surprise() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0E0817] flex flex-col items-center justify-center text-[#E7B85C] space-y-4">
-        <div className="w-12 h-12 rounded-full border-2 border-[#E7B85C]/30 border-t-[#E7B85C] animate-spin" />
-        <span className="text-xs font-semibold tracking-widest uppercase text-[#B8AEC5]">
+      <div className="min-h-screen bg-[#13101C] flex flex-col items-center justify-center text-[#E0A842] space-y-4">
+        <div className="w-12 h-12 rounded-full border-2 border-[#E0A842]/30 border-t-[#E0A842] animate-spin" />
+        <span className="text-xs font-semibold tracking-widest uppercase text-[#A89EC0]">
           Preparing your birthday celebration...
         </span>
       </div>
@@ -70,13 +70,13 @@ export default function Surprise() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#0E0817] flex flex-col items-center justify-center text-white px-4 text-center">
-        <div className="p-8 rounded-3xl bg-[#1D162A]/80 border border-[#251B35] max-w-md space-y-4">
-          <Gift className="w-10 h-10 text-[#9D6BFF] mx-auto opacity-70" />
+      <div className="min-h-screen bg-[#13101C] flex flex-col items-center justify-center text-white px-4 text-center">
+        <div className="p-8 rounded-3xl bg-[#1E182A]/80 border border-[#282038] max-w-md space-y-4">
+          <Gift className="w-10 h-10 text-[#7659E4] mx-auto opacity-70" />
           <h1 className="text-xl font-display font-bold text-white">
             This celebration link has expired or doesn&apos;t exist.
           </h1>
-          <p className="text-xs text-[#B8AEC5] leading-relaxed">
+          <p className="text-xs text-[#A89EC0] leading-relaxed">
             BirthdayVerse experiences are protected by private 72-hour ephemeral retention.
           </p>
           <Button
@@ -249,7 +249,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
         particleCount: 45,
         spread: 80,
         origin: { x: 0.5, y: 0.6 },
-        colors: ["#F47FB5", "#E7B85C", "#9D6BFF", "#FF3366"],
+        colors: ["#C495C8", "#E0A842", "#7659E4", "#A28DF8"],
         zIndex: 99999,
       });
     } catch {
@@ -278,7 +278,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       particleCount: 100,
       spread: 100,
       origin: { x: 0.5, y: 0.5 },
-      colors: ["#E7B85C", "#9D6BFF", "#F47FB5", "#9AD8C2"],
+      colors: ["#E0A842", "#7659E4", "#C495C8", "#8E72F0"],
     });
 
     // Advance to final screen after 2.5s
@@ -310,17 +310,17 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0B0614] via-[#140A22] to-[#0A0512] text-[#F7F3FC] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none font-sans">
+    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0F0C18] via-[#161122] to-[#0D0A14] text-[#F9F7FD] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none font-sans">
       
       {/* Subtle Atmospheric Ambient Lighting */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#7952D6]/15 via-[#E7B85C]/10 to-transparent rounded-full filter blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#7659E4]/12 via-[#E0A842]/08 to-transparent rounded-full filter blur-[140px] pointer-events-none" />
 
       {/* Floating Starlight Dust Particles */}
       <div className="absolute inset-0 pointer-events-none opacity-40">
-        <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-[#E7B85C] rounded-full animate-ping" />
-        <div className="absolute top-3/4 left-4/5 w-1.5 h-1.5 bg-[#9D6BFF] rounded-full animate-pulse" />
+        <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-[#E0A842] rounded-full animate-ping" />
+        <div className="absolute top-3/4 left-4/5 w-1.5 h-1.5 bg-[#8E72F0] rounded-full animate-pulse" />
         <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full animate-ping" />
-        <div className="absolute top-1/5 right-1/4 w-1 h-1 bg-[#F47FB5] rounded-full animate-pulse" />
+        <div className="absolute top-1/5 right-1/4 w-1 h-1 bg-[#C495C8] rounded-full animate-pulse" />
       </div>
 
       {/* Persistent Audio Controller */}
@@ -328,12 +328,12 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
         <div className="fixed top-5 right-5 z-50">
           <button
             onClick={toggleMusic}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 dark:bg-[#1D162A]/80 backdrop-blur-md border border-white/15 text-white text-xs font-semibold hover:bg-white/20 transition-all shadow-lg cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 dark:bg-[#1E182A]/80 backdrop-blur-md border border-white/15 text-white text-xs font-semibold hover:bg-white/20 transition-all shadow-lg cursor-pointer"
             aria-label="Toggle music"
           >
             {isPlaying ? (
               <>
-                <Music className="w-3.5 h-3.5 text-[#E7B85C] animate-bounce" />
+                <Music className="w-3.5 h-3.5 text-[#E0A842] animate-bounce" />
                 <span className="text-[11px] hidden sm:inline">Playing Soundtrack</span>
               </>
             ) : (
@@ -353,7 +353,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#9D6BFF] to-[#F47FB5] text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-white/25 backdrop-blur-md"
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#7659E4] to-[#C495C8] text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-white/25 backdrop-blur-md"
           >
             <Heart className="w-4 h-4 fill-white animate-ping" />
             <span>Your love was sent to {data.name}! ❤️</span>
@@ -397,7 +397,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="space-y-8 max-w-md w-full px-4"
             >
               <div className="space-y-2">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
                   A personal celebration awaits
                 </span>
                 <h1 className="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">
@@ -408,15 +408,15 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               {/* Luxury Sealed Envelope Card */}
               <div 
                 onClick={handleOpenGift}
-                className="relative mx-auto w-72 sm:w-80 h-48 sm:h-52 rounded-3xl bg-gradient-to-br from-[#1C1230] to-[#251540] border border-[#E7B85C]/35 shadow-[0_15px_45px_rgba(157,107,255,0.15)] flex flex-col items-center justify-center p-6 cursor-pointer group hover:scale-[1.02] hover:border-[#E7B85C]/60 transition-all"
+                className="relative mx-auto w-72 sm:w-80 h-48 sm:h-52 rounded-3xl bg-gradient-to-br from-[#1B1428] to-[#261B3B] border border-[#E0A842]/30 shadow-[0_15px_45px_rgba(118,89,228,0.12)] flex flex-col items-center justify-center p-6 cursor-pointer group hover:scale-[1.02] hover:border-[#E0A842]/60 transition-all"
               >
                 {/* Gold foil border inner */}
-                <div className="absolute inset-2 rounded-2xl border border-[#E7B85C]/15 pointer-events-none" />
+                <div className="absolute inset-2 rounded-2xl border border-[#E0A842]/15 pointer-events-none" />
 
                 {/* Wax Seal Emblem */}
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#E7B85C] via-[#D97706] to-[#92400E] p-0.5 shadow-lg shadow-amber-500/30 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <div className="w-full h-full rounded-full bg-[#1C1230] flex items-center justify-center border border-[#E7B85C]/40">
-                    <Sparkles className="w-7 h-7 text-[#E7B85C]" />
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#E0A842] via-[#C8922C] to-[#8C5E14] p-0.5 shadow-lg shadow-amber-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <div className="w-full h-full rounded-full bg-[#1B1428] flex items-center justify-center border border-[#E0A842]/40">
+                    <Sparkles className="w-7 h-7 text-[#E0A842]" />
                   </div>
                 </div>
 
@@ -424,7 +424,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                   <p className="text-xs font-serif italic text-white/90">
                     Crafted with love for {data.name}
                   </p>
-                  <span className="text-[10px] text-[#B8AEC5] tracking-widest uppercase mt-1 block">
+                  <span className="text-[10px] text-[#A89EC0] tracking-widest uppercase mt-1 block">
                     Tap to unlock
                   </span>
                 </div>
@@ -453,7 +453,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               onClick={() => setScene(2)}
               className="space-y-4 max-w-lg cursor-pointer px-4"
             >
-              <span className="text-xs font-bold tracking-widest uppercase text-[#9D6BFF]">
+              <span className="text-xs font-bold tracking-widest uppercase text-[#8E72F0]">
                 Today is your day
               </span>
               <h2 className="text-2xl sm:text-4xl font-display font-light text-white leading-relaxed">
@@ -473,15 +473,15 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               onClick={() => setScene(3)}
               className="space-y-4 max-w-xl cursor-pointer px-4"
             >
-              <span className="text-xs font-serif italic tracking-wider text-[#B8AEC5]">
+              <span className="text-xs font-serif italic tracking-wider text-[#A89EC0]">
                 Celebrating the one and only
               </span>
               
-              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif italic font-bold tracking-tight bg-gradient-to-r from-[#FFFBEB] via-[#E7B85C] to-[#F59E0B] bg-clip-text text-transparent drop-shadow-[0_10px_30px_rgba(231,184,92,0.3)]">
+              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif italic font-bold tracking-tight bg-gradient-to-r from-[#FFFBEB] via-[#E0A842] to-[#D97706] bg-clip-text text-transparent drop-shadow-[0_10px_30px_rgba(224,168,66,0.25)]">
                 {nickname ? `${data.name} (${nickname})` : data.name}
               </h1>
 
-              <p className="text-xs sm:text-sm text-[#B8AEC5] font-light max-w-sm mx-auto">
+              <p className="text-xs sm:text-sm text-[#A89EC0] font-light max-w-sm mx-auto">
                 Here is a special message written from the heart.
               </p>
             </m.div>
@@ -498,20 +498,20 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="w-full max-w-xl px-4 space-y-6"
             >
               {/* Luxury Letter Card */}
-              <div className="p-6 sm:p-10 rounded-3xl bg-[#1D162A]/90 border border-[#E7B85C]/25 shadow-2xl backdrop-blur-xl text-left space-y-4">
-                <div className="flex items-center justify-between border-b border-[#251B35] pb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#E7B85C]">
+              <div className="p-6 sm:p-10 rounded-3xl bg-[#1E182A]/90 border border-[#E0A842]/25 shadow-2xl backdrop-blur-xl text-left space-y-4">
+                <div className="flex items-center justify-between border-b border-[#282038] pb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#E0A842]">
                     Personal Birthday Message
                   </span>
-                  <Sparkles className="w-3.5 h-3.5 text-[#E7B85C]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#E0A842]" />
                 </div>
 
-                <div className="text-base sm:text-lg font-serif leading-relaxed text-[#F7F3FC] whitespace-pre-wrap">
+                <div className="text-base sm:text-lg font-serif leading-relaxed text-[#F9F7FD] whitespace-pre-wrap">
                   {bodyText}
                 </div>
 
                 <div className="pt-2 text-right">
-                  <span className="text-xs font-serif italic text-[#B8AEC5]">
+                  <span className="text-xs font-serif italic text-[#A89EC0]">
                     {signOffText}
                   </span>
                 </div>
@@ -543,7 +543,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
                   Some people make ordinary days extraordinary.
                 </h2>
-                <p className="text-xs sm:text-sm text-[#B8AEC5]">
+                <p className="text-xs sm:text-sm text-[#A89EC0]">
                   Tap the heart to send your reaction back to the creator
                 </p>
               </div>
@@ -551,11 +551,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               {/* Beating Jewel Heart */}
               <button
                 onClick={handleSendLove}
-                className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#BE123C] via-[#F47FB5] to-[#FB7185] p-1 shadow-[0_0_50px_rgba(244,127,181,0.35)] flex items-center justify-center mx-auto hover:scale-110 active:scale-95 transition-all cursor-pointer group"
+                className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#A83868] via-[#C495C8] to-[#A28DF8] p-1 shadow-[0_0_40px_rgba(196,149,200,0.3)] flex items-center justify-center mx-auto hover:scale-110 active:scale-95 transition-all cursor-pointer group"
                 aria-label="Send love"
               >
-                <div className="w-full h-full rounded-full bg-[#1A0B22] flex items-center justify-center">
-                  <Heart className="w-12 h-12 text-[#F47FB5] group-hover:scale-110 transition-transform fill-[#F47FB5]" />
+                <div className="w-full h-full rounded-full bg-[#1E182A] flex items-center justify-center">
+                  <Heart className="w-12 h-12 text-[#C495C8] group-hover:scale-110 transition-transform fill-[#C495C8]" />
                 </div>
               </button>
 
@@ -582,12 +582,12 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               transition={{ duration: 0.8 }}
               className="space-y-6 max-w-md px-4"
             >
-              <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+              <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
                 Cherished Moments
               </span>
 
               {/* Framed Photo or Monogram Card / Interactive Multi-Photo Gallery */}
-              <div className="p-3 sm:p-4 rounded-3xl bg-gradient-to-b from-[#E7B85C]/20 to-[#9D6BFF]/10 border border-[#E7B85C]/40 shadow-2xl relative">
+              <div className="p-3 sm:p-4 rounded-3xl bg-gradient-to-b from-[#E0A842]/15 to-[#7659E4]/10 border border-[#E0A842]/35 shadow-2xl relative">
                 {photosList.length > 0 ? (
                   <div className="space-y-3">
                     {/* Active Photo Container with touch swipe handlers */}
@@ -662,28 +662,28 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                               onClick={() => setActivePhotoIndex(idx)}
                               className={`h-2 rounded-full transition-all cursor-pointer ${
                                 activePhotoIndex === idx
-                                  ? "w-6 bg-[#E7B85C]"
+                                  ? "w-6 bg-[#E0A842]"
                                   : "w-2 bg-white/30 hover:bg-white/60"
                               }`}
                               aria-label={`Go to photo ${idx + 1}`}
                             />
                           ))}
                         </div>
-                        <p className="text-[11px] font-semibold text-[#E7B85C] flex items-center justify-center gap-1">
+                        <p className="text-[11px] font-semibold text-[#E0A842] flex items-center justify-center gap-1">
                           <span>👈 Swipe for more pics 👉</span>
                         </p>
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="rounded-2xl aspect-square max-h-80 w-full bg-[#1D162A] flex flex-col items-center justify-center p-8 text-center space-y-3">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#7952D6] to-[#E7B85C] flex items-center justify-center text-3xl font-serif font-bold text-white shadow-lg">
+                  <div className="rounded-2xl aspect-square max-h-80 w-full bg-[#1E182A] flex flex-col items-center justify-center p-8 text-center space-y-3">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#E0A842] flex items-center justify-center text-3xl font-serif font-bold text-white shadow-lg">
                       {data.name.charAt(0).toUpperCase()}
                     </div>
                     <h3 className="text-lg font-serif italic text-white font-bold">
                       A celebration of {data.name}
                     </h3>
-                    <p className="text-xs text-[#B8AEC5] max-w-xs">
+                    <p className="text-xs text-[#A89EC0] max-w-xs">
                       May every day of this new year bring you happiness, joy, and peace.
                     </p>
                   </div>
@@ -713,13 +713,13 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="space-y-8 max-w-md px-4"
             >
               <div className="space-y-2">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
                   Make a Wish
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
                   Happy Birthday, {data.name}!
                 </h2>
-                <p className="text-xs text-[#B8AEC5]">
+                <p className="text-xs text-[#A89EC0]">
                   {candlesBlown ? "Wish made! Celebrating..." : "Tap the candles to blow them out ✨"}
                 </p>
               </div>
@@ -746,17 +746,17 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 </div>
 
                 {/* Cake Tier 1 (Top) */}
-                <div className="w-36 h-12 bg-gradient-to-r from-[#D946EF] to-[#9D6BFF] rounded-t-2xl border-t-2 border-white/40 shadow-md z-10 flex items-center justify-center text-[10px] font-bold text-white/80">
+                <div className="w-36 h-12 bg-gradient-to-r from-[#8E72F0] to-[#7659E4] rounded-t-2xl border-t-2 border-white/40 shadow-md z-10 flex items-center justify-center text-[10px] font-bold text-white/80">
                   &bull; &bull; &bull; &bull;
                 </div>
 
                 {/* Cake Tier 2 (Middle) */}
-                <div className="w-48 h-14 bg-gradient-to-r from-[#7952D6] via-[#9D6BFF] to-[#7952D6] rounded-t-xl border-t border-white/20 shadow-md flex items-center justify-center text-xs font-bold text-white">
+                <div className="w-48 h-14 bg-gradient-to-r from-[#54448C] via-[#7659E4] to-[#54448C] rounded-t-xl border-t border-white/20 shadow-md flex items-center justify-center text-xs font-bold text-white">
                   {data.name}
                 </div>
 
                 {/* Cake Plate */}
-                <div className="w-60 h-4 bg-gradient-to-r from-[#E7B85C] via-[#FDE68A] to-[#D97706] rounded-full shadow-lg" />
+                <div className="w-60 h-4 bg-gradient-to-r from-[#E0A842] via-[#FDE68A] to-[#C8922C] rounded-full shadow-lg" />
               </div>
 
               <div className="pt-2">
@@ -782,13 +782,13 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="space-y-8 max-w-lg px-4"
             >
               <div className="space-y-3">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#E7B85C]">
+                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
                   Celebration Keepsake
                 </span>
                 <h1 className="text-3xl sm:text-5xl font-serif italic font-bold tracking-tight text-white leading-tight">
                   {finaleText}
                 </h1>
-                <p className="text-xs sm:text-sm text-[#B8AEC5] max-w-md mx-auto leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#A89EC0] max-w-md mx-auto leading-relaxed">
                   Here&apos;s to another beautiful chapter filled with unforgettable memories, love, and laughter.
                 </p>
               </div>
@@ -808,8 +808,8 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                   variant="primary"
                   size="md"
                   onClick={handleSendLove}
-                  leftIcon={<Heart className={`w-4 h-4 text-rose-300 ${loveCount > 0 ? "fill-rose-300 animate-pulse" : ""}`} />}
-                  className="shadow-lg shadow-purple-500/20 active:scale-95 transition-all"
+                  leftIcon={<Heart className={`w-4 h-4 text-[#C495C8] ${loveCount > 0 ? "fill-[#C495C8] animate-pulse" : ""}`} />}
+                  className="shadow-md shadow-[#7659E4]/20 active:scale-95 transition-all"
                 >
                   {loveCount > 0 ? `Love Sent! ❤️ (${loveCount})` : "Send Love ❤️"}
                 </Button>
@@ -825,17 +825,17 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               </div>
 
               {/* Standout Bordered CTA Button */}
-              <div className="pt-8 border-t border-[#251B35]/60 flex flex-col items-center gap-2.5">
-                <p className="text-xs text-[#B8AEC5]">
+              <div className="pt-8 border-t border-[#282038]/60 flex flex-col items-center gap-2.5">
+                <p className="text-xs text-[#A89EC0]">
                   Turn birthdays into unforgettable memories.
                 </p>
                 <a
                   href="/"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full border-2 border-[#9D6BFF] bg-gradient-to-r from-[#9D6BFF]/20 via-[#7952D6]/25 to-[#F47FB5]/20 hover:from-[#9D6BFF]/35 hover:to-[#F47FB5]/35 text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-[0_0_20px_rgba(157,107,255,0.35)] hover:shadow-[0_0_30px_rgba(157,107,255,0.6)] hover:scale-105 active:scale-95 cursor-pointer group"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full border border-[#7659E4] bg-gradient-to-r from-[#7659E4]/20 via-[#8E72F0]/25 to-[#C495C8]/20 hover:from-[#7659E4]/30 hover:to-[#C495C8]/30 text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-[0_4px_20px_rgba(118,89,228,0.25)] hover:shadow-[0_6px_28px_rgba(118,89,228,0.35)] hover:scale-105 active:scale-95 cursor-pointer group"
                 >
-                  <Sparkles className="w-4 h-4 text-[#F47FB5] group-hover:rotate-12 transition-transform" />
+                  <Sparkles className="w-4 h-4 text-[#E0A842] group-hover:rotate-12 transition-transform" />
                   <span>Create your own Birthday Verse</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-[#9D6BFF] group-hover:translate-x-0.5 transition-transform" />
+                  <ExternalLink className="w-3.5 h-3.5 text-[#A28DF8] group-hover:translate-x-0.5 transition-transform" />
                 </a>
               </div>
             </m.div>
@@ -845,7 +845,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       </div>
 
       {/* Subtle Bottom Watermark */}
-      <footer className="w-full max-w-5xl mx-auto py-3 text-center text-[10px] text-[#746B80] z-10">
+      <footer className="w-full max-w-5xl mx-auto py-3 text-center text-[10px] text-[#736886] z-10">
         BirthdayVerse &bull; The Digital Birthday Experience
       </footer>
     </div>

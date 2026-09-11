@@ -160,7 +160,7 @@ export default function Home() {
 
   // Theme & Publish States
   const [themeMode, setThemeMode] = useState<"auto" | "light" | "dark">("dark");
-  const [accentColor, setAccentColor] = useState<string>("#9D6BFF");
+  const [accentColor, setAccentColor] = useState<string>("#7659E4");
   const [retentionMode, setRetentionMode] = useState<"72h" | "forever">("72h");
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [generatedLink, setGeneratedLink] = useState<string>("");
@@ -179,7 +179,7 @@ export default function Home() {
       width: 240,
       margin: 2,
       color: {
-        dark: "#1D162A",
+        dark: "#1E182A",
         light: "#FFFFFF",
       },
     })
@@ -392,7 +392,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F6FC] dark:bg-[#100C18] text-[#241B35] dark:text-[#F7F3FC] transition-colors duration-300 font-sans">
+    <div className="min-h-screen flex flex-col bg-[#F9F7FD] dark:bg-[#13101C] text-[#211A30] dark:text-[#F9F7FD] transition-colors duration-300 font-sans">
       
       {/* Sticky Brand Top Navbar */}
       <Navbar
@@ -443,24 +443,24 @@ export default function Home() {
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* Studio Header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#EDE7F6] dark:border-[#251B35]">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#E8DFFA] dark:border-[#282038]">
                 <div className="text-left space-y-1">
-                  <span className="text-xs font-bold text-[#7952D6] dark:text-[#9D6BFF] uppercase tracking-wider">
+                  <span className="text-xs font-bold text-[#7659E4] dark:text-[#C7BAFA] uppercase tracking-wider">
                     Creator Studio
                   </span>
-                  <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                  <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                     Craft Birthday Experience
                   </h1>
                 </div>
 
                 {/* Mobile Editor/Preview Toggle */}
-                <div className="flex lg:hidden items-center bg-[#EDE7F6] dark:bg-[#1D162A] p-1 rounded-2xl border border-[#EDE7F6] dark:border-[#251B35] self-start md:self-auto">
+                <div className="flex lg:hidden items-center bg-[#EFEAFB] dark:bg-[#1E182A] p-1 rounded-2xl border border-[#E8DFFA] dark:border-[#282038] self-start md:self-auto">
                   <button
                     onClick={() => setMobileTab("editor")}
                     className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                       mobileTab === "editor"
-                        ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
-                        : "text-[#746B80] dark:text-[#B8AEC5]"
+                        ? "bg-white dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] shadow-xs"
+                        : "text-[#736886] dark:text-[#ACA2BE]"
                     }`}
                   >
                     Editor Form
@@ -469,8 +469,8 @@ export default function Home() {
                     onClick={() => setMobileTab("preview")}
                     className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                       mobileTab === "preview"
-                        ? "bg-white dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] shadow-xs"
-                        : "text-[#746B80] dark:text-[#B8AEC5]"
+                        ? "bg-white dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] shadow-xs"
+                        : "text-[#736886] dark:text-[#ACA2BE]"
                     }`}
                   >
                     Live Preview ✨
@@ -490,14 +490,14 @@ export default function Home() {
                         onClick={() => setCurrentStep(s.number)}
                         className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
                           isActive
-                            ? "bg-[#7952D6] text-white shadow-md shadow-purple-500/20 font-bold"
+                            ? "bg-[#7659E4] text-white shadow-md shadow-[#7659E4]/25 font-bold"
                             : isCompleted
-                            ? "bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF]"
-                            : "bg-white dark:bg-[#1D162A] text-[#746B80] dark:text-[#B8AEC5] border border-[#EDE7F6] dark:border-[#251B35] hover:text-[#241B35]"
+                            ? "bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA]"
+                            : "bg-white dark:bg-[#1E182A] text-[#736886] dark:text-[#ACA2BE] border border-[#E8DFFA] dark:border-[#282038] hover:text-[#211A30]"
                         }`}
                       >
                         <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${
-                          isActive ? "bg-white text-[#7952D6]" : isCompleted ? "bg-[#9D6BFF] text-white" : "bg-[#EDE7F6] dark:bg-[#251B35]"
+                          isActive ? "bg-white text-[#7659E4]" : isCompleted ? "bg-[#7659E4] text-white" : "bg-[#EFEAFB] dark:bg-[#261F36]"
                         }`}>
                           {isCompleted ? <Check className="w-3 h-3" /> : s.number}
                         </span>
@@ -513,16 +513,16 @@ export default function Home() {
                 
                 {/* Center Editor Column */}
                 <div className={`lg:col-span-7 space-y-6 ${mobileTab === "preview" ? "hidden lg:block" : "block"}`}>
-                  <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] shadow-xs text-left space-y-6">
+                  <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] shadow-xs text-left space-y-6">
                     
                     {/* STEP 1: EXPERIENCE TYPE */}
                     {currentStep === 1 && (
                       <div className="space-y-5">
                         <div>
-                          <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                          <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                             Choose Celebration Format
                           </h2>
-                          <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                          <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
                             Select the type of digital experience you want to build.
                           </p>
                         </div>
@@ -536,26 +536,26 @@ export default function Home() {
                                 onClick={() => setExperienceType(type.id)}
                                 className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3.5 relative ${
                                   isSelected
-                                    ? "bg-[#EDE7F6]/60 dark:bg-[#251B35] border-[#9D6BFF] shadow-sm"
-                                    : "bg-white dark:bg-[#171122] border-[#EDE7F6] dark:border-[#251B35] hover:border-[#9D6BFF]/40"
+                                    ? "bg-[#EFEAFB]/80 dark:bg-[#261F36] border-[#7659E4] shadow-sm"
+                                    : "bg-white dark:bg-[#181323] border-[#E8DFFA] dark:border-[#282038] hover:border-[#8E72F0]/40"
                                 }`}
                               >
                                 <span className="text-2xl">{type.icon}</span>
                                 <div className="space-y-0.5 flex-1 pr-6">
                                   <div className="flex items-center gap-2">
-                                    <h3 className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                                    <h3 className="text-xs font-bold text-[#211A30] dark:text-[#F7F5FC]">
                                       {type.title}
                                     </h3>
                                     {type.badge && (
                                       <Badge variant="primary">{type.badge}</Badge>
                                     )}
                                   </div>
-                                  <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5]">
+                                  <p className="text-[11px] text-[#736886] dark:text-[#ACA2BE]">
                                     {type.subtitle}
                                   </p>
                                 </div>
                                 {isSelected && (
-                                  <CheckCircle2 className="w-4 h-4 text-[#9D6BFF] absolute right-3.5 top-4" />
+                                  <CheckCircle2 className="w-4 h-4 text-[#7659E4] dark:text-[#A28DF8] absolute right-3.5 top-4" />
                                 )}
                               </div>
                             );
@@ -568,10 +568,10 @@ export default function Home() {
                     {currentStep === 2 && (
                       <div className="space-y-5">
                         <div>
-                          <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                          <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                             Select Visual Theme
                           </h2>
-                          <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                          <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
                             Pick an artistic style for typography and backdrop aesthetics.
                           </p>
                         </div>
@@ -587,36 +587,36 @@ export default function Home() {
                                   // Sync vibe and accent color with the selected template
                                   if (tmpl.id === "romantic") {
                                     setVibe("romantic");
-                                    setAccentColor("#F47FB5");
+                                    setAccentColor("#C495C8");
                                   } else if (tmpl.id === "fun") {
                                     setVibe("fun");
-                                    setAccentColor("#EA580C");
+                                    setAccentColor("#D8A854");
                                   } else if (tmpl.id === "dreamy") {
                                     setVibe("dreamy");
-                                    setAccentColor("#9D6BFF");
+                                    setAccentColor("#7659E4");
                                   } else if (tmpl.id === "party" || tmpl.id === "midnight") {
                                     setVibe("party");
-                                    setAccentColor("#F47FB5");
+                                    setAccentColor("#8E72F0");
                                   } else if (tmpl.id === "cute" || tmpl.id === "pastel") {
                                     setVibe("cute");
-                                    setAccentColor("#DB2777");
+                                    setAccentColor("#D4B2D8");
                                   } else {
                                     setVibe("elegant");
-                                    setAccentColor("#7952D6");
+                                    setAccentColor("#7659E4");
                                   }
                                 }}
                                 className={`rounded-2xl border overflow-hidden transition-all cursor-pointer text-left ${
                                   isSelected
-                                    ? "border-[#9D6BFF] ring-2 ring-[#9D6BFF]/40 shadow-lg shadow-purple-500/20"
-                                    : "border-[#EDE7F6] dark:border-[#251B35] hover:border-[#9D6BFF]/40"
+                                    ? "border-[#7659E4] ring-2 ring-[#7659E4]/40 shadow-lg shadow-[#7659E4]/20"
+                                    : "border-[#E8DFFA] dark:border-[#282038] hover:border-[#8E72F0]/40"
                                 }`}
                               >
                                 <div className={`h-20 ${tmpl.previewBg} p-3 flex items-center justify-between text-white`}>
                                   <span className="text-xs font-bold">{tmpl.name}</span>
                                   {isSelected && <CheckCircle2 className="w-4 h-4 text-white" />}
                                 </div>
-                                <div className="p-3 bg-white dark:bg-[#171122]">
-                                  <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5] line-clamp-1">
+                                <div className="p-3 bg-white dark:bg-[#181323]">
+                                  <p className="text-[11px] text-[#736886] dark:text-[#ACA2BE] line-clamp-1">
                                     {tmpl.description}
                                   </p>
                                 </div>
@@ -631,10 +631,10 @@ export default function Home() {
                     {currentStep === 3 && (
                       <div className="space-y-5">
                         <div>
-                          <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                          <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                             Who is this celebration for?
                           </h2>
-                          <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                          <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
                             Personalize the experience with their name, date, and relationship.
                           </p>
                         </div>
@@ -657,13 +657,13 @@ export default function Home() {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
-                            <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                            <label className="block text-xs font-semibold text-[#736886] dark:text-[#ACA2BE]">
                               Relationship
                             </label>
                             <select
                               value={relationship}
                               onChange={(e) => setRelationship(e.target.value)}
-                              className="w-full rounded-2xl bg-white dark:bg-[#1D162A] text-[#241B35] dark:text-[#F7F3FC] border border-[#EDE7F6] dark:border-[#251B35] px-4 py-2.5 text-sm outline-none focus:border-[#9D6BFF]"
+                              className="w-full rounded-2xl bg-white dark:bg-[#1E182A] text-[#211A30] dark:text-[#F7F5FC] border border-[#E8DFFA] dark:border-[#282038] px-4 py-2.5 text-sm outline-none focus:border-[#7659E4]"
                             >
                               <option value="Best Friend">Best Friend</option>
                               <option value="Partner">Partner</option>
@@ -687,7 +687,7 @@ export default function Home() {
 
                         {/* Vibe Selection */}
                         <div className="space-y-2 pt-2">
-                          <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                          <label className="block text-xs font-semibold text-[#736886] dark:text-[#ACA2BE]">
                             Celebration Vibe
                           </label>
                           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -700,8 +700,8 @@ export default function Home() {
                                   onClick={() => setVibe(v.id)}
                                   className={`p-2.5 rounded-2xl border text-center flex flex-col items-center gap-1.5 transition-all cursor-pointer ${
                                     isSelected
-                                      ? "bg-[#EDE7F6] dark:bg-[#251B35] border-[#9D6BFF] font-bold"
-                                      : "border-[#EDE7F6] dark:border-[#251B35] text-[#746B80] dark:text-[#B8AEC5]"
+                                      ? "bg-[#EFEAFB] dark:bg-[#261F36] border-[#7659E4] font-bold"
+                                      : "border-[#E8DFFA] dark:border-[#282038] text-[#736886] dark:text-[#ACA2BE]"
                                   }`}
                                 >
                                   {v.icon}
@@ -719,10 +719,10 @@ export default function Home() {
                       <div className="space-y-5">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                            <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                               Personal Message & AI Writer
                             </h2>
-                            <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                            <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
                               Write from the heart or choose an AI tone preset.
                             </p>
                           </div>
@@ -731,7 +731,7 @@ export default function Home() {
 
                         {/* Tone Selection Pills */}
                         <div className="space-y-1.5">
-                          <span className="text-[11px] font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                          <span className="text-[11px] font-semibold text-[#736886] dark:text-[#ACA2BE]">
                             AI Tone Presets
                           </span>
                           <div className="flex flex-wrap gap-2">
@@ -740,7 +740,7 @@ export default function Home() {
                                 key={tone.id}
                                 type="button"
                                 onClick={() => setMessage(tone.text)}
-                                className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[#EDE7F6]/60 dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] hover:bg-[#7952D6] hover:text-white transition-all cursor-pointer"
+                                className="px-3 py-1.5 rounded-full text-xs font-semibold bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] hover:bg-[#7659E4] hover:text-white transition-all cursor-pointer"
                               >
                                 {tone.name}
                               </button>
@@ -759,10 +759,10 @@ export default function Home() {
 
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                            <label className="block text-xs font-semibold text-[#736886] dark:text-[#ACA2BE]">
                               Letter Sign-off & Closing Signature
                             </label>
-                            <span className="text-[10px] text-[#7952D6] dark:text-[#9D6BFF] font-semibold bg-[#EDE7F6] dark:bg-[#251B35] px-2 py-0.5 rounded-full">
+                            <span className="text-[10px] text-[#7659E4] dark:text-[#C7BAFA] font-semibold bg-[#EFEAFB] dark:bg-[#261F36] px-2 py-0.5 rounded-full">
                               Card Footer
                             </span>
                           </div>
@@ -789,14 +789,14 @@ export default function Home() {
                       <div className="space-y-5">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                            <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                               Photos & Visual Memories
                             </h2>
-                            <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                            <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
                               Upload multiple cherished memories. Recipient can swipe through them!
                             </p>
                           </div>
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF]">
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA]">
                             {allPhotos.length} / 6 photos
                           </span>
                         </div>
@@ -807,7 +807,7 @@ export default function Home() {
                             {allPhotos.map((photo, index) => (
                               <div
                                 key={index}
-                                className="group relative rounded-2xl overflow-hidden aspect-square border-2 border-[#EDE7F6] dark:border-[#251B35] bg-black/10 shadow-xs"
+                                className="group relative rounded-2xl overflow-hidden aspect-square border-2 border-[#E8DFFA] dark:border-[#282038] bg-black/10 shadow-xs"
                               >
                                 <img
                                   src={photo}
@@ -817,7 +817,7 @@ export default function Home() {
                                 <div className="absolute top-2 left-2">
                                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                                     index === 0
-                                      ? "bg-[#7952D6] text-white shadow-xs"
+                                      ? "bg-[#7659E4] text-white shadow-xs"
                                       : "bg-black/60 backdrop-blur-md text-white border border-white/20"
                                   }`}>
                                     {index === 0 ? "Cover Photo" : `Memory #${index + 1}`}
@@ -838,20 +838,20 @@ export default function Home() {
 
                         {/* Photo Uploader Dropzone / Add Button */}
                         {allPhotos.length < 6 && (
-                          <div className="p-6 rounded-3xl border-2 border-dashed border-[#EDE7F6] dark:border-[#251B35] text-center space-y-3 hover:border-[#9D6BFF]/50 transition-colors">
-                            <div className="w-12 h-12 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] flex items-center justify-center mx-auto">
+                          <div className="p-6 rounded-3xl border-2 border-dashed border-[#E8DFFA] dark:border-[#282038] text-center space-y-3 hover:border-[#7659E4]/50 transition-colors">
+                            <div className="w-12 h-12 rounded-2xl bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA] flex items-center justify-center mx-auto">
                               <Upload className="w-6 h-6" />
                             </div>
                             <div>
-                              <p className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC]">
+                              <p className="text-xs font-semibold text-[#211A30] dark:text-[#F7F5FC]">
                                 {allPhotos.length === 0 ? "Upload Photos & Memories" : "Add More Photos"}
                               </p>
-                              <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5] mt-0.5">
+                              <p className="text-[11px] text-[#736886] dark:text-[#ACA2BE] mt-0.5">
                                 Select one or multiple photos (PNG, JPG up to 5MB each)
                               </p>
                             </div>
                             <label className={`inline-block ${isCompressingPhotos ? "opacity-60 cursor-not-allowed pointer-events-none" : "cursor-pointer"}`}>
-                              <span className="px-5 py-2.5 rounded-xl bg-[#7952D6] text-white text-xs font-bold inline-flex items-center gap-1.5 hover:brightness-105 transition-all shadow-md shadow-purple-500/20">
+                              <span className="px-5 py-2.5 rounded-xl bg-[#7659E4] text-white text-xs font-bold inline-flex items-center gap-1.5 hover:brightness-105 transition-all shadow-md shadow-[#7659E4]/25">
                                 {isCompressingPhotos ? (
                                   <>
                                     <div className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
@@ -877,7 +877,7 @@ export default function Home() {
                         )}
 
                         {allPhotos.length > 1 && (
-                          <div className="p-3 rounded-2xl bg-[#EDE7F6]/60 dark:bg-[#251B35]/60 border border-[#EDE7F6] dark:border-[#251B35] text-xs text-[#7952D6] dark:text-[#9D6BFF] flex items-center gap-2">
+                          <div className="p-3 rounded-2xl bg-[#EFEAFB] dark:bg-[#261F36] border border-[#E8DFFA] dark:border-[#282038] text-xs text-[#7659E4] dark:text-[#C7BAFA] flex items-center gap-2">
                             <span>✨</span>
                             <span>
                               <strong>Swipeable gallery enabled!</strong> Viewers will be able to swipe through all {allPhotos.length} photos in the celebration.
@@ -891,10 +891,10 @@ export default function Home() {
                     {currentStep === 6 && (
                       <div className="space-y-5">
                         <div>
-                          <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                          <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                             Soundtrack & Audio
                           </h2>
-                          <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                          <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
                             Set the mood with curated background melodies.
                           </p>
                         </div>
@@ -908,8 +908,8 @@ export default function Home() {
                               onClick={() => setActiveMusicTab(cat)}
                               className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                                 activeMusicTab === cat
-                                  ? "bg-[#7952D6] text-white font-bold shadow-xs"
-                                  : "bg-[#EDE7F6]/60 dark:bg-[#251B35] text-[#746B80] dark:text-[#B8AEC5]"
+                                  ? "bg-[#7659E4] text-white font-bold shadow-xs"
+                                  : "bg-[#EFEAFB] dark:bg-[#261F36] text-[#736886] dark:text-[#ACA2BE]"
                               }`}
                             >
                               {cat}
@@ -928,15 +928,15 @@ export default function Home() {
                                 key={track.id}
                                 className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
                                   isSelected
-                                    ? "bg-[#EDE7F6]/60 dark:bg-[#251B35] border-[#9D6BFF]"
-                                    : "border-[#EDE7F6] dark:border-[#251B35] hover:bg-white dark:hover:bg-[#171122]"
+                                    ? "bg-[#EFEAFB]/80 dark:bg-[#261F36] border-[#7659E4]"
+                                    : "border-[#E8DFFA] dark:border-[#282038] hover:bg-white dark:hover:bg-[#181323]"
                                 }`}
                               >
                                 <div className="flex items-center gap-3">
                                   <button
                                     type="button"
                                     onClick={() => toggleMusicPreview(track.id)}
-                                    className="w-8 h-8 rounded-full bg-[#7952D6] text-white flex items-center justify-center shadow-xs cursor-pointer hover:scale-105 transition-transform"
+                                    className="w-8 h-8 rounded-full bg-[#7659E4] text-white flex items-center justify-center shadow-xs cursor-pointer hover:scale-105 transition-transform"
                                   >
                                     {selectedMusic === track.id && isPlayingMusic ? (
                                       <Pause className="w-3.5 h-3.5" />
@@ -945,10 +945,10 @@ export default function Home() {
                                     )}
                                   </button>
                                   <div>
-                                    <h4 className="text-xs font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                                    <h4 className="text-xs font-bold text-[#211A30] dark:text-[#F7F5FC]">
                                       {track.title}
                                     </h4>
-                                    <span className="text-[10px] text-[#746B80] dark:text-[#B8AEC5]">
+                                    <span className="text-[10px] text-[#736886] dark:text-[#ACA2BE]">
                                       {track.artist} &bull; {track.duration}
                                     </span>
                                   </div>
@@ -973,16 +973,16 @@ export default function Home() {
                     {currentStep === 7 && (
                       <div className="space-y-5">
                         <div>
-                          <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                          <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F7F5FC]">
                             Appearance & Animation
                           </h2>
-                          <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                          <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
                             Customize lighting, accent colors, and party effects.
                           </p>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                          <label className="block text-xs font-semibold text-[#736886] dark:text-[#ACA2BE]">
                             Display Theme
                           </label>
                           <div className="grid grid-cols-3 gap-3">
@@ -993,8 +993,8 @@ export default function Home() {
                                 onClick={() => setThemeMode(mode)}
                                 className={`p-3 rounded-2xl border text-xs font-semibold capitalize transition-all cursor-pointer ${
                                   themeMode === mode
-                                    ? "bg-[#7952D6] text-white shadow-xs font-bold"
-                                    : "border-[#EDE7F6] dark:border-[#251B35] text-[#746B80] dark:text-[#B8AEC5]"
+                                    ? "bg-[#7659E4] text-white shadow-xs font-bold"
+                                    : "border-[#E8DFFA] dark:border-[#282038] text-[#736886] dark:text-[#ACA2BE]"
                                 }`}
                               >
                                 {mode}
@@ -1005,10 +1005,10 @@ export default function Home() {
 
                         <div className="space-y-3 pt-2">
                           <div className="flex items-center justify-between">
-                            <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                            <label className="block text-xs font-semibold text-[#736886] dark:text-[#A89EC0]">
                               Accent Color Palettes
                             </label>
-                            <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF]">
+                            <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#F1EBFD] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C495C8]">
                               {accentColor.toUpperCase()}
                             </span>
                           </div>
@@ -1016,18 +1016,18 @@ export default function Home() {
                           {/* Curated Color Swatches */}
                           <div className="grid grid-cols-6 sm:grid-cols-12 gap-2">
                             {[
-                              { name: "Electric Violet", color: "#9D6BFF" },
-                              { name: "Rose Quartz", color: "#F47FB5" },
-                              { name: "Golden Amber", color: "#E7B85C" },
-                              { name: "Mint Spark", color: "#9AD8C2" },
-                              { name: "Sky Cyan", color: "#38BDF8" },
-                              { name: "Crimson Love", color: "#F43F5E" },
-                              { name: "Sunset Orange", color: "#FB923C" },
-                              { name: "Emerald Glow", color: "#10B981" },
-                              { name: "Neon Fuchsia", color: "#D946EF" },
-                              { name: "Royal Indigo", color: "#6366F1" },
-                              { name: "Coral Sunset", color: "#FF6B6B" },
-                              { name: "Sunshine Yellow", color: "#FBBF24" },
+                              { name: "French Lavender", color: "#7659E4" },
+                              { name: "Wisteria Lavender", color: "#A594F9" },
+                              { name: "Mauve Mist", color: "#C495C8" },
+                              { name: "Lilac Twilight", color: "#8E72F0" },
+                              { name: "Warm Gold", color: "#E0A842" },
+                              { name: "Blush Rose", color: "#DE7A9E" },
+                              { name: "Champagne", color: "#EAC585" },
+                              { name: "Soft Sky", color: "#6BA4E8" },
+                              { name: "Sage Serenity", color: "#82B89D" },
+                              { name: "Velvet Plum", color: "#9B59B6" },
+                              { name: "Sunset Mauve", color: "#E28B78" },
+                              { name: "Midnight Violet", color: "#54448C" },
                             ].map((c) => (
                               <button
                                 key={c.color}
@@ -1037,7 +1037,7 @@ export default function Home() {
                                 style={{ backgroundColor: c.color }}
                                 className={`w-8 h-8 rounded-full transition-transform cursor-pointer hover:scale-110 ${
                                   accentColor.toLowerCase() === c.color.toLowerCase()
-                                    ? "scale-110 ring-2 ring-offset-2 ring-[#7952D6] dark:ring-white"
+                                    ? "scale-110 ring-2 ring-offset-2 ring-[#7659E4] dark:ring-white"
                                     : "opacity-90 hover:opacity-100"
                                 }`}
                               />
@@ -1045,14 +1045,14 @@ export default function Home() {
                           </div>
 
                           {/* Custom Color Picker & Hex Input */}
-                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#EDE7F6]/50 dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35]">
+                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#F5F1FD] dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038]">
                             <label
-                              className="relative flex items-center justify-center w-9 h-9 rounded-full cursor-pointer hover:scale-105 transition-transform shadow-xs border-2 border-dashed border-[#9D6BFF]"
+                              className="relative flex items-center justify-center w-9 h-9 rounded-full cursor-pointer hover:scale-105 transition-transform shadow-xs border-2 border-dashed border-[#7659E4]"
                               title="Click to open color picker"
                             >
                               <input
                                 type="color"
-                                value={accentColor.startsWith("#") && accentColor.length === 7 ? accentColor : "#9D6BFF"}
+                                value={accentColor.startsWith("#") && accentColor.length === 7 ? accentColor : "#7659E4"}
                                 onChange={(e) => setAccentColor(e.target.value)}
                                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                               />
@@ -1063,16 +1063,16 @@ export default function Home() {
                             </label>
 
                             <div className="flex-1 min-w-0">
-                              <span className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC] block">
+                              <span className="text-xs font-semibold text-[#211A30] dark:text-[#F9F7FD] block">
                                 Custom Color
                               </span>
-                              <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] truncate">
+                              <p className="text-[10px] text-[#736886] dark:text-[#A89EC0] truncate">
                                 Click the circle to choose any color
                               </p>
                             </div>
 
-                            <div className="flex items-center gap-1 bg-white dark:bg-[#251B35] px-2.5 py-1.5 rounded-xl border border-[#EDE7F6] dark:border-[#2A203C]">
-                              <span className="text-xs font-mono font-bold text-[#7952D6] dark:text-[#9D6BFF]">#</span>
+                            <div className="flex items-center gap-1 bg-white dark:bg-[#261F36] px-2.5 py-1.5 rounded-xl border border-[#E8DFFA] dark:border-[#282038]">
+                              <span className="text-xs font-mono font-bold text-[#7659E4] dark:text-[#C495C8]">#</span>
                               <input
                                 type="text"
                                 value={accentColor.replace("#", "")}
@@ -1082,8 +1082,8 @@ export default function Home() {
                                     setAccentColor(`#${val}`);
                                   }
                                 }}
-                                placeholder="9D6BFF"
-                                className="w-16 text-xs font-mono font-bold uppercase bg-transparent outline-none text-[#241B35] dark:text-[#F7F3FC]"
+                                placeholder="7659E4"
+                                className="w-16 text-xs font-mono font-bold uppercase bg-transparent outline-none text-[#211A30] dark:text-[#F9F7FD]"
                                 maxLength={6}
                               />
                             </div>
@@ -1096,19 +1096,19 @@ export default function Home() {
                     {currentStep === 8 && (
                       <div className="space-y-6">
                         <div>
-                          <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                          <h2 className="text-xl font-display font-bold text-[#211A30] dark:text-[#F9F7FD]">
                             Publish & Privacy
                           </h2>
-                          <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                          <p className="text-xs text-[#736886] dark:text-[#A89EC0] mt-1">
                             Review checklist and generate your private celebration link.
                           </p>
                         </div>
 
                         {/* Pre-Publish Checklist */}
-                        <div className="p-4 rounded-3xl bg-[#F8F6FC] dark:bg-[#171122] border border-[#EDE7F6] dark:border-[#251B35] space-y-2 text-xs">
+                        <div className="p-4 rounded-3xl bg-[#FAF8FE] dark:bg-[#161220] border border-[#E8DFFA] dark:border-[#282038] space-y-2 text-xs">
                           <div className="flex items-center justify-between font-semibold">
                             <span>Recipient Name:</span>
-                            <span className="text-[#7952D6] dark:text-[#9D6BFF] font-bold">{name || "Not set"}</span>
+                            <span className="text-[#7659E4] dark:text-[#C495C8] font-bold">{name || "Not set"}</span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span>Vibe & Format:</span>
@@ -1125,11 +1125,11 @@ export default function Home() {
                         </div>
 
                         {/* 72-Hour Ephemeral Retention Toggle */}
-                        <div className="p-4 rounded-3xl bg-purple-50 dark:bg-[#251B35]/50 border border-purple-200 dark:border-purple-900/60 space-y-3">
+                        <div className="p-4 rounded-3xl bg-[#F8F4FD] dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] space-y-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4 text-[#7952D6] dark:text-[#9D6BFF]" />
-                              <span className="text-xs font-bold text-[#7952D6] dark:text-[#9D6BFF]">
+                              <Clock className="w-4 h-4 text-[#7659E4] dark:text-[#C495C8]" />
+                              <span className="text-xs font-bold text-[#7659E4] dark:text-[#C495C8]">
                                 72-Hour Privacy Promise
                               </span>
                             </div>
@@ -1137,7 +1137,7 @@ export default function Home() {
                               {retentionMode === "forever" ? "Kept Forever ⭐" : "Auto-deletes in 72h"}
                             </Badge>
                           </div>
-                          <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5] leading-relaxed">
+                          <p className="text-[11px] text-[#736886] dark:text-[#A89EC0] leading-relaxed">
                             By default, all uploaded photos and message content automatically purge after 72 hours for privacy.
                           </p>
                           <div className="flex items-center gap-4 pt-1">
@@ -1147,7 +1147,7 @@ export default function Home() {
                                 name="retention"
                                 checked={retentionMode === "72h"}
                                 onChange={() => setRetentionMode("72h")}
-                                className="accent-[#7952D6]"
+                                className="accent-[#7659E4]"
                               />
                               <span>72h Ephemeral (Standard)</span>
                             </label>
@@ -1157,7 +1157,7 @@ export default function Home() {
                                 name="retention"
                                 checked={retentionMode === "forever"}
                                 onChange={() => setRetentionMode("forever")}
-                                className="accent-[#7952D6]"
+                                className="accent-[#7659E4]"
                               />
                               <span>Keep Forever ⭐</span>
                             </label>
@@ -1173,15 +1173,15 @@ export default function Home() {
 
                         {/* Generated Share Link Card */}
                         {generatedLink ? (
-                          <div className="p-5 rounded-3xl bg-[#EDE7F6]/50 dark:bg-[#251B35] border border-purple-200 dark:border-purple-800 space-y-4">
+                          <div className="p-5 rounded-3xl bg-[#F5F1FD] dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] space-y-4">
                             <div className="flex items-center gap-2">
                               <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                              <h3 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                              <h3 className="text-sm font-bold text-[#211A30] dark:text-[#F9F7FD]">
                                 Celebration Link Ready!
                               </h3>
                             </div>
 
-                            <div className="flex items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#2A203C]">
+                            <div className="flex items-center gap-2 p-2 rounded-2xl bg-white dark:bg-[#161220] border border-[#E8DFFA] dark:border-[#282038]">
                               <input
                                 type="text"
                                 readOnly
@@ -1221,7 +1221,7 @@ export default function Home() {
                                 href={generatedLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center gap-1 text-xs font-semibold px-4 py-2 rounded-2xl bg-[#7952D6] text-white hover:brightness-105"
+                                className="inline-flex items-center justify-center gap-1 text-xs font-semibold px-4 py-2 rounded-2xl bg-[#7659E4] text-white hover:bg-[#6849D6] transition-all"
                               >
                                 <span>Open</span>
                                 <ExternalLink className="w-3.5 h-3.5" />
@@ -1234,7 +1234,7 @@ export default function Home() {
                             size="lg"
                             onClick={handlePublish}
                             isLoading={isGenerating}
-                            className="w-full shadow-lg shadow-purple-500/20"
+                            className="w-full shadow-md shadow-[#7659E4]/20"
                             rightIcon={<ArrowRight className="w-4 h-4" />}
                           >
                             Create Birthday Experience ✨
@@ -1244,7 +1244,7 @@ export default function Home() {
                     )}
 
                     {/* Step Navigation Controls */}
-                    <div className="flex items-center justify-between pt-4 border-t border-[#EDE7F6] dark:border-[#251B35]">
+                    <div className="flex items-center justify-between pt-4 border-t border-[#E8DFFA] dark:border-[#282038]">
                       {currentStep > 1 ? (
                         <Button
                           variant="ghost"
@@ -1296,24 +1296,24 @@ export default function Home() {
               </div>
 
               {/* DOWN SIDE MIDDLE FOOTER: Created by Gous Khan */}
-              <div className="w-full pt-10 pb-6 mt-8 border-t border-[#EDE7F6] dark:border-[#251B35]/80 flex flex-col items-center justify-center gap-2.5">
-                <div className="relative p-[1.5px] rounded-full bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] shadow-[0_0_22px_rgba(157,107,255,0.4)] hover:shadow-[0_0_30px_rgba(244,127,181,0.55)] transition-all duration-500 group select-none">
-                  <div className="relative flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#171122]/95 backdrop-blur-xl overflow-hidden">
-                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
+              <div className="w-full pt-10 pb-6 mt-8 border-t border-[#E8DFFA] dark:border-[#282038] flex flex-col items-center justify-center gap-2.5">
+                <div className="relative p-[1.5px] rounded-full bg-gradient-to-r from-[#7659E4] via-[#C495C8] to-[#E0A842] shadow-[0_4px_20px_rgba(118,89,228,0.22)] hover:shadow-[0_6px_28px_rgba(118,89,228,0.32)] transition-all duration-500 group select-none">
+                  <div className="relative flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#161220]/95 backdrop-blur-xl overflow-hidden">
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
                     <span className="flex h-2.5 w-2.5 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F47FB5] opacity-80"></span>
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-r from-[#F47FB5] to-[#9D6BFF]"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C495C8] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-r from-[#C495C8] to-[#7659E4]"></span>
                     </span>
                     <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide">
-                      <span className="text-[#D3CCE3] font-medium">Crafted with ❤️ by</span>
-                      <span className="font-black text-sm bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] bg-clip-text text-transparent drop-shadow-xs tracking-wider uppercase">
+                      <span className="text-[#C5BED3] font-medium">Crafted with ❤️ by</span>
+                      <span className="font-black text-sm bg-gradient-to-r from-[#A28DF8] via-[#C495C8] to-[#E0A842] bg-clip-text text-transparent drop-shadow-xs tracking-wider uppercase">
                         GOUS KHAN
                       </span>
                     </div>
-                    <Sparkles className="w-4 h-4 text-[#E7B85C] animate-spin drop-shadow-[0_0_8px_rgba(231,184,92,0.8)]" style={{ animationDuration: "5s" }} />
+                    <Sparkles className="w-4 h-4 text-[#E0A842] animate-spin" style={{ animationDuration: "5s" }} />
                   </div>
                 </div>
-                <span className="text-[11px] text-[#746B80] dark:text-[#8E849E] tracking-wider uppercase font-medium">
+                <span className="text-[11px] text-[#736886] dark:text-[#8E849E] tracking-wider uppercase font-medium">
                   BirthdayVerse • Make Every Celebration Unforgettable
                 </span>
               </div>
@@ -1363,35 +1363,35 @@ export default function Home() {
           {activeNav === "settings" && (
             <div className="max-w-2xl mx-auto space-y-6 text-left animate-in fade-in duration-300">
               <div>
-                <h1 className="text-2xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                <h1 className="text-2xl font-display font-bold text-[#211A30] dark:text-[#F9F7FD]">
                   Workspace Settings
                 </h1>
-                <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                <p className="text-xs text-[#736886] dark:text-[#A89EC0] mt-1">
                   Manage your creator preferences and privacy configurations.
                 </p>
               </div>
 
-              <div className="p-6 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] space-y-4">
-                <h3 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+              <div className="p-6 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] space-y-4">
+                <h3 className="text-sm font-bold text-[#211A30] dark:text-[#F9F7FD]">
                   72-Hour Data Purge Guarantee
                 </h3>
-                <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] leading-relaxed">
+                <p className="text-xs text-[#736886] dark:text-[#A89EC0] leading-relaxed">
                   BirthdayVerse is committed to personal privacy. Every digital celebration link self-destructs after 72 hours unless you explicitly choose to keep it forever.
                 </p>
               </div>
 
-              <div className="p-6 rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] flex items-center justify-between">
+              <div className="p-6 rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                  <h3 className="text-sm font-bold text-[#211A30] dark:text-[#F9F7FD]">
                     Administrative Access
                   </h3>
-                  <p className="text-xs text-[#746B80] dark:text-[#B8AEC5]">
+                  <p className="text-xs text-[#736886] dark:text-[#A89EC0]">
                     Access the private platform control center
                   </p>
                 </div>
                 <a
                   href="/admin"
-                  className="px-4 py-2 rounded-2xl bg-[#7952D6] text-white text-xs font-bold hover:brightness-105 transition-all"
+                  className="px-4 py-2 rounded-2xl bg-[#7659E4] text-white text-xs font-bold hover:bg-[#6849D6] transition-all shadow-xs"
                 >
                   Admin Console
                 </a>
@@ -1412,7 +1412,7 @@ export default function Home() {
       >
         <div className="flex flex-col items-center py-4 space-y-4">
           {qrDataUrl ? (
-            <div className="p-3 bg-white rounded-3xl shadow-xl border-2 border-purple-200">
+            <div className="p-3 bg-white rounded-3xl shadow-xl border-2 border-[#E8DFFA] dark:border-[#282038]">
               <img
                 src={qrDataUrl}
                 alt="Celebration QR Code"
@@ -1420,9 +1420,9 @@ export default function Home() {
               />
             </div>
           ) : (
-            <div className="w-48 h-48 rounded-3xl border-2 border-dashed border-[#9D6BFF] flex flex-col items-center justify-center p-4 text-center">
-              <QrCode className="w-8 h-8 text-[#9D6BFF] animate-pulse" />
-              <span className="text-xs text-[#746B80] mt-2">Generating QR Code...</span>
+            <div className="w-48 h-48 rounded-3xl border-2 border-dashed border-[#7659E4] flex flex-col items-center justify-center p-4 text-center">
+              <QrCode className="w-8 h-8 text-[#7659E4] animate-pulse" />
+              <span className="text-xs text-[#736886] mt-2">Generating QR Code...</span>
             </div>
           )}
           
@@ -1431,7 +1431,7 @@ export default function Home() {
               <a
                 href={qrDataUrl}
                 download={`birthdayverse-qr-${(name || 'celebration').toLowerCase().replace(/\s+/g, '-')}.png`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#7952D6] text-white text-xs font-semibold hover:brightness-105 transition-all shadow-md shadow-purple-500/20 cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#7659E4] text-white text-xs font-semibold hover:bg-[#6849D6] transition-all shadow-md shadow-[#7659E4]/20 cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Save QR Image</span>

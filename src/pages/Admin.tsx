@@ -267,7 +267,7 @@ export default function AdminPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-[#100C18] flex items-center justify-center text-[#9D6BFF]">
+      <div className="min-h-screen bg-[#13101C] flex items-center justify-center text-[#8E72F0]">
         <RefreshCw className="w-6 h-6 animate-spin mr-2" />
         <span className="text-sm font-semibold">Verifying credentials...</span>
       </div>
@@ -277,20 +277,20 @@ export default function AdminPage() {
   // 1. Unauthenticated Login Screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen w-full bg-[#100C18] text-[#F7F3FC] flex flex-col justify-between p-4 sm:p-8 relative overflow-hidden">
+      <div className="min-h-screen w-full bg-[#13101C] text-[#F9F7FD] flex flex-col justify-between p-4 sm:p-8 relative overflow-hidden">
         {/* Subtle Ambient Background */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-[#7952D6]/15 via-[#9D6BFF]/10 to-transparent rounded-full filter blur-[120px] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-br from-[#7659E4]/12 via-[#8E72F0]/08 to-transparent rounded-full filter blur-[120px] pointer-events-none" />
 
         {/* Top bar */}
         <div className="w-full max-w-5xl mx-auto flex items-center justify-between z-10">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-[#B8AEC5] hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-[#A89EC0] hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Return to BirthdayVerse</span>
           </Link>
-          <div className="flex items-center gap-2 text-xs font-bold text-[#E7B85C]">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#E0A842]">
             <ShieldCheck className="w-4 h-4" />
             <span>Secure Perimeter</span>
           </div>
@@ -298,10 +298,10 @@ export default function AdminPage() {
 
         {/* Center Login Box */}
         <div className="w-full max-w-md mx-auto my-auto z-10 animate-in fade-in zoom-in-95 duration-300">
-          <div className="p-8 sm:p-10 rounded-3xl bg-[#1D162A]/90 border border-[#251B35] shadow-2xl backdrop-blur-xl text-center space-y-6">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#7952D6] to-[#9D6BFF] p-0.5 mx-auto shadow-lg shadow-purple-500/20 flex items-center justify-center">
-              <div className="w-full h-full bg-[#171122] rounded-[14px] flex items-center justify-center">
-                <Lock className="w-6 h-6 text-[#9D6BFF]" />
+          <div className="p-8 sm:p-10 rounded-3xl bg-[#1E182A]/90 border border-[#282038] shadow-2xl backdrop-blur-xl text-center space-y-6">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#7659E4] to-[#8E72F0] p-0.5 mx-auto shadow-md flex items-center justify-center">
+              <div className="w-full h-full bg-[#161220] rounded-[14px] flex items-center justify-center">
+                <Lock className="w-6 h-6 text-[#8E72F0]" />
               </div>
             </div>
 
@@ -309,14 +309,14 @@ export default function AdminPage() {
               <h1 className="text-2xl font-display font-bold text-white tracking-tight">
                 BirthdayVerse Admin
               </h1>
-              <p className="text-xs text-[#B8AEC5] mt-1.5 leading-relaxed">
+              <p className="text-xs text-[#A89EC0] mt-1.5 leading-relaxed">
                 Enter your administrative key to manage live verses, data retention, and platform health.
               </p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4 text-left">
               <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-[#B8AEC5]">
+                <label className="block text-xs font-semibold text-[#A89EC0]">
                   Admin Key / Password
                 </label>
                 <div className="relative">
@@ -327,12 +327,12 @@ export default function AdminPage() {
                     placeholder="Enter admin password"
                     required
                     autoFocus
-                    className="w-full rounded-2xl bg-[#171122] text-white border border-[#251B35] px-4 py-3 text-sm transition-all focus:outline-none focus:border-[#9D6BFF] focus:ring-2 focus:ring-[#9D6BFF]/20 pr-11"
+                    className="w-full rounded-2xl bg-[#161220] text-white border border-[#282038] px-4 py-3 text-sm transition-all focus:outline-none focus:border-[#7659E4] focus:ring-2 focus:ring-[#7659E4]/20 pr-11"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#746B80] hover:text-[#B8AEC5] transition-colors cursor-pointer"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#736886] hover:text-[#A89EC0] transition-colors cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -362,7 +362,7 @@ export default function AdminPage() {
         </div>
 
         {/* Footer */}
-        <div className="w-full max-w-5xl mx-auto text-center z-10 text-[11px] text-[#746B80]">
+        <div className="w-full max-w-5xl mx-auto text-center z-10 text-[11px] text-[#736886]">
           BirthdayVerse Private Administrative System &bull; 72-Hour Ephemeral Retention Verified
         </div>
       </div>
@@ -371,22 +371,22 @@ export default function AdminPage() {
 
   // 2. Authenticated Dashboard Screen
   return (
-    <div className="min-h-screen w-full bg-[#100C18] text-[#F7F3FC] flex flex-col selection:bg-[#9D6BFF]/30">
+    <div className="min-h-screen w-full bg-[#13101C] text-[#F9F7FD] flex flex-col selection:bg-[#7659E4]/30">
       
       {/* Top Admin Header Bar */}
-      <header className="sticky top-0 z-40 w-full bg-[#171122]/90 backdrop-blur-xl border-b border-[#251B35] px-4 sm:px-8 py-3.5">
+      <header className="sticky top-0 z-40 w-full bg-[#181323]/90 backdrop-blur-xl border-b border-[#282038] px-4 sm:px-8 py-3.5">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link
               to="/"
-              className="p-2 rounded-xl bg-[#251B35] text-[#B8AEC5] hover:text-white transition-colors"
+              className="p-2 rounded-xl bg-[#261F36] text-[#A89EC0] hover:text-white transition-colors"
               title="Return to Public Site"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
 
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#7952D6] to-[#9D6BFF] p-0.5 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#7659E4] to-[#8E72F0] p-0.5 flex items-center justify-center">
                 <ShieldCheck className="w-4 h-4 text-white" />
               </div>
               <div>
@@ -442,26 +442,26 @@ export default function AdminPage() {
           <StatCard
             label="Total Celebrations"
             value={metrics ? metrics.totalCelebrations : "—"}
-            icon={<Layers className="w-4 h-4" />}
+            icon={<Layers className="w-4 h-4 text-[#8E72F0]" />}
             change="Real Firestore Docs"
             trend="neutral"
-            className="border-[#251B35] bg-[#1D162A]"
+            className="border-[#282038] bg-[#1E182A]"
           />
           <StatCard
             label="Total Recipient Views"
             value={metrics ? metrics.totalViews.toLocaleString() : "—"}
-            icon={<Eye className="w-4 h-4 text-purple-400" />}
+            icon={<Eye className="w-4 h-4 text-[#8E72F0]" />}
             change="Unique link visits"
             trend="up"
-            className="border-[#251B35] bg-[#1D162A]"
+            className="border-[#282038] bg-[#1E182A]"
           />
           <StatCard
             label="Love Reactions Sent"
             value={metrics ? metrics.totalReactions.toLocaleString() : "—"}
-            icon={<Heart className="w-4 h-4 text-rose-400" />}
+            icon={<Heart className="w-4 h-4 text-[#C495C8]" />}
             change="Heart reactions"
             trend="up"
-            className="border-[#251B35] bg-[#1D162A]"
+            className="border-[#282038] bg-[#1E182A]"
           />
           <StatCard
             label="Active Ephemeral Verses"
@@ -469,18 +469,18 @@ export default function AdminPage() {
             icon={<Clock className="w-4 h-4 text-emerald-400" />}
             change={metrics ? `${metrics.expiredVerses} expired (purged)` : "72h window active"}
             trend="neutral"
-            className="border-[#251B35] bg-[#1D162A]"
+            className="border-[#282038] bg-[#1E182A]"
           />
         </div>
 
         {/* View Selection Tabs */}
-        <div className="flex items-center gap-2 border-b border-[#251B35] pb-4">
+        <div className="flex items-center gap-2 border-b border-[#282038] pb-4">
           <button
             onClick={() => setActiveTab("overview")}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "overview"
-                ? "bg-[#251B35] text-white shadow-xs font-bold"
-                : "text-[#B8AEC5] hover:text-white"
+                ? "bg-[#261F36] text-white shadow-xs font-bold"
+                : "text-[#A89EC0] hover:text-white"
             }`}
           >
             Overview & Traffic
@@ -489,8 +489,8 @@ export default function AdminPage() {
             onClick={() => setActiveTab("verses")}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "verses"
-                ? "bg-[#251B35] text-white shadow-xs font-bold"
-                : "text-[#B8AEC5] hover:text-white"
+                ? "bg-[#261F36] text-white shadow-xs font-bold"
+                : "text-[#A89EC0] hover:text-white"
             }`}
           >
             Recent Verses ({metrics?.recentVerses.length || 0})
@@ -499,8 +499,8 @@ export default function AdminPage() {
             onClick={() => setActiveTab("system")}
             className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               activeTab === "system"
-                ? "bg-[#251B35] text-white shadow-xs font-bold"
-                : "text-[#B8AEC5] hover:text-white"
+                ? "bg-[#261F36] text-white shadow-xs font-bold"
+                : "text-[#A89EC0] hover:text-white"
             }`}
           >
             System & 72h Purge Health
@@ -511,30 +511,30 @@ export default function AdminPage() {
         {activeTab === "overview" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Real Traffic Chart */}
-            <div className="lg:col-span-8 p-6 rounded-3xl bg-[#1D162A] border border-[#251B35] space-y-4">
+            <div className="lg:col-span-8 p-6 rounded-3xl bg-[#1E182A] border border-[#282038] space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-base font-bold text-white">Daily Recipient Views</h2>
-                  <p className="text-xs text-[#B8AEC5]">Real traffic aggregated over the last 7 days</p>
+                  <p className="text-xs text-[#A89EC0]">Real traffic aggregated over the last 7 days</p>
                 </div>
                 <Badge variant="purple">Realtime Data</Badge>
               </div>
 
               {/* Chart Bars */}
-              <div className="h-52 w-full flex items-end justify-between gap-3 pt-6 pb-2 px-2 border-b border-[#251B35]">
+              <div className="h-52 w-full flex items-end justify-between gap-3 pt-6 pb-2 px-2 border-b border-[#282038]">
                 {metrics?.trafficDays.map((td, i) => {
                   const maxViews = Math.max(...metrics.trafficDays.map((d) => d.views), 10);
                   const heightPercent = Math.max(12, Math.round((td.views / maxViews) * 100));
                   return (
                     <div key={i} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-                      <span className="text-[10px] text-[#B8AEC5] opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="text-[10px] text-[#A89EC0] opacity-0 group-hover:opacity-100 transition-opacity">
                         {td.views}
                       </span>
                       <div
                         style={{ height: `${heightPercent}%` }}
-                        className="w-full max-w-[40px] rounded-t-xl bg-gradient-to-t from-[#7952D6] to-[#9D6BFF] group-hover:brightness-110 transition-all shadow-sm"
+                        className="w-full max-w-[40px] rounded-t-xl bg-gradient-to-t from-[#7659E4] to-[#8E72F0] group-hover:brightness-110 transition-all shadow-sm"
                       />
-                      <span className="text-[11px] font-semibold text-[#B8AEC5] mt-1">
+                      <span className="text-[11px] font-semibold text-[#A89EC0] mt-1">
                         {td.day}
                       </span>
                     </div>
@@ -542,39 +542,39 @@ export default function AdminPage() {
                 })}
               </div>
 
-              <div className="flex items-center justify-between text-xs text-[#746B80] pt-2">
+              <div className="flex items-center justify-between text-xs text-[#736886] pt-2">
                 <span>Calculated from active Firestore document timestamps</span>
                 <span>7-day rolling window</span>
               </div>
             </div>
 
             {/* Quick Status Callout */}
-            <div className="lg:col-span-4 p-6 rounded-3xl bg-[#1D162A] border border-[#251B35] space-y-5 flex flex-col justify-between">
+            <div className="lg:col-span-4 p-6 rounded-3xl bg-[#1E182A] border border-[#282038] space-y-5 flex flex-col justify-between">
               <div>
-                <div className="flex items-center gap-2 text-[#E7B85C] mb-2 text-xs font-bold uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-[#E0A842] mb-2 text-xs font-bold uppercase tracking-wider">
                   <Clock className="w-4 h-4" />
                   <span>72-Hour Ephemeral Engine</span>
                 </div>
                 <h3 className="text-xl font-display font-bold text-white">
                   Automated Ephemeral Purge
                 </h3>
-                <p className="text-xs text-[#B8AEC5] mt-2 leading-relaxed">
-                  Verses not explicitly marked with <span className="text-purple-300 font-semibold">&quot;Keep forever&quot;</span> are dynamically purged after 72 hours to guarantee creator and recipient privacy.
+                <p className="text-xs text-[#A89EC0] mt-2 leading-relaxed">
+                  Verses not explicitly marked with <span className="text-[#C495C8] font-semibold">&quot;Keep forever&quot;</span> are dynamically purged after 72 hours to guarantee creator and recipient privacy.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#171122] border border-[#251B35] space-y-2">
+              <div className="p-4 rounded-2xl bg-[#161220] border border-[#282038] space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#B8AEC5]">Auto-Purge TTL:</span>
+                  <span className="text-[#A89EC0]">Auto-Purge TTL:</span>
                   <span className="font-bold text-white">72 Hours</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#B8AEC5]">Purge Compliance:</span>
+                  <span className="text-[#A89EC0]">Purge Compliance:</span>
                   <span className="font-bold text-emerald-400">100% Active</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#B8AEC5]">Permanent Overrides:</span>
-                  <span className="font-bold text-purple-300">Creator opt-in</span>
+                  <span className="text-[#A89EC0]">Permanent Overrides:</span>
+                  <span className="font-bold text-[#C495C8]">Creator opt-in</span>
                 </div>
               </div>
 
@@ -593,11 +593,11 @@ export default function AdminPage() {
 
         {/* Tab 2: Recent Verses List */}
         {activeTab === "verses" && (
-          <div className="p-6 rounded-3xl bg-[#1D162A] border border-[#251B35] space-y-4">
+          <div className="p-6 rounded-3xl bg-[#1E182A] border border-[#282038] space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-white">Live Celebrations in Database</h2>
-                <p className="text-xs text-[#B8AEC5]">Real Firestore records in the `surprises` collection</p>
+                <p className="text-xs text-[#A89EC0]">Real Firestore records in the `surprises` collection</p>
               </div>
               <Badge variant="secondary">{metrics?.recentVerses.length || 0} Records</Badge>
             </div>
@@ -606,7 +606,7 @@ export default function AdminPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-[#251B35] text-[#746B80]">
+                    <tr className="border-b border-[#282038] text-[#736886]">
                       <th className="py-3 px-4 font-semibold">Recipient</th>
                       <th className="py-3 px-4 font-semibold">Status</th>
                       <th className="py-3 px-4 font-semibold">Views</th>
@@ -615,9 +615,9 @@ export default function AdminPage() {
                       <th className="py-3 px-4 font-semibold text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#251B35]">
+                  <tbody className="divide-y divide-[#282038]">
                     {metrics.recentVerses.map((verse) => (
-                      <tr key={verse.id} className="hover:bg-[#251B35]/40 transition-colors">
+                      <tr key={verse.id} className="hover:bg-[#261F36]/40 transition-colors">
                         <td className="py-3.5 px-4 font-bold text-white">
                           {verse.name}
                         </td>
@@ -634,13 +634,13 @@ export default function AdminPage() {
                             {verse.status}
                           </Badge>
                         </td>
-                        <td className="py-3.5 px-4 text-[#B8AEC5] font-mono">
+                        <td className="py-3.5 px-4 text-[#A89EC0] font-mono">
                           {verse.views}
                         </td>
-                        <td className="py-3.5 px-4 text-[#B8AEC5] font-mono">
+                        <td className="py-3.5 px-4 text-[#A89EC0] font-mono">
                           {verse.reactions}
                         </td>
-                        <td className="py-3.5 px-4 text-[#746B80]">
+                        <td className="py-3.5 px-4 text-[#736886]">
                           {new Date(verse.created_at).toLocaleDateString()}
                         </td>
                         <td className="py-3.5 px-4 text-right space-x-2">
@@ -648,7 +648,7 @@ export default function AdminPage() {
                             href={`/surprise/${verse.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1.5 rounded-lg bg-[#251B35] text-purple-300 hover:text-white inline-flex"
+                            className="p-1.5 rounded-lg bg-[#261F36] text-[#C495C8] hover:text-white inline-flex"
                             title="Open recipient page"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
@@ -667,7 +667,7 @@ export default function AdminPage() {
                 </table>
               </div>
             ) : (
-              <div className="text-center py-12 text-[#746B80]">
+              <div className="text-center py-12 text-[#736886]">
                 <Layers className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm font-semibold">No celebrations found in database</p>
                 <p className="text-xs mt-1">When users publish verses, they will appear here with live metrics.</p>
@@ -679,57 +679,57 @@ export default function AdminPage() {
         {/* Tab 3: System & Purge Health */}
         {activeTab === "system" && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-6 rounded-3xl bg-[#1D162A] border border-[#251B35] space-y-4">
+            <div className="p-6 rounded-3xl bg-[#1E182A] border border-[#282038] space-y-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-emerald-950 text-emerald-400">
                   <Database className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Firestore Database Connectivity</h3>
-                  <p className="text-xs text-[#B8AEC5]">Google Cloud Firestore cluster status</p>
+                  <p className="text-xs text-[#A89EC0]">Google Cloud Firestore cluster status</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#171122] border border-[#251B35] space-y-2 text-xs">
+              <div className="p-4 rounded-2xl bg-[#161220] border border-[#282038] space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#B8AEC5]">Status:</span>
+                  <span className="text-[#A89EC0]">Status:</span>
                   <span className="font-bold text-emerald-400 flex items-center gap-1">
                     <CheckCircle2 className="w-3.5 h-3.5" /> Connected
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#B8AEC5]">Collection:</span>
-                  <span className="font-mono text-purple-300">surprises</span>
+                  <span className="text-[#A89EC0]">Collection:</span>
+                  <span className="font-mono text-[#C495C8]">surprises</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#B8AEC5]">Read Latency:</span>
+                  <span className="text-[#A89EC0]">Read Latency:</span>
                   <span className="text-white font-mono">&lt; 150ms</span>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 rounded-3xl bg-[#1D162A] border border-[#251B35] space-y-4">
+            <div className="p-6 rounded-3xl bg-[#1E182A] border border-[#282038] space-y-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-purple-950 text-purple-400">
+                <div className="p-2 rounded-xl bg-purple-950 text-[#8E72F0]">
                   <Server className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Firebase Storage Pipeline</h3>
-                  <p className="text-xs text-[#B8AEC5]">Media asset upload and soundtrack delivery</p>
+                  <p className="text-xs text-[#A89EC0]">Media asset upload and soundtrack delivery</p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#171122] border border-[#251B35] space-y-2 text-xs">
+              <div className="p-4 rounded-2xl bg-[#161220] border border-[#282038] space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-[#B8AEC5]">Storage Bucket:</span>
+                  <span className="text-[#A89EC0]">Storage Bucket:</span>
                   <span className="font-mono text-emerald-400">Active</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#B8AEC5]">Audio CDN:</span>
+                  <span className="text-[#A89EC0]">Audio CDN:</span>
                   <span className="text-white">Direct HTTPS streaming</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[#B8AEC5]">Asset Encryption:</span>
+                  <span className="text-[#A89EC0]">Asset Encryption:</span>
                   <span className="text-emerald-400">AES-256 enabled</span>
                 </div>
               </div>

@@ -21,9 +21,9 @@ export const TEMPLATES_DATA: TemplateItem[] = [
     name: "Golden Elegance",
     category: "Elegant",
     description: "Refined lavender gold aesthetics with classical serif typography and subtle candlelight warmth.",
-    accent: "#7952D6",
+    accent: "#7659E4",
     badge: "Popular",
-    previewBg: "bg-gradient-to-br from-[#2D1654] via-[#1F103A] to-[#120824]",
+    previewBg: "bg-gradient-to-br from-[#261F36] via-[#1E182A] to-[#13101C]",
     previewText: "Elegant & Luxurious",
     icon: <Crown className="w-4 h-4 text-amber-300" />,
   },
@@ -32,9 +32,9 @@ export const TEMPLATES_DATA: TemplateItem[] = [
     name: "Dreamy Starlight",
     category: "Dreamy",
     description: "Soft celestial clouds, twinkling stars, and gentle pastel purple ambient gradients.",
-    accent: "#9D6BFF",
+    accent: "#8E72F0",
     badge: "Trending",
-    previewBg: "bg-gradient-to-br from-[#4338CA] via-[#6D28D9] to-[#C084FC]",
+    previewBg: "bg-gradient-to-br from-[#1E182A] via-[#261F36] to-[#7659E4]",
     previewText: "Clouds & Starlight",
     icon: <Moon className="w-4 h-4 text-purple-300" />,
   },
@@ -43,9 +43,9 @@ export const TEMPLATES_DATA: TemplateItem[] = [
     name: "Sweet Romance",
     category: "Romantic",
     description: "Rose gold petals, soft bokeh lights, and warm heartfelt words of affection.",
-    accent: "#F47FB5",
+    accent: "#C495C8",
     badge: "Special",
-    previewBg: "bg-gradient-to-br from-[#881337] via-[#BE123C] to-[#FB7185]",
+    previewBg: "bg-gradient-to-br from-[#4A1D36] via-[#7B2852] to-[#C495C8]",
     previewText: "Warm & Heartfelt",
     icon: <Heart className="w-4 h-4 text-rose-300" />,
   },
@@ -54,8 +54,8 @@ export const TEMPLATES_DATA: TemplateItem[] = [
     name: "Confetti Fiesta",
     category: "Fun",
     description: "Bursting confetti cascades, lively vibrant colors, and pure joyful celebration energy.",
-    accent: "#EA580C",
-    previewBg: "bg-gradient-to-br from-[#EA580C] via-[#F59E0B] to-[#EC4899]",
+    accent: "#E0A842",
+    previewBg: "bg-gradient-to-br from-[#92400E] via-[#D97706] to-[#C495C8]",
     previewText: "Joyful & Energetic",
     icon: <PartyPopper className="w-4 h-4 text-amber-300" />,
   },
@@ -64,20 +64,20 @@ export const TEMPLATES_DATA: TemplateItem[] = [
     name: "Pastel Sweetness",
     category: "Cute",
     description: "Playful balloons, cute gift wraps, and adorable celebration art for smiles.",
-    accent: "#DB2777",
-    previewBg: "bg-gradient-to-br from-[#F47FB5] via-[#A78BFA] to-[#93C5FD]",
+    accent: "#A28DF8",
+    previewBg: "bg-gradient-to-br from-[#C495C8] via-[#A28DF8] to-[#E0A842]",
     previewText: "Sweet & Adorable",
-    icon: <Gift className="w-4 h-4 text-pink-300" />,
+    icon: <Gift className="w-4 h-4 text-purple-300" />,
   },
   {
     id: "party",
     name: "Midnight Disco",
     category: "Party",
-    description: "Neon rave lights, dark moody glow, and high-energy celebration music vibes.",
-    accent: "#A855F7",
+    description: "Deep velvety lavender, moody glow, and high-energy celebration vibes.",
+    accent: "#7659E4",
     badge: "Hot",
-    previewBg: "bg-gradient-to-br from-[#1E1B4B] via-[#4C1D95] to-[#BE185D]",
-    previewText: "Neon & High Energy",
+    previewBg: "bg-gradient-to-br from-[#13101C] via-[#261F36] to-[#54448C]",
+    previewText: "Velvet & High Energy",
     icon: <Music className="w-4 h-4 text-purple-300" />,
   },
   {
@@ -85,8 +85,8 @@ export const TEMPLATES_DATA: TemplateItem[] = [
     name: "Modern Minimalist",
     category: "Minimal",
     description: "Crisp whitespace, timeless typography, and subtle micro-accents for understated elegance.",
-    accent: "#4B5563",
-    previewBg: "bg-gradient-to-br from-[#1F2937] via-[#374151] to-[#6B7280]",
+    accent: "#736886",
+    previewBg: "bg-gradient-to-br from-[#1E182A] via-[#282038] to-[#433858]",
     previewText: "Clean & Modern",
     icon: <Feather className="w-4 h-4 text-gray-300" />,
   },
@@ -119,12 +119,12 @@ export const TemplatesView: React.FC<TemplatesViewProps> = ({
     <div className="w-full max-w-7xl mx-auto space-y-8 text-left animate-in fade-in duration-300">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#EDE7F6] dark:border-[#251B35]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E8DFFA] dark:border-[#282038]">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+          <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#211A30] dark:text-[#F9F7FD]">
             Visual Style Templates
           </h1>
-          <p className="text-xs sm:text-sm text-[#746B80] dark:text-[#B8AEC5] mt-1">
+          <p className="text-xs sm:text-sm text-[#736886] dark:text-[#A89EC0] mt-1">
             Pick from curated artistic directions handcrafted for emotion and celebration.
           </p>
         </div>
@@ -137,8 +137,8 @@ export const TemplatesView: React.FC<TemplatesViewProps> = ({
               onClick={() => setActiveCategory(cat)}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 activeCategory === cat
-                  ? "bg-[#7952D6] text-white font-bold shadow-xs"
-                  : "bg-white dark:bg-[#1D162A] text-[#746B80] dark:text-[#B8AEC5] border border-[#EDE7F6] dark:border-[#251B35] hover:text-[#241B35]"
+                  ? "bg-[#7659E4] text-white font-bold shadow-xs"
+                  : "bg-white dark:bg-[#1E182A] text-[#736886] dark:text-[#A89EC0] border border-[#E8DFFA] dark:border-[#282038] hover:text-[#211A30]"
               }`}
             >
               {cat}
@@ -152,7 +152,7 @@ export const TemplatesView: React.FC<TemplatesViewProps> = ({
         {filteredTemplates.map((template) => (
           <div
             key={template.id}
-            className="rounded-3xl bg-white dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35] overflow-hidden shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group"
+            className="rounded-3xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] overflow-hidden shadow-xs hover:shadow-lg transition-all flex flex-col justify-between group"
           >
             {/* Template Banner Preview */}
             <div className={`h-36 ${template.previewBg} p-5 flex flex-col justify-between relative overflow-hidden`}>
@@ -172,10 +172,10 @@ export const TemplatesView: React.FC<TemplatesViewProps> = ({
             {/* Template Info Body */}
             <div className="p-6 space-y-4">
               <div>
-                <h3 className="text-base font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                <h3 className="text-base font-bold text-[#211A30] dark:text-[#F9F7FD]">
                   {template.name}
                 </h3>
-                <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1.5 leading-relaxed">
+                <p className="text-xs text-[#736886] dark:text-[#A89EC0] mt-1.5 leading-relaxed">
                   {template.description}
                 </p>
               </div>
