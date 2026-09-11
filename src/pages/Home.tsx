@@ -324,13 +324,10 @@ export default function Home() {
     setIsGenerating(true);
 
     try {
-      // Ensure all photos are strictly optimized before sending to prevent Firestore 1MB overflow
-      let preparedPhotos = allPhotos;
+      // Ensure all photos are strictly optimized to fit within ~190KB total budget
+      let preparedPhotos: string[] = [];
       if (allPhotos.length > 0) {
-        const hasOversized = allPhotos.some((p) => p.length > 120000);
-        if (hasOversized) {
-          preparedPhotos = await optimizePhotoBatch(allPhotos, 500000);
-        }
+        preparedPhotos = await optimizePhotoBatch(allPhotos);
       }
 
       const payload = {
@@ -355,7 +352,6 @@ export default function Home() {
       const id = await saveSurpriseData({
         name,
         message: finalMessageString,
-        imageBase64: preparedPhotos[0] || null,
         musicFile: musicFile,
         photos: preparedPhotos,
       });
@@ -455,33 +451,6 @@ export default function Home() {
                   <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
                     Craft Birthday Experience
                   </h1>
-                </div>
-
-                {/* MIDDLE OF CREATION DASHBOARD: Professional Animated "Made by Gous Khan" Badge */}
-                <div className="flex items-center justify-center my-1 md:my-0">
-                  <div className="relative p-[1.5px] rounded-full bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] shadow-[0_0_22px_rgba(157,107,255,0.45)] hover:shadow-[0_0_30px_rgba(244,127,181,0.6)] transition-all duration-500 group select-none">
-                    <div className="relative flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#171122]/90 backdrop-blur-xl overflow-hidden">
-                      {/* Ambient Shimmer Sweep Animation */}
-                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
-                      
-                      {/* Radar Pulse Dot */}
-                      <span className="flex h-2.5 w-2.5 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F47FB5] opacity-80"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-r from-[#F47FB5] to-[#9D6BFF]"></span>
-                      </span>
-
-                      {/* Text & Designer Name */}
-                      <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide">
-                        <span className="text-[#D3CCE3] font-medium">Crafted with ❤️ by</span>
-                        <span className="font-black text-sm bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] bg-clip-text text-transparent drop-shadow-xs tracking-wider uppercase">
-                          Gous Khan
-                        </span>
-                      </div>
-
-                      {/* Rotating Sparkle */}
-                      <Sparkles className="w-4 h-4 text-[#E7B85C] animate-spin drop-shadow-[0_0_8px_rgba(231,184,92,0.8)]" style={{ animationDuration: "5s" }} />
-                    </div>
-                  </div>
                 </div>
 
                 {/* Mobile Editor/Preview Toggle */}
@@ -1325,6 +1294,30 @@ export default function Home() {
                 </div>
 
               </div>
+
+              {/* DOWN SIDE MIDDLE FOOTER: Created by Gous Khan */}
+              <div className="w-full pt-10 pb-6 mt-8 border-t border-[#EDE7F6] dark:border-[#251B35]/80 flex flex-col items-center justify-center gap-2.5">
+                <div className="relative p-[1.5px] rounded-full bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] shadow-[0_0_22px_rgba(157,107,255,0.4)] hover:shadow-[0_0_30px_rgba(244,127,181,0.55)] transition-all duration-500 group select-none">
+                  <div className="relative flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#171122]/95 backdrop-blur-xl overflow-hidden">
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
+                    <span className="flex h-2.5 w-2.5 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F47FB5] opacity-80"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-r from-[#F47FB5] to-[#9D6BFF]"></span>
+                    </span>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide">
+                      <span className="text-[#D3CCE3] font-medium">Crafted with ❤️ by</span>
+                      <span className="font-black text-sm bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] bg-clip-text text-transparent drop-shadow-xs tracking-wider uppercase">
+                        GOUS KHAN
+                      </span>
+                    </div>
+                    <Sparkles className="w-4 h-4 text-[#E7B85C] animate-spin drop-shadow-[0_0_8px_rgba(231,184,92,0.8)]" style={{ animationDuration: "5s" }} />
+                  </div>
+                </div>
+                <span className="text-[11px] text-[#746B80] dark:text-[#8E849E] tracking-wider uppercase font-medium">
+                  BirthdayVerse • Make Every Celebration Unforgettable
+                </span>
+              </div>
+
             </div>
           )}
 

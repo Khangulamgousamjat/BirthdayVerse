@@ -206,26 +206,24 @@ export async function saveSurpriseData(record: {
       if (storageSucceeded && uploadedUrls.length > 0) {
         parsedPayload.photos = uploadedUrls;
         image_path = uploadedUrls[0];
-        finalMessage = JSON.stringify(parsedPayload);
       } else {
-        // Fallback mode: Photos stay as base64 in parsedPayload.photos.
-        // Set image_path = null so the primary photo isn't duplicated in Firestore!
-        image_path = null;
-        finalMessage = JSON.stringify(parsedPayload);
-
-        // Safety check: If message is close to Firestore's 1MB limit (e.g. > 850KB),
-        // re-optimize photos aggressively so it can never exceed 1,048,487 bytes.
-        if (finalMessage.length > 850000 && Array.isArray(parsedPayload.photos)) {
-          console.warn("Payload size exceeds safety threshold, running emergency photo batch optimization...");
-          parsedPayload.photos = await optimizePhotoBatch(parsedPayload.photos, 450000);
-          finalMessage = JSON.stringify(parsedPayload);
+        // In-line fallback: Ensure all photos are strictly budget-optimized
+        if (Array.isArray(parsedPayload.photos) && parsedPayload.photos.length > 0) {
+          const hasOversized = parsedPayload.photos.some(
+            (p: string) => typeof p === "string" && (p.length > 65000 || p.startsWith("data:"))
+          );
+          if (hasOversized) {
+            parsedPayload.photos = await optimizePhotoBatch(parsedPayload.photos);
+          }
         }
+        // Never duplicate base64 data in image_path (Surprise.tsx reads photos[0])
+        image_path = null;
       }
+      finalMessage = JSON.stringify(parsedPayload);
     } else if (storageSucceeded && uploadedUrls[0]) {
       image_path = uploadedUrls[0];
     } else {
-      // Plain text mode: Only store imageBase64 if size is under 150KB
-      image_path = (record.imageBase64 && record.imageBase64.length < 150000) ? record.imageBase64 : null;
+      image_path = null;
     }
 
     // Save surprise details in Firestore surprises collection
