@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { StatCard } from "@/components/ui/StatCard";
-import { getAdminMetrics, AdminMetrics, deleteSurprise } from "@/lib/db";
+import { getAdminMetrics, AdminMetrics, deleteSurprise, verifyAdminPassword, updateAdminPasswordInDb } from "@/lib/db";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -148,9 +148,10 @@ export default function AdminPage() {
         // Server API not running in current environment or network unavailable
       }
 
-      // 2. Direct fallback authentication for Kingkhan@12
+      // 2. Direct Firestore & fallback authentication
       if (!loggedIn) {
-        if (password === "Kingkhan@12") {
+        const isValid = await verifyAdminPassword(password);
+        if (isValid) {
           const fallbackToken = btoa(JSON.stringify({ role: "admin", exp: Date.now() + 86400000 }));
           sessionStorage.setItem("bv_admin_token", fallbackToken);
           setIsAuthenticated(true);
@@ -191,7 +192,9 @@ export default function AdminPage() {
 
     setPasswordLoading(true);
     const token = sessionStorage.getItem("bv_admin_token") || "";
+    let updated = false;
 
+    // 1. Try server API
     try {
       const res = await fetch("/api/admin/change-password", {
         method: "POST",
@@ -206,28 +209,47 @@ export default function AdminPage() {
         }),
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        setPasswordSuccess("Admin password updated successfully.");
-        if (data.token) {
-          sessionStorage.setItem("bv_admin_token", data.token);
+      const contentType = res.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await res.json();
+        if (res.ok) {
+          updated = true;
+          if (data.token) {
+            sessionStorage.setItem("bv_admin_token", data.token);
+          }
+        } else if (res.status === 401 || res.status === 400) {
+          setPasswordError(data.error || "Failed to update password.");
+          setPasswordLoading(false);
+          return;
         }
-        setTimeout(() => {
-          setShowPasswordModal(false);
-          setCurrentPassword("");
-          setNewPassword("");
-          setConfirmPassword("");
-          setPasswordSuccess("");
-        }, 1500);
-      } else {
-        setPasswordError(data.error || "Failed to update password.");
       }
-    } catch (err) {
-      setPasswordError("Network error while updating password.");
-    } finally {
-      setPasswordLoading(false);
+    } catch {
+      // Server API unreachable in current environment, falling back to database update
     }
+
+    // 2. Direct database update fallback
+    if (!updated) {
+      try {
+        await updateAdminPasswordInDb(currentPassword, newPassword);
+        updated = true;
+      } catch (err: any) {
+        setPasswordError(err.message || "Incorrect current password. Please try again.");
+        setPasswordLoading(false);
+        return;
+      }
+    }
+
+    if (updated) {
+      setPasswordSuccess("Admin password updated successfully.");
+      setTimeout(() => {
+        setShowPasswordModal(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setPasswordSuccess("");
+      }, 1500);
+    }
+    setPasswordLoading(false);
   };
 
   // Handle Delete Verse

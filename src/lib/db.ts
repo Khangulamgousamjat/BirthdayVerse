@@ -13,6 +13,7 @@ import {
   limit
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { dataUrlToBlob, optimizePhotoBatch } from './imageOptimizer';
 
 export type SurpriseData = {
   id: string; // Firestore document ID (which is the short_id)
@@ -132,18 +133,99 @@ export async function saveSurpriseData(record: {
   message: string;
   imageBase64?: string | null;
   musicFile?: File | null;
+  photos?: string[];
 }): Promise<string> {
   const short_id = Math.random().toString(36).substring(2, 10);
 
   try {
-    let image_path = record.imageBase64 || undefined;
-    let music_path = undefined;
+    let music_path: string | undefined = undefined;
 
     // Upload Music if provided
     if (record.musicFile) {
-      const ext = record.musicFile.name.split('.').pop() || 'mp3';
-      const fileName = `${short_id}_music.${ext}`;
-      music_path = (await uploadFile(record.musicFile, fileName)) || undefined;
+      try {
+        const ext = record.musicFile.name.split('.').pop() || 'mp3';
+        const fileName = `${short_id}_music.${ext}`;
+        music_path = (await uploadFile(record.musicFile, fileName)) || undefined;
+      } catch (musicErr) {
+        console.warn("Music upload to storage skipped:", musicErr);
+      }
+    }
+
+    let finalMessage = record.message;
+    let image_path: string | null = null;
+    let parsedPayload: any = null;
+
+    try {
+      parsedPayload = JSON.parse(record.message);
+    } catch {
+      // plain text message
+    }
+
+    const photosList: string[] = (record.photos && record.photos.length > 0)
+      ? record.photos
+      : (parsedPayload?.photos && Array.isArray(parsedPayload.photos))
+        ? parsedPayload.photos
+        : (record.imageBase64 ? [record.imageBase64] : []);
+
+    let uploadedUrls: string[] = [];
+    let storageSucceeded = false;
+
+    // 1. Attempt uploading photos to Firebase Storage if any are data URLs
+    if (photosList.length > 0) {
+      try {
+        const uploadPromises = photosList.map(async (photoStr, idx) => {
+          if (photoStr && photoStr.startsWith("data:image/")) {
+            const blob = dataUrlToBlob(photoStr);
+            const fileName = `${short_id}_photo_${idx}.jpg`;
+            const downloadUrl = await uploadFile(blob, fileName);
+            return downloadUrl || photoStr;
+          }
+          return photoStr;
+        });
+
+        // 10s timeout for photo storage upload
+        const urls = await withTimeout(
+          Promise.all(uploadPromises),
+          10000,
+          "Storage upload timed out"
+        );
+
+        if (urls && urls.length > 0 && urls.some((u) => u && u.startsWith("http"))) {
+          uploadedUrls = urls;
+          storageSucceeded = true;
+          image_path = urls[0];
+        }
+      } catch (storageErr) {
+        console.warn("Firebase Storage photo upload skipped, using optimized inline storage:", storageErr);
+        storageSucceeded = false;
+      }
+    }
+
+    // 2. Assemble the payload safely
+    if (parsedPayload && typeof parsedPayload === "object") {
+      if (storageSucceeded && uploadedUrls.length > 0) {
+        parsedPayload.photos = uploadedUrls;
+        image_path = uploadedUrls[0];
+        finalMessage = JSON.stringify(parsedPayload);
+      } else {
+        // Fallback mode: Photos stay as base64 in parsedPayload.photos.
+        // Set image_path = null so the primary photo isn't duplicated in Firestore!
+        image_path = null;
+        finalMessage = JSON.stringify(parsedPayload);
+
+        // Safety check: If message is close to Firestore's 1MB limit (e.g. > 850KB),
+        // re-optimize photos aggressively so it can never exceed 1,048,487 bytes.
+        if (finalMessage.length > 850000 && Array.isArray(parsedPayload.photos)) {
+          console.warn("Payload size exceeds safety threshold, running emergency photo batch optimization...");
+          parsedPayload.photos = await optimizePhotoBatch(parsedPayload.photos, 450000);
+          finalMessage = JSON.stringify(parsedPayload);
+        }
+      }
+    } else if (storageSucceeded && uploadedUrls[0]) {
+      image_path = uploadedUrls[0];
+    } else {
+      // Plain text mode: Only store imageBase64 if size is under 150KB
+      image_path = (record.imageBase64 && record.imageBase64.length < 150000) ? record.imageBase64 : null;
     }
 
     // Save surprise details in Firestore surprises collection
@@ -151,7 +233,7 @@ export async function saveSurpriseData(record: {
       setDoc(doc(db, 'surprises', short_id), {
         short_id,
         name: record.name,
-        message: record.message,
+        message: finalMessage,
         image_path: image_path || null,
         music_path: music_path || null,
         created_at: new Date().toISOString(),
@@ -306,4 +388,46 @@ export async function getAdminMetrics(): Promise<AdminMetrics> {
       ],
     };
   }
+}
+
+// ── Admin Authentication Helpers ──────────────────────────────────────────────
+
+async function sha256Hex(str: string): Promise<string> {
+  const buffer = new TextEncoder().encode(str);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+const DEFAULT_ADMIN_HASH = "59eafbae0bb4a62bbfb4933f8800482264da9301a8384284f0205704d075a44a"; // Kingkhan@12
+
+export async function verifyAdminPassword(password: string): Promise<boolean> {
+  try {
+    const docRef = doc(db, "_system_settings", "admin_auth");
+    const snap = await withTimeout(getDoc(docRef), 5000, "Auth timeout");
+    const hash = await sha256Hex(password);
+    if (snap.exists() && snap.data()?.hash) {
+      return snap.data().hash === hash;
+    }
+    return hash === DEFAULT_ADMIN_HASH || password === "Kingkhan@12";
+  } catch {
+    return password === "Kingkhan@12";
+  }
+}
+
+export async function updateAdminPasswordInDb(currentPassword: string, newPassword: string): Promise<void> {
+  const isValid = await verifyAdminPassword(currentPassword);
+  if (!isValid) {
+    throw new Error("Incorrect current password.");
+  }
+  const newHash = await sha256Hex(newPassword);
+  const docRef = doc(db, "_system_settings", "admin_auth");
+  await withTimeout(
+    setDoc(docRef, {
+      hash: newHash,
+      updated_at: new Date().toISOString(),
+    }, { merge: true }),
+    8000,
+    "Database update timed out"
+  );
 }

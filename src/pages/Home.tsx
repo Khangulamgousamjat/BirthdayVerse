@@ -47,6 +47,7 @@ import { Textarea } from "@/components/ui/Textarea";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { saveSurpriseData } from "@/lib/db";
+import { compressImageToDataUrl, optimizePhotoBatch } from "@/lib/imageOptimizer";
 
 // Steps Definition
 const STEPS = [
@@ -151,6 +152,7 @@ export default function Home() {
   // Media & Music States
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [extraPhotos, setExtraPhotos] = useState<string[]>([]);
+  const [isCompressingPhotos, setIsCompressingPhotos] = useState<boolean>(false);
   const [selectedMusic, setSelectedMusic] = useState<string>("/Happy Birthday Song.mp3");
   const [activeMusicTab, setActiveMusicTab] = useState<string>("Popular");
   const [isPlayingMusic, setIsPlayingMusic] = useState<boolean>(false);
@@ -216,8 +218,8 @@ export default function Home() {
   // Combined active photos array
   const allPhotos = [profilePhoto, ...extraPhotos].filter(Boolean) as string[];
 
-  // Multi-photo upload handler
-  const handleMultiplePhotosUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Multi-photo upload handler with client-side compression
+  const handleMultiplePhotosUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -225,21 +227,35 @@ export default function Home() {
     if (remainingSlots <= 0) return;
 
     const filesToLoad = Array.from(files).slice(0, remainingSlots);
-    filesToLoad.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        if (result) {
-          if (!profilePhoto) {
-            setProfilePhoto(result);
-          } else {
-            setExtraPhotos((prev) => [...prev, result]);
+    setIsCompressingPhotos(true);
+    try {
+      const compressedBatch: string[] = [];
+      for (const file of filesToLoad) {
+        const compressed = await compressImageToDataUrl(file, {
+          maxWidth: 960,
+          maxHeight: 960,
+          quality: 0.72,
+          maxDataUrlLength: 110000,
+        });
+        if (compressed) compressedBatch.push(compressed);
+      }
+
+      if (compressedBatch.length > 0) {
+        if (!profilePhoto) {
+          setProfilePhoto(compressedBatch[0]);
+          if (compressedBatch.length > 1) {
+            setExtraPhotos((prev) => [...prev, ...compressedBatch.slice(1)]);
           }
+        } else {
+          setExtraPhotos((prev) => [...prev, ...compressedBatch]);
         }
-      };
-      reader.readAsDataURL(file);
-    });
-    e.target.value = "";
+      }
+    } catch (err) {
+      console.error("Photo compression error:", err);
+    } finally {
+      setIsCompressingPhotos(false);
+      e.target.value = "";
+    }
   };
 
   // Remove photo at given index
@@ -256,27 +272,43 @@ export default function Home() {
     }
   };
 
-  // Image Upload handler for single photo
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>, isPrimary: boolean = true) => {
+  // Image Upload handler for single photo with client-side compression
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, isPrimary: boolean = true) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    if (isPrimary) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setProfilePhoto(event.target?.result as string);
-      };
-      reader.readAsDataURL(files[0]);
-    } else {
-      Array.from(files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          if (event.target?.result) {
-            setExtraPhotos((prev) => [...prev, event.target!.result as string]);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
+    setIsCompressingPhotos(true);
+    try {
+      if (isPrimary) {
+        const compressed = await compressImageToDataUrl(files[0], {
+          maxWidth: 960,
+          maxHeight: 960,
+          quality: 0.72,
+          maxDataUrlLength: 110000,
+        });
+        if (compressed) setProfilePhoto(compressed);
+      } else {
+        const remainingSlots = 6 - allPhotos.length;
+        const filesToLoad = Array.from(files).slice(0, Math.max(0, remainingSlots));
+        const compressedBatch: string[] = [];
+        for (const file of filesToLoad) {
+          const compressed = await compressImageToDataUrl(file, {
+            maxWidth: 960,
+            maxHeight: 960,
+            quality: 0.72,
+            maxDataUrlLength: 110000,
+          });
+          if (compressed) compressedBatch.push(compressed);
+        }
+        if (compressedBatch.length > 0) {
+          setExtraPhotos((prev) => [...prev, ...compressedBatch]);
+        }
+      }
+    } catch (err) {
+      console.error("Photo upload error:", err);
+    } finally {
+      setIsCompressingPhotos(false);
+      e.target.value = "";
     }
   };
 
@@ -292,6 +324,15 @@ export default function Home() {
     setIsGenerating(true);
 
     try {
+      // Ensure all photos are strictly optimized before sending to prevent Firestore 1MB overflow
+      let preparedPhotos = allPhotos;
+      if (allPhotos.length > 0) {
+        const hasOversized = allPhotos.some((p) => p.length > 120000);
+        if (hasOversized) {
+          preparedPhotos = await optimizePhotoBatch(allPhotos, 500000);
+        }
+      }
+
       const payload = {
         body: message,
         finaleText: finaleText,
@@ -306,7 +347,7 @@ export default function Home() {
         experienceType: experienceType,
         retentionMode: retentionMode,
         keepForever: retentionMode === "forever",
-        photos: allPhotos,
+        photos: preparedPhotos,
       };
 
       const finalMessageString = JSON.stringify(payload);
@@ -314,8 +355,9 @@ export default function Home() {
       const id = await saveSurpriseData({
         name,
         message: finalMessageString,
-        imageBase64: profilePhoto || (extraPhotos[0] || null),
+        imageBase64: preparedPhotos[0] || null,
         musicFile: musicFile,
+        photos: preparedPhotos,
       });
 
       if (id) {
@@ -839,15 +881,25 @@ export default function Home() {
                                 Select one or multiple photos (PNG, JPG up to 5MB each)
                               </p>
                             </div>
-                            <label className="inline-block cursor-pointer">
+                            <label className={`inline-block ${isCompressingPhotos ? "opacity-60 cursor-not-allowed pointer-events-none" : "cursor-pointer"}`}>
                               <span className="px-5 py-2.5 rounded-xl bg-[#7952D6] text-white text-xs font-bold inline-flex items-center gap-1.5 hover:brightness-105 transition-all shadow-md shadow-purple-500/20">
-                                <Plus className="w-3.5 h-3.5" />
-                                <span>Select Photos</span>
+                                {isCompressingPhotos ? (
+                                  <>
+                                    <div className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                    <span>Optimizing Photos...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>Select Photos</span>
+                                  </>
+                                )}
                               </span>
                               <input
                                 type="file"
                                 accept="image/*"
                                 multiple
+                                disabled={isCompressingPhotos}
                                 className="hidden"
                                 onChange={handleMultiplePhotosUpload}
                               />

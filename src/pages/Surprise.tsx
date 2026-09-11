@@ -145,8 +145,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
     // Fallback for plain text message
   }
 
-  // Ensure imageBase64 is included in photosList if present
-  if (imageBase64 && !photosList.includes(imageBase64)) {
+  // Ensure primary image and photosList are synced
+  if (!imageBase64 && photosList.length > 0) {
+    imageBase64 = photosList[0];
+  } else if (imageBase64 && !photosList.includes(imageBase64)) {
     photosList = [imageBase64, ...photosList];
   }
 
