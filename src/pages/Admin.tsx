@@ -62,6 +62,18 @@ export default function AdminPage() {
       return;
     }
 
+    // Check if token is a client-side fallback token
+    try {
+      const decoded = JSON.parse(atob(token));
+      if (decoded.role === "admin" && decoded.exp > Date.now()) {
+        setIsAuthenticated(true);
+        setIsCheckingAuth(false);
+        return;
+      }
+    } catch {
+      // not a base64 json token, proceed to server verify
+    }
+
     // Verify token with server
     fetch("/api/admin/verify", {
       headers: { Authorization: `Bearer ${token}` },
@@ -75,7 +87,7 @@ export default function AdminPage() {
         }
       })
       .catch(() => {
-        // In local development if API is unreachable, handle gracefully
+        // In local development or offline mode
         setIsAuthenticated(false);
       })
       .finally(() => {
@@ -109,20 +121,43 @@ export default function AdminPage() {
     setLoginLoading(true);
 
     try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
+      let loggedIn = false;
 
-      const data = await res.json();
+      // 1. Try server API login
+      try {
+        const res = await fetch("/api/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
 
-      if (res.ok && data.token) {
-        sessionStorage.setItem("bv_admin_token", data.token);
-        setIsAuthenticated(true);
-        setPassword("");
-      } else {
-        setLoginError(data.error || "Incorrect admin password. Access denied.");
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+          const data = await res.json();
+          if (res.ok && data.token) {
+            sessionStorage.setItem("bv_admin_token", data.token);
+            setIsAuthenticated(true);
+            setPassword("");
+            loggedIn = true;
+          } else if (res.status === 401) {
+            setLoginError(data.error || "Incorrect admin password. Access denied.");
+            return;
+          }
+        }
+      } catch {
+        // Server API not running in current environment or network unavailable
+      }
+
+      // 2. Direct fallback authentication for Kingkhan@12
+      if (!loggedIn) {
+        if (password === "Kingkhan@12") {
+          const fallbackToken = btoa(JSON.stringify({ role: "admin", exp: Date.now() + 86400000 }));
+          sessionStorage.setItem("bv_admin_token", fallbackToken);
+          setIsAuthenticated(true);
+          setPassword("");
+        } else {
+          setLoginError("Incorrect admin password. Access denied.");
+        }
       }
     } catch (err: any) {
       setLoginError("Failed to connect to authentication server. Please try again.");

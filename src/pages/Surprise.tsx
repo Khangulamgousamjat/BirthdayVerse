@@ -14,7 +14,9 @@ import {
   Gift, 
   Flame, 
   ArrowRight,
-  ExternalLink
+  ExternalLink,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
@@ -102,7 +104,13 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [hasSentLove, setHasSentLove] = useState<boolean>(false);
+  const [loveCount, setLoveCount] = useState<number>(0);
   const [loveToast, setLoveToast] = useState<boolean>(false);
+  const [floatingHearts, setFloatingHearts] = useState<{ id: number; left: number; size: number }[]>([]);
+
+  // Multi-photo gallery states
+  const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   // Cake Scene states
   const [candlesBlown, setCandlesBlown] = useState<boolean>(false);
@@ -110,17 +118,23 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   // Parse custom parameters from creator message
   let bodyText = data.message;
   let finaleText = "HAPPY BIRTHDAY! 🎂";
+  let signOffText = "With all my warmest love • BirthdayVerse";
   let customMusic = "";
   let imageBase64 = data.image_path || "";
   let nickname = "";
+  let photosList: string[] = [];
 
   try {
     const parsed = JSON.parse(data.message);
     if (parsed && typeof parsed === "object") {
       bodyText = parsed.body || data.message;
       if (parsed.finaleText) finaleText = parsed.finaleText;
+      if (parsed.signOff) signOffText = parsed.signOff;
       if (parsed.nickname) nickname = parsed.nickname;
       if (parsed.imageBase64 && !imageBase64) imageBase64 = parsed.imageBase64;
+      if (Array.isArray(parsed.photos) && parsed.photos.length > 0) {
+        photosList = parsed.photos;
+      }
       if (parsed.selectedMusic && parsed.selectedMusic !== "custom") {
         customMusic = parsed.selectedMusic;
       } else if (parsed.musicBase64 && !customMusic) {
@@ -129,6 +143,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
     }
   } catch {
     // Fallback for plain text message
+  }
+
+  // Ensure imageBase64 is included in photosList if present
+  if (imageBase64 && !photosList.includes(imageBase64)) {
+    photosList = [imageBase64, ...photosList];
   }
 
   if (data.music_path) {
@@ -204,17 +223,44 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
 
   // Send Love interaction
   const handleSendLove = (e?: React.MouseEvent) => {
-    if (hasSentLove) return;
+    setLoveCount((prev) => prev + 1);
     setHasSentLove(true);
     incrementReactions(surpriseId);
 
+    // Sync with local storage wishes if present
+    try {
+      const saved = localStorage.getItem("birthdayverse_my_wishes");
+      if (saved) {
+        const wishes = JSON.parse(saved);
+        const updated = wishes.map((w: any) =>
+          w.id === surpriseId ? { ...w, reactions: (w.reactions || 0) + 1 } : w
+        );
+        localStorage.setItem("birthdayverse_my_wishes", JSON.stringify(updated));
+      }
+    } catch {
+      // ignore
+    }
+
     // Confetti spark from center
-    confetti({
-      particleCount: 30,
-      spread: 60,
-      origin: { x: 0.5, y: 0.6 },
-      colors: ["#F47FB5", "#E7B85C", "#9D6BFF"],
-    });
+    try {
+      confetti({
+        particleCount: 45,
+        spread: 80,
+        origin: { x: 0.5, y: 0.6 },
+        colors: ["#F47FB5", "#E7B85C", "#9D6BFF", "#FF3366"],
+        zIndex: 99999,
+      });
+    } catch {
+      // ignore
+    }
+
+    // Spawn floating heart particles that rise and fade
+    const newHearts = Array.from({ length: 5 }).map((_, i) => ({
+      id: Date.now() + Math.random() + i,
+      left: Math.max(15, Math.min(85, 50 + (Math.random() - 0.5) * 60)),
+      size: Math.floor(Math.random() * 14) + 20,
+    }));
+    setFloatingHearts((prev) => [...prev.slice(-15), ...newHearts]);
 
     setLoveToast(true);
     setTimeout(() => setLoveToast(false), 2500);
@@ -305,13 +351,34 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#9D6BFF] to-[#F47FB5] text-white text-xs font-bold shadow-xl flex items-center gap-2"
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#9D6BFF] to-[#F47FB5] text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-white/25 backdrop-blur-md"
           >
-            <Heart className="w-4 h-4 fill-white" />
-            <span>Your love was sent to {data.name}!</span>
+            <Heart className="w-4 h-4 fill-white animate-ping" />
+            <span>Your love was sent to {data.name}! ❤️</span>
+            {loveCount > 1 && (
+              <span className="px-2 py-0.5 rounded-full bg-white/25 text-white text-[10px] font-extrabold">
+                {loveCount}x
+              </span>
+            )}
           </m.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Hearts Animation Layer */}
+      <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+        {floatingHearts.map((heart) => (
+          <m.div
+            key={heart.id}
+            initial={{ opacity: 1, y: "75vh", scale: 0.6 }}
+            animate={{ opacity: 0, y: "10vh", scale: 1.5 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+            style={{ left: `${heart.left}%`, width: heart.size, height: heart.size }}
+            className="absolute text-rose-500 drop-shadow-[0_0_12px_rgba(244,63,94,0.7)]"
+          >
+            <Heart className="w-full h-full fill-current" />
+          </m.div>
+        ))}
+      </div>
 
       {/* Main Experience Container */}
       <div className="flex-1 w-full max-w-3xl mx-auto flex flex-col items-center justify-center text-center my-auto z-10 py-6 sm:py-12">
@@ -443,7 +510,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
 
                 <div className="pt-2 text-right">
                   <span className="text-xs font-serif italic text-[#B8AEC5]">
-                    With all my warmest love &bull; BirthdayVerse
+                    {signOffText}
                   </span>
                 </div>
               </div>
@@ -517,15 +584,94 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 Cherished Moments
               </span>
 
-              {/* Framed Photo or Monogram Card */}
-              <div className="p-3 sm:p-4 rounded-3xl bg-gradient-to-b from-[#E7B85C]/20 to-[#9D6BFF]/10 border border-[#E7B85C]/40 shadow-2xl">
-                {imageBase64 ? (
-                  <div className="rounded-2xl overflow-hidden aspect-square max-h-80 w-full bg-black">
-                    <img
-                      src={imageBase64}
-                      alt={data.name}
-                      className="w-full h-full object-cover"
-                    />
+              {/* Framed Photo or Monogram Card / Interactive Multi-Photo Gallery */}
+              <div className="p-3 sm:p-4 rounded-3xl bg-gradient-to-b from-[#E7B85C]/20 to-[#9D6BFF]/10 border border-[#E7B85C]/40 shadow-2xl relative">
+                {photosList.length > 0 ? (
+                  <div className="space-y-3">
+                    {/* Active Photo Container with touch swipe handlers */}
+                    <div
+                      className="relative rounded-2xl overflow-hidden aspect-square max-h-80 w-full bg-black select-none touch-pan-y"
+                      onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
+                      onTouchEnd={(e) => {
+                        if (touchStartX === null) return;
+                        const touchEndX = e.changedTouches[0].clientX;
+                        const diff = touchStartX - touchEndX;
+                        if (diff > 45 && photosList.length > 1) {
+                          // Swiped left -> next
+                          setActivePhotoIndex((prev) => (prev + 1) % photosList.length);
+                        } else if (diff < -45 && photosList.length > 1) {
+                          // Swiped right -> prev
+                          setActivePhotoIndex((prev) => (prev - 1 + photosList.length) % photosList.length);
+                        }
+                        setTouchStartX(null);
+                      }}
+                    >
+                      <img
+                        key={activePhotoIndex}
+                        src={photosList[activePhotoIndex]}
+                        alt={`${data.name} memory ${activePhotoIndex + 1}`}
+                        className="w-full h-full object-cover transition-all duration-300 animate-in fade-in zoom-in-95"
+                      />
+
+                      {/* Navigation Arrows for multi-photo */}
+                      {photosList.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActivePhotoIndex((prev) => (prev - 1 + photosList.length) % photosList.length);
+                            }}
+                            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
+                            aria-label="Previous photo"
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActivePhotoIndex((prev) => (prev + 1) % photosList.length);
+                            }}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
+                            aria-label="Next photo"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+
+                      {/* Floating Counter Badge */}
+                      {photosList.length > 1 && (
+                        <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] font-bold text-white shadow-md">
+                          {activePhotoIndex + 1} / {photosList.length}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Multi-Photo Dots & Swipe Hint */}
+                    {photosList.length > 1 && (
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center justify-center gap-1.5">
+                          {photosList.map((_, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setActivePhotoIndex(idx)}
+                              className={`h-2 rounded-full transition-all cursor-pointer ${
+                                activePhotoIndex === idx
+                                  ? "w-6 bg-[#E7B85C]"
+                                  : "w-2 bg-white/30 hover:bg-white/60"
+                              }`}
+                              aria-label={`Go to photo ${idx + 1}`}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-[11px] font-semibold text-[#E7B85C] flex items-center justify-center gap-1">
+                          <span>👈 Swipe for more pics 👉</span>
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="rounded-2xl aspect-square max-h-80 w-full bg-[#1D162A] flex flex-col items-center justify-center p-8 text-center space-y-3">
@@ -660,9 +806,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                   variant="primary"
                   size="md"
                   onClick={handleSendLove}
-                  leftIcon={<Heart className="w-4 h-4 text-rose-300" />}
+                  leftIcon={<Heart className={`w-4 h-4 text-rose-300 ${loveCount > 0 ? "fill-rose-300 animate-pulse" : ""}`} />}
+                  className="shadow-lg shadow-purple-500/20 active:scale-95 transition-all"
                 >
-                  Send Love ❤️
+                  {loveCount > 0 ? `Love Sent! ❤️ (${loveCount})` : "Send Love ❤️"}
                 </Button>
 
                 <Button
@@ -675,16 +822,18 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 </Button>
               </div>
 
-              {/* Discreet CTA to create own verse */}
-              <div className="pt-8 border-t border-[#251B35]/60">
-                <p className="text-xs text-[#746B80]">
+              {/* Standout Bordered CTA Button */}
+              <div className="pt-8 border-t border-[#251B35]/60 flex flex-col items-center gap-2.5">
+                <p className="text-xs text-[#B8AEC5]">
                   Turn birthdays into unforgettable memories.
                 </p>
                 <a
                   href="/"
-                  className="text-xs font-semibold text-[#9D6BFF] hover:underline inline-flex items-center gap-1 mt-1"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full border-2 border-[#9D6BFF] bg-gradient-to-r from-[#9D6BFF]/20 via-[#7952D6]/25 to-[#F47FB5]/20 hover:from-[#9D6BFF]/35 hover:to-[#F47FB5]/35 text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-[0_0_20px_rgba(157,107,255,0.35)] hover:shadow-[0_0_30px_rgba(157,107,255,0.6)] hover:scale-105 active:scale-95 cursor-pointer group"
                 >
-                  Create your own Birthday Verse <ExternalLink className="w-3 h-3" />
+                  <Sparkles className="w-4 h-4 text-[#F47FB5] group-hover:rotate-12 transition-transform" />
+                  <span>Create your own Birthday Verse</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-[#9D6BFF] group-hover:translate-x-0.5 transition-transform" />
                 </a>
               </div>
             </m.div>

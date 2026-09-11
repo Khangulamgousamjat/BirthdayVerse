@@ -29,8 +29,10 @@ import {
   Video,
   Users,
   Clock,
-  Volume2
+  Volume2,
+  Download
 } from "lucide-react";
+import QRCode from "qrcode";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar, NavView } from "@/components/layout/Sidebar";
 import { MainDashboardView } from "@/components/dashboard/MainDashboardView";
@@ -79,17 +81,25 @@ const VIBES = [
 ];
 
 // Soundtracks
-const SOUNDTRACK_CATEGORIES = ["Popular", "Happy", "Romantic", "Calm", "Energetic", "Upload"];
+const SOUNDTRACK_CATEGORIES = ["Popular", "Happy", "Romantic", "Calm", "Energetic", "Party", "Upload"];
 
 const SOUNDTRACKS = [
   { id: "Coldplay - A Sky Full of Stars", file: "/funky groovin.mp3", title: "A Sky Full of Stars", artist: "Coldplay", duration: "4:28", category: "Popular" },
-  { id: "/Happy Birthday Song.mp3", title: "Classic Happy Birthday", artist: "Birthdayverse Mix", duration: "2:54", category: "Happy" },
-  { id: "/happy birthday slowed.mp3", title: "Happy Birthday (Lo-Fi Slowed)", artist: "Chill Mix", duration: "1:23", category: "Calm" },
-  { id: "/pianocafe.mp3", title: "Acoustic Piano Cafe", artist: "Acoustic Cafe", duration: "3:10", category: "Calm" },
-  { id: "/romantic.mp3", title: "Romantic Strings", artist: "Sweet Melodies", duration: "3:45", category: "Romantic" },
-  { id: "/funky groovin.mp3", title: "Funky Groovin", artist: "Groove Party", duration: "2:15", category: "Energetic" },
-  { id: "/playhouse.mp3", title: "Playhouse Celebration", artist: "Playful Pop", duration: "2:30", category: "Happy" },
-  { id: "none", title: "No Music (Silent)", artist: "Muted Experience", duration: "—", category: "Calm" },
+  { id: "/Happy Birthday Song.mp3", file: "/Happy Birthday Song.mp3", title: "Classic Happy Birthday", artist: "Birthdayverse Mix", duration: "2:54", category: "Happy" },
+  { id: "/happy birthday slowed.mp3", file: "/happy birthday slowed.mp3", title: "Happy Birthday (Lo-Fi Slowed)", artist: "Chill Midnight Mix", duration: "1:23", category: "Calm" },
+  { id: "/pianocafe.mp3", file: "/pianocafe.mp3", title: "Acoustic Piano Cafe", artist: "Acoustic Cafe", duration: "3:10", category: "Calm" },
+  { id: "/romantic.mp3", file: "/romantic.mp3", title: "Romantic Strings & Cello", artist: "Sweet Melodies", duration: "3:45", category: "Romantic" },
+  { id: "/funky groovin.mp3", file: "/funky groovin.mp3", title: "Funky Groovin Disco", artist: "Groove Party", duration: "2:15", category: "Energetic" },
+  { id: "/playhouse.mp3", file: "/playhouse.mp3", title: "Playhouse Celebration", artist: "Playful Pop", duration: "2:30", category: "Happy" },
+  { id: "golden_sunset", file: "/pianocafe.mp3", title: "Golden Sunset Chords", artist: "Acoustic Warmth", duration: "3:15", category: "Calm" },
+  { id: "dreamy_starlight", file: "/happy birthday slowed.mp3", title: "Dreamy Starlight Lullaby", artist: "Celestial Music Box", duration: "2:40", category: "Romantic" },
+  { id: "confetti_pop", file: "/playhouse.mp3", title: "Celebration Confetti Pop", artist: "Festival Beats", duration: "2:50", category: "Happy" },
+  { id: "sweet_serenade", file: "/romantic.mp3", title: "Sweet Rose Serenade", artist: "Violin Ensemble", duration: "3:20", category: "Romantic" },
+  { id: "neon_dance", file: "/funky groovin.mp3", title: "Neon Midnight Dance", artist: "Club Party Remix", duration: "2:45", category: "Party" },
+  { id: "bollywood_dhol", file: "/Happy Birthday Song.mp3", title: "Bollywood Dhol Celebration", artist: "Desi Festive Mix", duration: "3:30", category: "Party" },
+  { id: "peaceful_morning", file: "/pianocafe.mp3", title: "Peaceful Morning Light", artist: "Zen Meditation Piano", duration: "3:05", category: "Calm" },
+  { id: "joyful_ukulele", file: "/playhouse.mp3", title: "Joyful Ukulele Whistle", artist: "Sunshine Acoustic", duration: "2:25", category: "Energetic" },
+  { id: "none", file: "none", title: "No Music (Silent Experience)", artist: "Muted Experience", duration: "—", category: "Calm" },
 ];
 
 // AI Tone Presets
@@ -136,6 +146,7 @@ export default function Home() {
   const [vibe, setVibe] = useState<string>("elegant");
   const [message, setMessage] = useState<string>(AI_TONE_PRESETS[0].text);
   const [finaleText, setFinaleText] = useState<string>("HAPPY BIRTHDAY! 🎂");
+  const [signOff, setSignOff] = useState<string>("With all my warmest love • BirthdayVerse");
   
   // Media & Music States
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -154,9 +165,25 @@ export default function Home() {
   const [shortId, setShortId] = useState<string>("");
   const [copied, setCopied] = useState<boolean>(false);
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Generate offline QR code Data URL whenever link changes or modal opens
+  useEffect(() => {
+    const linkToEncode = generatedLink || `${window.location.origin}/surprise/${shortId || 'demo'}`;
+    QRCode.toDataURL(linkToEncode, {
+      width: 240,
+      margin: 2,
+      color: {
+        dark: "#1D162A",
+        light: "#FFFFFF",
+      },
+    })
+      .then((url) => setQrDataUrl(url))
+      .catch((err) => console.error("QR Code generation error:", err));
+  }, [generatedLink, shortId, showQrModal]);
 
   // Handle soundtrack toggle
   const toggleMusicPreview = (src: string) => {
@@ -176,7 +203,8 @@ export default function Home() {
       if (audioRef.current) {
         audioRef.current.pause();
       }
-      let realSrc = src;
+      const trackObj = SOUNDTRACKS.find((s) => s.id === src);
+      let realSrc = trackObj?.file || src;
       if (src.includes("Coldplay")) realSrc = "/funky groovin.mp3";
       audioRef.current = new Audio(realSrc);
       audioRef.current.play().catch(() => {});
@@ -185,7 +213,50 @@ export default function Home() {
     }
   };
 
-  // Image Upload handler
+  // Combined active photos array
+  const allPhotos = [profilePhoto, ...extraPhotos].filter(Boolean) as string[];
+
+  // Multi-photo upload handler
+  const handleMultiplePhotosUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const remainingSlots = 6 - allPhotos.length;
+    if (remainingSlots <= 0) return;
+
+    const filesToLoad = Array.from(files).slice(0, remainingSlots);
+    filesToLoad.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        if (result) {
+          if (!profilePhoto) {
+            setProfilePhoto(result);
+          } else {
+            setExtraPhotos((prev) => [...prev, result]);
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = "";
+  };
+
+  // Remove photo at given index
+  const removePhoto = (index: number) => {
+    if (index === 0) {
+      if (extraPhotos.length > 0) {
+        setProfilePhoto(extraPhotos[0]);
+        setExtraPhotos((prev) => prev.slice(1));
+      } else {
+        setProfilePhoto(null);
+      }
+    } else {
+      setExtraPhotos((prev) => prev.filter((_, i) => i !== index - 1));
+    }
+  };
+
+  // Image Upload handler for single photo
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>, isPrimary: boolean = true) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -224,6 +295,8 @@ export default function Home() {
       const payload = {
         body: message,
         finaleText: finaleText,
+        signOff: signOff,
+        accentColor: accentColor,
         selectedMusic: selectedMusic,
         vibe: vibe,
         theme: selectedTemplate,
@@ -233,7 +306,7 @@ export default function Home() {
         experienceType: experienceType,
         retentionMode: retentionMode,
         keepForever: retentionMode === "forever",
-        photos: extraPhotos,
+        photos: allPhotos,
       };
 
       const finalMessageString = JSON.stringify(payload);
@@ -241,7 +314,7 @@ export default function Home() {
       const id = await saveSurpriseData({
         name,
         message: finalMessageString,
-        imageBase64: profilePhoto || null,
+        imageBase64: profilePhoto || (extraPhotos[0] || null),
         musicFile: musicFile,
       });
 
@@ -332,8 +405,8 @@ export default function Home() {
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* Studio Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EDE7F6] dark:border-[#251B35]">
-                <div className="text-left">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#EDE7F6] dark:border-[#251B35]">
+                <div className="text-left space-y-1">
                   <span className="text-xs font-bold text-[#7952D6] dark:text-[#9D6BFF] uppercase tracking-wider">
                     Creator Studio
                   </span>
@@ -342,8 +415,35 @@ export default function Home() {
                   </h1>
                 </div>
 
+                {/* MIDDLE OF CREATION DASHBOARD: Professional Animated "Made by Gous Khan" Badge */}
+                <div className="flex items-center justify-center my-1 md:my-0">
+                  <div className="relative p-[1.5px] rounded-full bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] shadow-[0_0_22px_rgba(157,107,255,0.45)] hover:shadow-[0_0_30px_rgba(244,127,181,0.6)] transition-all duration-500 group select-none">
+                    <div className="relative flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#171122]/90 backdrop-blur-xl overflow-hidden">
+                      {/* Ambient Shimmer Sweep Animation */}
+                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_3s_infinite]" />
+                      
+                      {/* Radar Pulse Dot */}
+                      <span className="flex h-2.5 w-2.5 relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F47FB5] opacity-80"></span>
+                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-gradient-to-r from-[#F47FB5] to-[#9D6BFF]"></span>
+                      </span>
+
+                      {/* Text & Designer Name */}
+                      <div className="flex items-center gap-1.5 text-xs font-semibold tracking-wide">
+                        <span className="text-[#D3CCE3] font-medium">Crafted with ❤️ by</span>
+                        <span className="font-black text-sm bg-gradient-to-r from-[#9D6BFF] via-[#F47FB5] to-[#E7B85C] bg-clip-text text-transparent drop-shadow-xs tracking-wider uppercase">
+                          Gous Khan
+                        </span>
+                      </div>
+
+                      {/* Rotating Sparkle */}
+                      <Sparkles className="w-4 h-4 text-[#E7B85C] animate-spin drop-shadow-[0_0_8px_rgba(231,184,92,0.8)]" style={{ animationDuration: "5s" }} />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Mobile Editor/Preview Toggle */}
-                <div className="flex lg:hidden items-center bg-[#EDE7F6] dark:bg-[#1D162A] p-1 rounded-2xl border border-[#EDE7F6] dark:border-[#251B35] self-start">
+                <div className="flex lg:hidden items-center bg-[#EDE7F6] dark:bg-[#1D162A] p-1 rounded-2xl border border-[#EDE7F6] dark:border-[#251B35] self-start md:self-auto">
                   <button
                     onClick={() => setMobileTab("editor")}
                     className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
@@ -471,10 +571,32 @@ export default function Home() {
                             return (
                               <div
                                 key={tmpl.id}
-                                onClick={() => setSelectedTemplate(tmpl.id)}
+                                onClick={() => {
+                                  setSelectedTemplate(tmpl.id);
+                                  // Sync vibe and accent color with the selected template
+                                  if (tmpl.id === "romantic") {
+                                    setVibe("romantic");
+                                    setAccentColor("#F47FB5");
+                                  } else if (tmpl.id === "fun") {
+                                    setVibe("fun");
+                                    setAccentColor("#EA580C");
+                                  } else if (tmpl.id === "dreamy") {
+                                    setVibe("dreamy");
+                                    setAccentColor("#9D6BFF");
+                                  } else if (tmpl.id === "party" || tmpl.id === "midnight") {
+                                    setVibe("party");
+                                    setAccentColor("#F47FB5");
+                                  } else if (tmpl.id === "cute" || tmpl.id === "pastel") {
+                                    setVibe("cute");
+                                    setAccentColor("#DB2777");
+                                  } else {
+                                    setVibe("elegant");
+                                    setAccentColor("#7952D6");
+                                  }
+                                }}
                                 className={`rounded-2xl border overflow-hidden transition-all cursor-pointer text-left ${
                                   isSelected
-                                    ? "border-[#9D6BFF] ring-2 ring-[#9D6BFF]/30 shadow-md"
+                                    ? "border-[#9D6BFF] ring-2 ring-[#9D6BFF]/40 shadow-lg shadow-purple-500/20"
                                     : "border-[#EDE7F6] dark:border-[#251B35] hover:border-[#9D6BFF]/40"
                                 }`}
                               >
@@ -621,14 +743,32 @@ export default function Home() {
                           onChange={(e) => setMessage(e.target.value)}
                           maxCharacters={1000}
                           rows={6}
+                          helperText="Main heartfelt letter shown inside the luxury parchment card in Scene 3."
                         />
+
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                              Letter Sign-off & Closing Signature
+                            </label>
+                            <span className="text-[10px] text-[#7952D6] dark:text-[#9D6BFF] font-semibold bg-[#EDE7F6] dark:bg-[#251B35] px-2 py-0.5 rounded-full">
+                              Card Footer
+                            </span>
+                          </div>
+                          <Input
+                            value={signOff}
+                            onChange={(e) => setSignOff(e.target.value)}
+                            placeholder="With all my warmest love • BirthdayVerse"
+                            helperText="Appears at the bottom-right corner of the letter card (e.g. 'With all my warmest love', 'Forever yours, Alex ❤️', or any custom text)."
+                          />
+                        </div>
 
                         <Input
                           label="Grand Finale Heading"
                           value={finaleText}
                           onChange={(e) => setFinaleText(e.target.value)}
                           placeholder="HAPPY BIRTHDAY! 🎂"
-                          helperText="Displayed at the climax of the celebration"
+                          helperText="Big headline displayed at the climax of the celebration during the fireworks."
                         />
                       </div>
                     )}
@@ -636,58 +776,93 @@ export default function Home() {
                     {/* STEP 5: PHOTOS & MEMORIES */}
                     {currentStep === 5 && (
                       <div className="space-y-5">
-                        <div>
-                          <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
-                            Photos & Visual Memories
-                          </h2>
-                          <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
-                            Add a profile picture or cherish memories in the photo frame.
-                          </p>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h2 className="text-xl font-display font-bold text-[#241B35] dark:text-[#F7F3FC]">
+                              Photos & Visual Memories
+                            </h2>
+                            <p className="text-xs text-[#746B80] dark:text-[#B8AEC5] mt-1">
+                              Upload multiple cherished memories. Recipient can swipe through them!
+                            </p>
+                          </div>
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF]">
+                            {allPhotos.length} / 6 photos
+                          </span>
                         </div>
 
-                        {/* Primary Photo Uploader */}
-                        <div className="p-6 rounded-3xl border-2 border-dashed border-[#EDE7F6] dark:border-[#251B35] text-center space-y-3">
-                          {profilePhoto ? (
-                            <div className="space-y-3">
-                              <img
-                                src={profilePhoto}
-                                alt="Memory preview"
-                                className="w-32 h-32 rounded-2xl object-cover mx-auto shadow-md border-2 border-[#9D6BFF]"
-                              />
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                onClick={() => setProfilePhoto(null)}
-                                leftIcon={<Trash2 className="w-3.5 h-3.5" />}
+                        {/* Uploaded Photos Grid */}
+                        {allPhotos.length > 0 && (
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {allPhotos.map((photo, index) => (
+                              <div
+                                key={index}
+                                className="group relative rounded-2xl overflow-hidden aspect-square border-2 border-[#EDE7F6] dark:border-[#251B35] bg-black/10 shadow-xs"
                               >
-                                Remove Photo
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="space-y-2">
-                              <div className="w-12 h-12 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] flex items-center justify-center mx-auto">
-                                <Upload className="w-6 h-6" />
-                              </div>
-                              <p className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC]">
-                                Upload Featured Photo
-                              </p>
-                              <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5]">
-                                PNG, JPG up to 5MB
-                              </p>
-                              <label className="inline-block cursor-pointer">
-                                <span className="px-4 py-2 rounded-xl bg-[#7952D6] text-white text-xs font-bold inline-block hover:brightness-105 transition-all">
-                                  Select Photo
-                                </span>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={(e) => handlePhotoUpload(e, true)}
+                                <img
+                                  src={photo}
+                                  alt={`Memory ${index + 1}`}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                 />
-                              </label>
+                                <div className="absolute top-2 left-2">
+                                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                    index === 0
+                                      ? "bg-[#7952D6] text-white shadow-xs"
+                                      : "bg-black/60 backdrop-blur-md text-white border border-white/20"
+                                  }`}>
+                                    {index === 0 ? "Cover Photo" : `Memory #${index + 1}`}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => removePhoto(index)}
+                                  className="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/90 text-white flex items-center justify-center hover:bg-red-600 transition-all opacity-90 sm:opacity-0 group-hover:opacity-100 shadow-md cursor-pointer"
+                                  title="Remove photo"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Photo Uploader Dropzone / Add Button */}
+                        {allPhotos.length < 6 && (
+                          <div className="p-6 rounded-3xl border-2 border-dashed border-[#EDE7F6] dark:border-[#251B35] text-center space-y-3 hover:border-[#9D6BFF]/50 transition-colors">
+                            <div className="w-12 h-12 rounded-2xl bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF] flex items-center justify-center mx-auto">
+                              <Upload className="w-6 h-6" />
                             </div>
-                          )}
-                        </div>
+                            <div>
+                              <p className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC]">
+                                {allPhotos.length === 0 ? "Upload Photos & Memories" : "Add More Photos"}
+                              </p>
+                              <p className="text-[11px] text-[#746B80] dark:text-[#B8AEC5] mt-0.5">
+                                Select one or multiple photos (PNG, JPG up to 5MB each)
+                              </p>
+                            </div>
+                            <label className="inline-block cursor-pointer">
+                              <span className="px-5 py-2.5 rounded-xl bg-[#7952D6] text-white text-xs font-bold inline-flex items-center gap-1.5 hover:brightness-105 transition-all shadow-md shadow-purple-500/20">
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>Select Photos</span>
+                              </span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={handleMultiplePhotosUpload}
+                              />
+                            </label>
+                          </div>
+                        )}
+
+                        {allPhotos.length > 1 && (
+                          <div className="p-3 rounded-2xl bg-[#EDE7F6]/60 dark:bg-[#251B35]/60 border border-[#EDE7F6] dark:border-[#251B35] text-xs text-[#7952D6] dark:text-[#9D6BFF] flex items-center gap-2">
+                            <span>✨</span>
+                            <span>
+                              <strong>Swipeable gallery enabled!</strong> Viewers will be able to swipe through all {allPhotos.length} photos in the celebration.
+                            </span>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -807,22 +982,90 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <div className="space-y-2 pt-2">
-                          <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
-                            Accent Color
-                          </label>
-                          <div className="flex items-center gap-3">
-                            {["#9D6BFF", "#F47FB5", "#E7B85C", "#9AD8C2", "#38BDF8"].map((c) => (
+                        <div className="space-y-3 pt-2">
+                          <div className="flex items-center justify-between">
+                            <label className="block text-xs font-semibold text-[#746B80] dark:text-[#B8AEC5]">
+                              Accent Color Palettes
+                            </label>
+                            <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-md bg-[#EDE7F6] dark:bg-[#251B35] text-[#7952D6] dark:text-[#9D6BFF]">
+                              {accentColor.toUpperCase()}
+                            </span>
+                          </div>
+
+                          {/* Curated Color Swatches */}
+                          <div className="grid grid-cols-6 sm:grid-cols-12 gap-2">
+                            {[
+                              { name: "Electric Violet", color: "#9D6BFF" },
+                              { name: "Rose Quartz", color: "#F47FB5" },
+                              { name: "Golden Amber", color: "#E7B85C" },
+                              { name: "Mint Spark", color: "#9AD8C2" },
+                              { name: "Sky Cyan", color: "#38BDF8" },
+                              { name: "Crimson Love", color: "#F43F5E" },
+                              { name: "Sunset Orange", color: "#FB923C" },
+                              { name: "Emerald Glow", color: "#10B981" },
+                              { name: "Neon Fuchsia", color: "#D946EF" },
+                              { name: "Royal Indigo", color: "#6366F1" },
+                              { name: "Coral Sunset", color: "#FF6B6B" },
+                              { name: "Sunshine Yellow", color: "#FBBF24" },
+                            ].map((c) => (
                               <button
-                                key={c}
+                                key={c.color}
                                 type="button"
-                                onClick={() => setAccentColor(c)}
-                                style={{ backgroundColor: c }}
-                                className={`w-9 h-9 rounded-full transition-transform cursor-pointer ${
-                                  accentColor === c ? "scale-110 ring-2 ring-offset-2 ring-[#7952D6]" : ""
+                                title={c.name}
+                                onClick={() => setAccentColor(c.color)}
+                                style={{ backgroundColor: c.color }}
+                                className={`w-8 h-8 rounded-full transition-transform cursor-pointer hover:scale-110 ${
+                                  accentColor.toLowerCase() === c.color.toLowerCase()
+                                    ? "scale-110 ring-2 ring-offset-2 ring-[#7952D6] dark:ring-white"
+                                    : "opacity-90 hover:opacity-100"
                                 }`}
                               />
                             ))}
+                          </div>
+
+                          {/* Custom Color Picker & Hex Input */}
+                          <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#EDE7F6]/50 dark:bg-[#1D162A] border border-[#EDE7F6] dark:border-[#251B35]">
+                            <label
+                              className="relative flex items-center justify-center w-9 h-9 rounded-full cursor-pointer hover:scale-105 transition-transform shadow-xs border-2 border-dashed border-[#9D6BFF]"
+                              title="Click to open color picker"
+                            >
+                              <input
+                                type="color"
+                                value={accentColor.startsWith("#") && accentColor.length === 7 ? accentColor : "#9D6BFF"}
+                                onChange={(e) => setAccentColor(e.target.value)}
+                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                              />
+                              <div
+                                className="w-6 h-6 rounded-full shadow-xs"
+                                style={{ backgroundColor: accentColor }}
+                              />
+                            </label>
+
+                            <div className="flex-1 min-w-0">
+                              <span className="text-xs font-semibold text-[#241B35] dark:text-[#F7F3FC] block">
+                                Custom Color
+                              </span>
+                              <p className="text-[10px] text-[#746B80] dark:text-[#B8AEC5] truncate">
+                                Click the circle to choose any color
+                              </p>
+                            </div>
+
+                            <div className="flex items-center gap-1 bg-white dark:bg-[#251B35] px-2.5 py-1.5 rounded-xl border border-[#EDE7F6] dark:border-[#2A203C]">
+                              <span className="text-xs font-mono font-bold text-[#7952D6] dark:text-[#9D6BFF]">#</span>
+                              <input
+                                type="text"
+                                value={accentColor.replace("#", "")}
+                                onChange={(e) => {
+                                  const val = e.target.value.replace(/[^0-9A-Fa-f]/g, "");
+                                  if (val.length <= 6) {
+                                    setAccentColor(`#${val}`);
+                                  }
+                                }}
+                                placeholder="9D6BFF"
+                                className="w-16 text-xs font-mono font-bold uppercase bg-transparent outline-none text-[#241B35] dark:text-[#F7F3FC]"
+                                maxLength={6}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -856,7 +1099,7 @@ export default function Home() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span>Photos:</span>
-                            <span>{profilePhoto ? "1 Photo Attached" : "Monogram Keepsake"}</span>
+                            <span>{allPhotos.length > 0 ? `${allPhotos.length} Photo${allPhotos.length > 1 ? "s" : ""} Attached (Swipeable Gallery)` : "Monogram Keepsake"}</span>
                           </div>
                         </div>
 
@@ -1016,6 +1259,8 @@ export default function Home() {
                       name={name}
                       message={message}
                       finaleText={finaleText}
+                      signOff={signOff}
+                      accentColor={accentColor}
                       vibe={vibe}
                       theme={selectedTemplate}
                       profilePhoto={profilePhoto}
@@ -1121,21 +1366,41 @@ export default function Home() {
         maxWidth="sm"
       >
         <div className="flex flex-col items-center py-4 space-y-4">
-          {generatedLink && (
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(generatedLink)}`}
-              alt="QR Code"
-              className="w-44 h-44 rounded-2xl border p-2 bg-white"
-            />
+          {qrDataUrl ? (
+            <div className="p-3 bg-white rounded-3xl shadow-xl border-2 border-purple-200">
+              <img
+                src={qrDataUrl}
+                alt="Celebration QR Code"
+                className="w-48 h-48 rounded-xl object-contain"
+              />
+            </div>
+          ) : (
+            <div className="w-48 h-48 rounded-3xl border-2 border-dashed border-[#9D6BFF] flex flex-col items-center justify-center p-4 text-center">
+              <QrCode className="w-8 h-8 text-[#9D6BFF] animate-pulse" />
+              <span className="text-xs text-[#746B80] mt-2">Generating QR Code...</span>
+            </div>
           )}
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={copyLink}
-            leftIcon={<Copy className="w-3.5 h-3.5" />}
-          >
-            {copied ? "Link Copied!" : "Copy URL"}
-          </Button>
+          
+          <div className="flex items-center gap-2">
+            {qrDataUrl && (
+              <a
+                href={qrDataUrl}
+                download={`birthdayverse-qr-${(name || 'celebration').toLowerCase().replace(/\s+/g, '-')}.png`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-[#7952D6] text-white text-xs font-semibold hover:brightness-105 transition-all shadow-md shadow-purple-500/20 cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Save QR Image</span>
+              </a>
+            )}
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={copyLink}
+              leftIcon={<Copy className="w-3.5 h-3.5" />}
+            >
+              {copied ? "Link Copied!" : "Copy URL"}
+            </Button>
+          </div>
         </div>
       </Modal>
 
