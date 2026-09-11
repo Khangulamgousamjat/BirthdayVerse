@@ -247,61 +247,6 @@ BirthdayVerse/
 | `hash` | `string` | SHA-256 / PBKDF2 hash of active admin password |
 | `updated_at` | `string` | ISO timestamp of last password modification |
 
----
-
-## 🚀 Quickstart & Installation
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
-- [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/)
-- A [Firebase Project](https://console.firebase.google.com/) with **Firestore** enabled.
-
-### Environment Variables (`.env`)
-Create a `.env` file in the root directory:
-
-```env
-VITE_FIREBASE_API_KEY=your_api_key_here
-VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-```
-
-### Running Locally
-```bash
-# 1. Clone repository
-git clone https://github.com/Khangulamgousamjat/BirthdayVerse.git
-cd BirthdayVerse
-
-# 2. Install dependencies
-npm install
-
-# 3. Start local development server
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Building for Production
-```bash
-npm run build
-```
-The optimized bundle will be created inside the `dist/` directory.
-
----
-
-## 🌐 Deployment on Vercel
-
-BirthdayVerse is pre-configured for one-click deployment on **Vercel**:
-
-1. Push your repository to GitHub.
-2. Import the project in the [Vercel Dashboard](https://vercel.com/new).
-3. Set the **Framework Preset** to `Vite`.
-4. In **Environment Variables**, add the `VITE_FIREBASE_*` variables from your `.env`.
-5. Click **Deploy**.
-
-The bundled [`vercel.json`](./vercel.json) automatically handles SPA route fallbacks to `index.html` while preserving serverless API handlers.
 
 ---
 
@@ -316,7 +261,7 @@ The bundled [`vercel.json`](./vercel.json) automatically handles SPA route fallb
 
 ## 👨‍💻 Author & Credits
 
-Designed, architected, and built with ❤️ by:
+Designed, architected, and built:
 
 ### **GOUS KHAN**
 *Founder & Creator of BirthdayVerse*
