@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Gift, Eye, Copy, ExternalLink, Trash2, Calendar, Sparkles, Check } from "lucide-react";
+import { Plus, Gift, Eye, Copy, ExternalLink, Trash2, Calendar, Sparkles, Check, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { getSurpriseData } from "@/lib/db";
 
 export interface WishCardData {
   id: string;
@@ -19,46 +20,73 @@ interface MyWishesViewProps {
   onEditWish?: (wish: WishCardData) => void;
 }
 
-const DEFAULT_SAMPLE_WISHES: WishCardData[] = [
-  {
-    id: "aanya-sample",
-    name: "Aanya",
-    relationship: "Best Friend",
-    date: "Sep 20",
-    status: "Published",
-    url: "/surprise/aanya-sample",
-    views: 14,
-    reactions: 9,
-  },
-  {
-    id: "rahul-draft",
-    name: "Rahul",
-    relationship: "Brother",
-    date: "Oct 05",
-    status: "Draft",
-    views: 0,
-    reactions: 0,
-  }
-];
-
 export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
   const [wishes, setWishes] = useState<WishCardData[]>(() => {
     const saved = localStorage.getItem("birthdayverse_my_wishes");
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // Filter out any old demo/sample entries that don't have real IDs
+        return parsed.filter((w: WishCardData) =>
+          w.id && w.id !== "aanya-sample" && w.id !== "rahul-draft"
+        );
       } catch (e) {
-        return DEFAULT_SAMPLE_WISHES;
+        return [];
       }
     }
-    return DEFAULT_SAMPLE_WISHES;
+    return [];
   });
 
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("birthdayverse_my_wishes", JSON.stringify(wishes));
   }, [wishes]);
+
+  // Sync live stats (views + reactions) from Firestore for all published wishes
+  const syncLiveStats = async () => {
+    const publishedWishes = wishes.filter((w) => w.status === "Published" && w.id);
+    if (publishedWishes.length === 0) return;
+    setIsSyncing(true);
+    try {
+      const updates = await Promise.all(
+        publishedWishes.map(async (w) => {
+          try {
+            const data = await getSurpriseData(w.id);
+            if (data) {
+              return { id: w.id, views: data.view_count ?? w.views, reactions: data.reactions ?? w.reactions };
+            }
+            // If null returned, link may be expired
+            return { id: w.id, views: w.views, reactions: w.reactions, expired: true };
+          } catch {
+            return null;
+          }
+        })
+      );
+      setWishes((prev) =>
+        prev.map((w) => {
+          const upd = updates.find((u) => u?.id === w.id);
+          if (!upd) return w;
+          return {
+            ...w,
+            views: upd.views ?? w.views,
+            reactions: upd.reactions ?? w.reactions,
+          };
+        })
+      );
+    } catch {
+      // silently ignore
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Auto-sync on mount
+  useEffect(() => {
+    syncLiveStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDelete = (id: string) => {
     setWishes((prev) => prev.filter((w) => w.id !== id));
@@ -88,14 +116,24 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="md"
-          onClick={onCreateNew}
-          leftIcon={<Plus className="w-4 h-4" />}
-        >
-          Create New Verse
-        </Button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={syncLiveStats}
+            disabled={isSyncing}
+            title="Refresh views & reactions"
+            className="p-2 rounded-xl bg-white dark:bg-[#1E182A] border border-[#E8DFFA] dark:border-[#282038] text-[#7659E4] dark:text-[#A28DF8] hover:bg-[#F1EBFD] dark:hover:bg-[#261F36] transition-all cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />
+          </button>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={onCreateNew}
+            leftIcon={<Plus className="w-4 h-4" />}
+          >
+            Create New Verse
+          </Button>
+        </div>
       </div>
 
       {/* Wishes List or Empty State */}

@@ -40,14 +40,9 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
   const displayMessage = message?.trim() || "May your day be as special and beautiful as you are! ✨";
   const displaySignOff = signOff?.trim() || "With all my warmest love • BirthdayVerse";
 
-  // User uploaded photos or curated samples
+  // Only use user-uploaded photos — no demo samples
   const userPhotos = [profilePhoto, ...photos].filter(Boolean) as string[];
-  const samplePhotos = [
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
-  ];
-  const activePhotos = userPhotos.length > 0 ? userPhotos : samplePhotos;
+  const activePhotos = userPhotos; // empty means show placeholder
 
   // Format song title from filename or path
   const songTitle = selectedMusic === "custom" 
@@ -185,74 +180,69 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
           </div>
         </div>
 
-        {/* Interactive Polaroid Photos Collage */}
+        {/* Photo Card Stack Preview */}
         <div className="relative w-full max-w-[270px] my-2 flex flex-col items-center">
-          <div className="relative w-full h-36 flex items-center justify-center">
-            {/* Photo 1: Left tilted */}
-            <div 
-              onClick={() => setPreviewPhotoIndex((prev) => (prev - 1 + activePhotos.length) % activePhotos.length)}
-              className="polaroid-card absolute -left-1 bottom-1 w-24 transform -rotate-8 z-10 cursor-pointer hover:scale-105 transition-transform"
-              style={{ willChange: "transform" }}
-              title="Previous photo"
-            >
-              <div className="w-full h-20 bg-gray-200 overflow-hidden rounded-[3px]">
-                <img 
-                  src={activePhotos[(previewPhotoIndex - 1 + activePhotos.length) % activePhotos.length]} 
-                  alt="Memory" 
-                  className="w-full h-full object-cover" 
-                />
-              </div>
-            </div>
-
-            {/* Photo 2: Center elevated (Active Photo) */}
-            <div 
-              className="polaroid-card absolute left-14 top-0 w-28 transform rotate-3 z-20 shadow-md transition-all"
-              style={{ willChange: "transform" }}
-            >
-              <div className="w-full h-24 bg-gray-200 overflow-hidden rounded-[3px] relative group">
-                <img 
-                  src={activePhotos[previewPhotoIndex % activePhotos.length]} 
-                  alt="Active memory" 
-                  className="w-full h-full object-cover" 
-                />
-                {activePhotos.length > 1 && (
-                  <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/60 text-[9px] font-bold text-white">
-                    {(previewPhotoIndex % activePhotos.length) + 1}/{activePhotos.length}
+          {activePhotos.length > 0 ? (
+            <div className="relative h-36 w-full flex items-center justify-center">
+              {/* Card stack — up to 3 cards deep */}
+              {[2, 1, 0].map((depthIdx) => {
+                const photoIdx = previewPhotoIndex % activePhotos.length;
+                const idx = (photoIdx + depthIdx) % activePhotos.length;
+                if (depthIdx > 0 && activePhotos.length === 1) return null;
+                return (
+                  <div
+                    key={depthIdx}
+                    className="polaroid-card absolute"
+                    style={{
+                      zIndex: 10 + (2 - depthIdx),
+                      transform: depthIdx === 0
+                        ? "rotate(2deg) translateY(0px) scale(1)"
+                        : depthIdx === 1
+                        ? "rotate(-4deg) translateY(8px) scale(0.95)"
+                        : "rotate(6deg) translateY(16px) scale(0.90)",
+                      opacity: depthIdx === 0 ? 1 : depthIdx === 1 ? 0.8 : 0.6,
+                      width: 112,
+                      top: 0,
+                      left: "50%",
+                      marginLeft: -56,
+                    }}
+                    onClick={depthIdx === 0 ? () => setPreviewPhotoIndex((prev) => (prev + 1) % activePhotos.length) : undefined}
+                  >
+                    <div className="w-full h-24 bg-gray-200 overflow-hidden rounded-[3px] relative">
+                      <img
+                        src={activePhotos[idx]}
+                        alt="Memory"
+                        className="w-full h-full object-cover"
+                      />
+                      {depthIdx === 0 && activePhotos.length > 1 && (
+                        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-black/60 text-[9px] font-bold text-white">
+                          {(previewPhotoIndex % activePhotos.length) + 1}/{activePhotos.length}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
+                );
+              })}
+            </div>
+          ) : (
+            /* No photos — show placeholder */
+            <div className="relative h-32 w-full flex items-center justify-center">
+              <div
+                className="polaroid-card"
+                style={{ width: 112, transform: "rotate(2deg)" }}
+              >
+                <div className="w-full h-24 bg-gradient-to-br from-[#EFEAFB] to-[#E8DFFA] overflow-hidden rounded-[3px] flex flex-col items-center justify-center gap-1">
+                  <span className="text-2xl">🖼️</span>
+                  <span className="text-[9px] font-semibold text-[#7659E4] text-center leading-tight px-2">Add photos<br/>to preview</span>
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Photo 3: Right tilted */}
-            <div 
-              onClick={() => setPreviewPhotoIndex((prev) => (prev + 1) % activePhotos.length)}
-              className="polaroid-card absolute -right-1 bottom-1 w-24 transform rotate-6 z-10 cursor-pointer hover:scale-105 transition-transform"
-              style={{ willChange: "transform" }}
-              title="Next photo"
-            >
-              <div className="w-full h-20 bg-[#FAF0F5] overflow-hidden rounded-[3px] flex flex-col items-center justify-center p-1 text-center border border-purple-100">
-                {activePhotos.length > 2 ? (
-                  <img 
-                    src={activePhotos[(previewPhotoIndex + 1) % activePhotos.length]} 
-                    alt="Memory" 
-                    className="w-full h-full object-cover" 
-                  />
-                ) : (
-                  <>
-                    <span className="font-serif italic text-xs font-bold text-[#7659E4] leading-tight">
-                      Good<br/>Vibes<br/>Always
-                    </span>
-                    <span className="text-[9px] mt-0.5">💜</span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Swipe / Click Hint Pill */}
+          {/* Click / Swipe Hint Pill */}
           {activePhotos.length > 1 && (
-            <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-[#7659E4] dark:text-[#C495C8] bg-white/70 dark:bg-black/40 px-2.5 py-0.5 rounded-full border border-[#E8DFFA]/50 shadow-2xs">
-              <span>👈 Click or swipe photos 👉</span>
+            <div className="mt-2 flex items-center gap-1 text-[10px] font-semibold text-[#7659E4] dark:text-[#C495C8] bg-white/70 dark:bg-black/40 px-2.5 py-0.5 rounded-full border border-[#E8DFFA]/50 shadow-2xs">
+              <span>👆 Tap to flip cards</span>
             </div>
           )}
         </div>

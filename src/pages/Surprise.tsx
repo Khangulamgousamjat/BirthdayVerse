@@ -12,11 +12,8 @@ import {
   Check, 
   RotateCcw, 
   Gift, 
-  Flame, 
   ArrowRight,
   ExternalLink,
-  ChevronLeft,
-  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
@@ -71,22 +68,31 @@ export default function Surprise() {
   if (!data) {
     return (
       <div className="min-h-screen bg-[#13101C] flex flex-col items-center justify-center text-white px-4 text-center">
-        <div className="p-8 rounded-3xl bg-[#1E182A]/80 border border-[#282038] max-w-md space-y-4">
-          <Gift className="w-10 h-10 text-[#7659E4] mx-auto opacity-70" />
+        <div className="p-8 rounded-3xl bg-[#1E182A]/80 border border-[#282038] max-w-md space-y-5 shadow-2xl">
+          <Gift className="w-12 h-12 text-[#7659E4] mx-auto opacity-70" />
           <h1 className="text-xl font-display font-bold text-white">
             This celebration link has expired or doesn&apos;t exist.
           </h1>
           <p className="text-xs text-[#A89EC0] leading-relaxed">
-            BirthdayVerse experiences are protected by private 72-hour ephemeral retention.
+            BirthdayVerse links automatically self-destruct after <span className="text-[#E0A842] font-bold">72 hours</span> to protect privacy.
+            The creator can choose &quot;Keep Forever&quot; when publishing to prevent this.
           </p>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => navigate("/")}
-            className="w-full mt-2"
-          >
-            Create a New Birthday Verse
-          </Button>
+          <div className="flex flex-col gap-3 pt-2">
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => navigate("/")}
+              className="w-full"
+            >
+              Create a New Birthday Verse
+            </Button>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-xs text-[#A89EC0] hover:text-white transition-colors cursor-pointer underline underline-offset-2"
+            >
+              Try reloading the page
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -108,9 +114,8 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   const [loveToast, setLoveToast] = useState<boolean>(false);
   const [floatingHearts, setFloatingHearts] = useState<{ id: number; left: number; size: number }[]>([]);
 
-  // Multi-photo gallery states
-  const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  // Card-stack swipe state
+  const [activeCardIndex, setActiveCardIndex] = useState<number>(0);
 
   // Cake Scene states
   const [candlesBlown, setCandlesBlown] = useState<boolean>(false);
@@ -544,20 +549,49 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                   Some people make ordinary days extraordinary.
                 </h2>
                 <p className="text-xs sm:text-sm text-[#A89EC0]">
-                  Tap the heart to send your reaction back to the creator
+                  {hasSentLove
+                    ? "Love sent! Tap again to send more 💕"
+                    : "Tap the heart to send your love to the creator"}
                 </p>
               </div>
 
               {/* Beating Jewel Heart */}
-              <button
-                onClick={handleSendLove}
-                className="w-28 h-28 rounded-full bg-gradient-to-tr from-[#A83868] via-[#C495C8] to-[#A28DF8] p-1 shadow-[0_0_40px_rgba(196,149,200,0.3)] flex items-center justify-center mx-auto hover:scale-110 active:scale-95 transition-all cursor-pointer group"
-                aria-label="Send love"
-              >
-                <div className="w-full h-full rounded-full bg-[#1E182A] flex items-center justify-center">
-                  <Heart className="w-12 h-12 text-[#C495C8] group-hover:scale-110 transition-transform fill-[#C495C8]" />
-                </div>
-              </button>
+              <div className="flex flex-col items-center gap-3">
+                <button
+                  onClick={handleSendLove}
+                  className={`w-32 h-32 rounded-full p-1 flex items-center justify-center mx-auto transition-all cursor-pointer group active:scale-90 ${
+                    hasSentLove
+                      ? "bg-gradient-to-tr from-[#A83868] via-[#C495C8] to-[#A28DF8] shadow-[0_0_60px_rgba(196,149,200,0.6)] scale-105 animate-pulse"
+                      : "bg-gradient-to-tr from-[#A83868] via-[#C495C8] to-[#A28DF8] shadow-[0_0_40px_rgba(196,149,200,0.3)] hover:scale-110"
+                  }`}
+                  aria-label="Send love"
+                >
+                  <div className="w-full h-full rounded-full bg-[#1E182A] flex flex-col items-center justify-center gap-1">
+                    <Heart
+                      className={`w-12 h-12 transition-transform ${
+                        hasSentLove
+                          ? "text-[#FF6B8A] fill-[#FF6B8A] scale-110"
+                          : "text-[#C495C8] fill-[#C495C8] group-hover:scale-110"
+                      }`}
+                    />
+                    {hasSentLove && loveCount > 0 && (
+                      <span className="text-[11px] font-bold text-[#FF6B8A]">
+                        {loveCount}x love! 💕
+                      </span>
+                    )}
+                  </div>
+                </button>
+
+                {hasSentLove && (
+                  <m.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="px-4 py-2 rounded-full bg-gradient-to-r from-[#7659E4]/30 to-[#C495C8]/30 border border-[#C495C8]/40 text-sm font-semibold text-white"
+                  >
+                    ❤️ Love sent to {data.name}!
+                  </m.div>
+                )}
+              </div>
 
               <div className="pt-4">
                 <Button
@@ -572,6 +606,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
             </m.div>
           )}
 
+
           {/* ── SCENE 5: Memory Reveal ── */}
           {scene === 5 && (
             <m.div
@@ -580,115 +615,125 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.8 }}
-              className="space-y-6 max-w-md px-4"
+              className="space-y-6 max-w-sm px-4 w-full"
             >
-              <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
-                Cherished Moments
-              </span>
+              <div className="text-center space-y-1">
+                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
+                  Cherished Moments
+                </span>
+                {photosList.length > 1 && (
+                  <p className="text-[11px] text-[#A89EC0]">
+                    Swipe the card ✨ {activeCardIndex + 1} / {photosList.length}
+                  </p>
+                )}
+              </div>
 
-              {/* Framed Photo or Monogram Card / Interactive Multi-Photo Gallery */}
-              <div className="p-3 sm:p-4 rounded-3xl bg-gradient-to-b from-[#E0A842]/15 to-[#7659E4]/10 border border-[#E0A842]/35 shadow-2xl relative">
-                {photosList.length > 0 ? (
-                  <div className="space-y-3">
-                    {/* Active Photo Container with touch swipe handlers */}
-                    <div
-                      className="relative rounded-2xl overflow-hidden aspect-square max-h-80 w-full bg-black select-none touch-pan-y"
-                      onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
-                      onTouchEnd={(e) => {
-                        if (touchStartX === null) return;
-                        const touchEndX = e.changedTouches[0].clientX;
-                        const diff = touchStartX - touchEndX;
-                        if (diff > 45 && photosList.length > 1) {
-                          // Swiped left -> next
-                          setActivePhotoIndex((prev) => (prev + 1) % photosList.length);
-                        } else if (diff < -45 && photosList.length > 1) {
-                          // Swiped right -> prev
-                          setActivePhotoIndex((prev) => (prev - 1 + photosList.length) % photosList.length);
-                        }
-                        setTouchStartX(null);
-                      }}
+              {photosList.length > 0 ? (
+                <div className="relative mx-auto" style={{ height: 340, width: "100%", maxWidth: 320 }}>
+                  {/* Render card stack — bottom cards first, top card last */}
+                  {photosList
+                    .slice(activeCardIndex)
+                    .map((photo, stackIdx) => {
+                      const reverseIdx = photosList.slice(activeCardIndex).length - 1 - stackIdx;
+                      const isTopCard = stackIdx === 0;
+                      const depth = Math.min(reverseIdx, 3);
+                      return isTopCard ? (
+                        <m.div
+                          key={`card-${activeCardIndex}`}
+                          drag="x"
+                          dragConstraints={{ left: 0, right: 0 }}
+                          dragElastic={0.4}
+                          onDragEnd={(_e, info) => {
+                            if (Math.abs(info.offset.x) > 90) {
+                              // Dismissed — go to next card
+                              setActiveCardIndex((prev) => Math.min(prev + 1, photosList.length - 1));
+                            }
+                          }}
+                          animate={{ scale: 1, rotate: 0, x: 0, opacity: 1 }}
+                          exit={{ x: 400, opacity: 0, rotate: 20 }}
+                          whileDrag={{ cursor: "grabbing" }}
+                          className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl cursor-grab select-none"
+                          style={{ zIndex: 20, touchAction: "none" }}
+                        >
+                          <img
+                            src={photo}
+                            alt={`${data.name} memory ${activeCardIndex + 1}`}
+                            className="w-full h-full object-cover"
+                            draggable={false}
+                          />
+                          {/* Gold frame overlay */}
+                          <div className="absolute inset-0 rounded-3xl border-2 border-[#E0A842]/40 pointer-events-none" />
+                          {/* Swipe hint overlay on first card */}
+                          {photosList.length > 1 && activeCardIndex === 0 && (
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white whitespace-nowrap">
+                              👈 Swipe to see more 👉
+                            </div>
+                          )}
+                          {/* Counter */}
+                          <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] font-bold text-white">
+                            {activeCardIndex + 1} / {photosList.length}
+                          </div>
+                        </m.div>
+                      ) : (
+                        /* Background stacked cards */
+                        <div
+                          key={`bg-card-${activeCardIndex + stackIdx}`}
+                          className="absolute inset-0 rounded-3xl overflow-hidden"
+                          style={{
+                            zIndex: 20 - depth,
+                            transform: `scale(${1 - depth * 0.04}) translateY(${depth * 12}px)`,
+                            opacity: 1 - depth * 0.15,
+                            filter: `brightness(${1 - depth * 0.15})`,
+                          }}
+                        >
+                          <img
+                            src={photo}
+                            alt="memory"
+                            className="w-full h-full object-cover"
+                            draggable={false}
+                          />
+                          <div className="absolute inset-0 rounded-3xl border-2 border-[#E0A842]/30 pointer-events-none" />
+                        </div>
+                      );
+                    })}
+
+                  {/* All swiped — show done state */}
+                  {activeCardIndex >= photosList.length && (
+                    <m.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="absolute inset-0 rounded-3xl bg-[#1E182A] border border-[#E0A842]/30 flex flex-col items-center justify-center gap-3 p-6 text-center"
                     >
-                      <img
-                        key={activePhotoIndex}
-                        src={photosList[activePhotoIndex]}
-                        alt={`${data.name} memory ${activePhotoIndex + 1}`}
-                        className="w-full h-full object-cover transition-all duration-300 animate-in fade-in zoom-in-95"
-                      />
-
-                      {/* Navigation Arrows for multi-photo */}
-                      {photosList.length > 1 && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActivePhotoIndex((prev) => (prev - 1 + photosList.length) % photosList.length);
-                            }}
-                            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
-                            aria-label="Previous photo"
-                          >
-                            <ChevronLeft className="w-4 h-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setActivePhotoIndex((prev) => (prev + 1) % photosList.length);
-                            }}
-                            className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer shadow-lg active:scale-95"
-                            aria-label="Next photo"
-                          >
-                            <ChevronRight className="w-4 h-4" />
-                          </button>
-                        </>
-                      )}
-
-                      {/* Floating Counter Badge */}
-                      {photosList.length > 1 && (
-                        <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] font-bold text-white shadow-md">
-                          {activePhotoIndex + 1} / {photosList.length}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Multi-Photo Dots & Swipe Hint */}
-                    {photosList.length > 1 && (
-                      <div className="space-y-2 pt-1">
-                        <div className="flex items-center justify-center gap-1.5">
-                          {photosList.map((_, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => setActivePhotoIndex(idx)}
-                              className={`h-2 rounded-full transition-all cursor-pointer ${
-                                activePhotoIndex === idx
-                                  ? "w-6 bg-[#E0A842]"
-                                  : "w-2 bg-white/30 hover:bg-white/60"
-                              }`}
-                              aria-label={`Go to photo ${idx + 1}`}
-                            />
-                          ))}
-                        </div>
-                        <p className="text-[11px] font-semibold text-[#E0A842] flex items-center justify-center gap-1">
-                          <span>👈 Swipe for more pics 👉</span>
-                        </p>
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#E0A842] flex items-center justify-center text-2xl font-serif font-bold text-white shadow-lg">
+                        {data.name.charAt(0).toUpperCase()}
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="rounded-2xl aspect-square max-h-80 w-full bg-[#1E182A] flex flex-col items-center justify-center p-8 text-center space-y-3">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#E0A842] flex items-center justify-center text-3xl font-serif font-bold text-white shadow-lg">
+                      <p className="text-sm text-white font-semibold">All memories seen! 💛</p>
+                      <button
+                        onClick={() => setActiveCardIndex(0)}
+                        className="text-[11px] text-[#E0A842] underline underline-offset-2 cursor-pointer"
+                      >
+                        View again
+                      </button>
+                    </m.div>
+                  )}
+                </div>
+              ) : (
+                /* No photos — monogram card */
+                <div className="relative mx-auto rounded-3xl overflow-hidden shadow-2xl" style={{ height: 320, width: "100%", maxWidth: 320 }}>
+                  <div className="w-full h-full bg-gradient-to-br from-[#261F36] to-[#1E182A] flex flex-col items-center justify-center p-8 text-center space-y-4">
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#E0A842] flex items-center justify-center text-4xl font-serif font-bold text-white shadow-lg">
                       {data.name.charAt(0).toUpperCase()}
                     </div>
-                    <h3 className="text-lg font-serif italic text-white font-bold">
+                    <h3 className="text-xl font-serif italic text-white font-bold">
                       A celebration of {data.name}
                     </h3>
-                    <p className="text-xs text-[#A89EC0] max-w-xs">
+                    <p className="text-xs text-[#A89EC0] max-w-xs leading-relaxed">
                       May every day of this new year bring you happiness, joy, and peace.
                     </p>
                   </div>
-                )}
-              </div>
+                  <div className="absolute inset-0 rounded-3xl border-2 border-[#E0A842]/40 pointer-events-none" />
+                </div>
+              )}
 
               <Button
                 variant="gold"
