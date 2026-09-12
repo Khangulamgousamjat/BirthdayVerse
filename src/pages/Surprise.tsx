@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
+import { CasinoCardDeck } from "@/components/surprise/CasinoCardDeck";
 
 interface ExperienceData {
   name: string;
@@ -114,9 +115,6 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   const [loveToast, setLoveToast] = useState<boolean>(false);
   const [floatingHearts, setFloatingHearts] = useState<{ id: number; left: number; size: number }[]>([]);
 
-  // Card-stack swipe state
-  const [activeCardIndex, setActiveCardIndex] = useState<number>(0);
-
   // Cake Scene states
   const [candlesBlown, setCandlesBlown] = useState<boolean>(false);
 
@@ -128,6 +126,9 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   let imageBase64 = data.image_path || "";
   let nickname = "";
   let photosList: string[] = [];
+  let accentColor = "#7659E4"; // Default to signature BirthdayVerse Lavender
+  let vibe = "elegant";
+  let theme = "midnight";
 
   try {
     const parsed = JSON.parse(data.message);
@@ -140,6 +141,9 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       if (Array.isArray(parsed.photos) && parsed.photos.length > 0) {
         photosList = parsed.photos;
       }
+      if (parsed.accentColor) accentColor = parsed.accentColor;
+      if (parsed.vibe) vibe = parsed.vibe;
+      if (parsed.theme) theme = parsed.theme;
       if (parsed.selectedMusic && parsed.selectedMusic !== "custom") {
         customMusic = parsed.selectedMusic;
       } else if (parsed.musicBase64 && !customMusic) {
@@ -160,6 +164,13 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   if (data.music_path) {
     customMusic = data.music_path;
   }
+
+  // Helper for dynamic primary CTA button styling (Lavender default, custom accent if chosen)
+  const isDefaultLavender = !accentColor || accentColor.toLowerCase() === "#7659e4";
+  const dynamicPrimaryButtonStyle: React.CSSProperties | undefined = !isDefaultLavender ? {
+    background: `linear-gradient(135deg, ${accentColor} 0%, ${accentColor}e6 100%)`,
+    boxShadow: `0 10px 25px -5px ${accentColor}66`,
+  } : undefined;
 
   // Audio lifecycle
   useEffect(() => {
@@ -419,9 +430,15 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 <div className="absolute inset-2 rounded-2xl border border-[#E0A842]/15 pointer-events-none" />
 
                 {/* Wax Seal Emblem */}
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#E0A842] via-[#C8922C] to-[#8C5E14] p-0.5 shadow-lg shadow-amber-500/25 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <div className="w-full h-full rounded-full bg-[#1B1428] flex items-center justify-center border border-[#E0A842]/40">
-                    <Sparkles className="w-7 h-7 text-[#E0A842]" />
+                <div 
+                  className="w-16 h-16 rounded-full p-0.5 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform"
+                  style={{
+                    background: `linear-gradient(135deg, ${accentColor}, #8E72F0)`,
+                    boxShadow: `0 8px 24px ${accentColor}40`,
+                  }}
+                >
+                  <div className="w-full h-full rounded-full bg-[#1B1428] flex items-center justify-center border border-white/20">
+                    <Sparkles className="w-7 h-7" style={{ color: accentColor }} />
                   </div>
                 </div>
 
@@ -436,10 +453,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               </div>
 
               <Button
-                variant="gold"
+                variant={isDefaultLavender ? "primary" : undefined}
                 size="lg"
                 onClick={handleOpenGift}
-                className="w-full max-w-xs mx-auto shadow-lg"
+                className="w-full max-w-xs mx-auto text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                style={dynamicPrimaryButtonStyle}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
               >
                 Open Your Surprise ✨
@@ -607,7 +625,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           )}
 
 
-          {/* ── SCENE 5: Memory Reveal ── */}
+          {/* ── SCENE 5: Memory Reveal (Casino 52-Card Deck Style) ── */}
           {scene === 5 && (
             <m.div
               key="scene-5"
@@ -618,110 +636,31 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="space-y-6 max-w-sm px-4 w-full"
             >
               <div className="text-center space-y-1">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
+                <span 
+                  className="text-xs font-bold tracking-widest uppercase"
+                  style={{ color: accentColor }}
+                >
                   Cherished Moments
                 </span>
-                {photosList.length > 1 && (
-                  <p className="text-[11px] text-[#A89EC0]">
-                    Swipe the card ✨ {activeCardIndex + 1} / {photosList.length}
-                  </p>
-                )}
               </div>
 
               {photosList.length > 0 ? (
-                <div className="relative mx-auto" style={{ height: 340, width: "100%", maxWidth: 320 }}>
-                  {/* Render card stack — bottom cards first, top card last */}
-                  {photosList
-                    .slice(activeCardIndex)
-                    .map((photo, stackIdx) => {
-                      const reverseIdx = photosList.slice(activeCardIndex).length - 1 - stackIdx;
-                      const isTopCard = stackIdx === 0;
-                      const depth = Math.min(reverseIdx, 3);
-                      return isTopCard ? (
-                        <m.div
-                          key={`card-${activeCardIndex}`}
-                          drag="x"
-                          dragConstraints={{ left: 0, right: 0 }}
-                          dragElastic={0.4}
-                          onDragEnd={(_e, info) => {
-                            if (Math.abs(info.offset.x) > 90) {
-                              // Dismissed — go to next card
-                              setActiveCardIndex((prev) => Math.min(prev + 1, photosList.length - 1));
-                            }
-                          }}
-                          animate={{ scale: 1, rotate: 0, x: 0, opacity: 1 }}
-                          exit={{ x: 400, opacity: 0, rotate: 20 }}
-                          whileDrag={{ cursor: "grabbing" }}
-                          className="absolute inset-0 rounded-3xl overflow-hidden shadow-2xl cursor-grab select-none"
-                          style={{ zIndex: 20, touchAction: "none" }}
-                        >
-                          <img
-                            src={photo}
-                            alt={`${data.name} memory ${activeCardIndex + 1}`}
-                            className="w-full h-full object-cover"
-                            draggable={false}
-                          />
-                          {/* Gold frame overlay */}
-                          <div className="absolute inset-0 rounded-3xl border-2 border-[#E0A842]/40 pointer-events-none" />
-                          {/* Swipe hint overlay on first card */}
-                          {photosList.length > 1 && activeCardIndex === 0 && (
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white whitespace-nowrap">
-                              👈 Swipe to see more 👉
-                            </div>
-                          )}
-                          {/* Counter */}
-                          <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[10px] font-bold text-white">
-                            {activeCardIndex + 1} / {photosList.length}
-                          </div>
-                        </m.div>
-                      ) : (
-                        /* Background stacked cards */
-                        <div
-                          key={`bg-card-${activeCardIndex + stackIdx}`}
-                          className="absolute inset-0 rounded-3xl overflow-hidden"
-                          style={{
-                            zIndex: 20 - depth,
-                            transform: `scale(${1 - depth * 0.04}) translateY(${depth * 12}px)`,
-                            opacity: 1 - depth * 0.15,
-                            filter: `brightness(${1 - depth * 0.15})`,
-                          }}
-                        >
-                          <img
-                            src={photo}
-                            alt="memory"
-                            className="w-full h-full object-cover"
-                            draggable={false}
-                          />
-                          <div className="absolute inset-0 rounded-3xl border-2 border-[#E0A842]/30 pointer-events-none" />
-                        </div>
-                      );
-                    })}
-
-                  {/* All swiped — show done state */}
-                  {activeCardIndex >= photosList.length && (
-                    <m.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="absolute inset-0 rounded-3xl bg-[#1E182A] border border-[#E0A842]/30 flex flex-col items-center justify-center gap-3 p-6 text-center"
-                    >
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#E0A842] flex items-center justify-center text-2xl font-serif font-bold text-white shadow-lg">
-                        {data.name.charAt(0).toUpperCase()}
-                      </div>
-                      <p className="text-sm text-white font-semibold">All memories seen! 💛</p>
-                      <button
-                        onClick={() => setActiveCardIndex(0)}
-                        className="text-[11px] text-[#E0A842] underline underline-offset-2 cursor-pointer"
-                      >
-                        View again
-                      </button>
-                    </m.div>
-                  )}
-                </div>
+                <CasinoCardDeck
+                  photos={photosList}
+                  name={data.name}
+                  accentColor={accentColor}
+                />
               ) : (
                 /* No photos — monogram card */
                 <div className="relative mx-auto rounded-3xl overflow-hidden shadow-2xl" style={{ height: 320, width: "100%", maxWidth: 320 }}>
                   <div className="w-full h-full bg-gradient-to-br from-[#261F36] to-[#1E182A] flex flex-col items-center justify-center p-8 text-center space-y-4">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#E0A842] flex items-center justify-center text-4xl font-serif font-bold text-white shadow-lg">
+                    <div 
+                      className="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-serif font-bold text-white shadow-lg"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentColor}, #E0A842)`,
+                        boxShadow: `0 10px 25px ${accentColor}40`,
+                      }}
+                    >
                       {data.name.charAt(0).toUpperCase()}
                     </div>
                     <h3 className="text-xl font-serif italic text-white font-bold">
@@ -731,16 +670,17 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                       May every day of this new year bring you happiness, joy, and peace.
                     </p>
                   </div>
-                  <div className="absolute inset-0 rounded-3xl border-2 border-[#E0A842]/40 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-3xl border-2 border-white/20 pointer-events-none" />
                 </div>
               )}
 
               <Button
-                variant="gold"
+                variant={isDefaultLavender ? "primary" : undefined}
                 size="md"
                 onClick={() => setScene(6)}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="mx-auto"
+                className="mx-auto text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                style={dynamicPrimaryButtonStyle}
               >
                 Make a Birthday Wish 🎂
               </Button>
@@ -806,10 +746,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
 
               <div className="pt-2">
                 <Button
-                  variant="gold"
+                  variant={isDefaultLavender ? "primary" : undefined}
                   size="md"
                   onClick={handleBlowCandles}
-                  className="mx-auto"
+                  className="mx-auto text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                  style={dynamicPrimaryButtonStyle}
                 >
                   {candlesBlown ? "Wish Granted! ✨" : "Blow Out Candles 🎂"}
                 </Button>
