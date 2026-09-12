@@ -26,38 +26,6 @@
 
 > **For Creators:** A clean, intuitive, and professional 8-step studio with real-time live mobile previewing.  
 > **For Recipients:** A magical, full-screen cinematic journey featuring interactive unwrapping, dynamic typewriting, interactive multi-photo polaroids, blowable birthday candles, floating love hearts, and celebratory confetti cannons.
-
----
-
-## 📑 Table of Contents
-
-- [✨ Key Features & Capabilities](#-key-features--capabilities)
-  - [1. 8-Step Creator Studio](#1-8-step-creator-studio)
-  - [2. Live Interactive Phone Preview](#2-live-interactive-phone-preview)
-  - [3. 8-Scene Cinematic Recipient Experience](#3-8-scene-cinematic-recipient-experience)
-  - [4. Client-Side Image Optimizer](#4-client-side-image-optimizer)
-  - [5. Master Admin Control Center](#5-master-admin-control-center)
-  - [6. Ephemeral Privacy & Data Retention](#6-ephemeral-privacy--data-retention)
-- [🎨 Design System & Aesthetics](#-design-system--aesthetics)
-  - [Curated Color Palettes](#curated-color-palettes)
-  - [Typography Hierarchy](#typography-hierarchy)
-- [🛠️ Tech Stack & Architecture](#️-tech-stack--architecture)
-- [📂 Project Directory Structure](#-project-directory-structure)
-- [💾 Data Architecture & Schema](#-data-architecture--schema)
-  - [Firestore Document Schema (`surprises` collection)](#firestore-document-schema-surprises-collection)
-  - [Admin Authentication Schema (`_system_settings/admin_auth`)](#admin-authentication-schema-_system_settingsadmin_auth)
-- [🚀 Quickstart & Installation](#-quickstart--installation)
-  - [Prerequisites](#prerequisites)
-  - [Environment Variables (`.env`)](#environment-variables-env)
-  - [Running Locally](#running-locally)
-  - [Building for Production](#building-for-production)
-- [🌐 Deployment on Vercel](#-deployment-on-vercel)
-- [🛡️ Security & Performance](#️-security--performance)
-- [👨‍💻 Author & Credits](#-author--credits)
-- [📄 License](#-license)
-
----
-
 ## ✨ Key Features & Capabilities
 
 ### 1. 8-Step Creator Studio
