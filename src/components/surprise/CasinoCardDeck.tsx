@@ -141,20 +141,20 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
   return (
     <div className="w-full flex flex-col items-center select-none">
       
-      {/* Header Info & Casino Indicator */}
+      {/* Header Info */}
       <div className="text-center space-y-1 mb-4">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-bold text-white shadow-xs">
-          <Layers className="w-3.5 h-3.5" style={{ color: accentColor }} />
-          <span>Casino Card Deck</span>
-          {!isFinished && photos.length > 0 && (
+        {!isFinished && photos.length > 0 && (
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-bold text-white shadow-xs">
+            <Sparkles className="w-3.5 h-3.5" style={{ color: accentColor }} />
+            <span>Memories</span>
             <span className="ml-1 font-mono font-bold" style={{ color: accentColor }}>
-              {activeCardIndex + 1} / {photos.length}
+              {activeCardIndex + 1} of {photos.length}
             </span>
-          )}
-        </div>
+          </div>
+        )}
         {!isFinished && (
           <p className="text-[11px] text-[#A89EC0] font-medium">
-            Swipe card left or right to discard &bull; reveals next card
+            Swipe card left or right &bull; reveals next photo
           </p>
         )}
       </div>

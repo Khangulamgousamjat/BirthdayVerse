@@ -104,36 +104,33 @@ export default function Surprise() {
   return <CinematicExperience data={data} surpriseId={id || ""} />;
 }
 
-// ── Dynamic Thematic Atmosphere Particles ────────────────────────────────────
+// ── High-Performance Hardware-Accelerated Atmosphere Particles (Pure CSS GPU Compositing) ──
 
 function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) {
   if (type === "petals") {
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(14)].map((_, i) => (
-          <m.div
+        <style>{`
+          @keyframes bvPetalFall {
+            0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.3; }
+            50% { transform: translate3d(14px, 20px, 0) rotate(45deg); opacity: 0.6; }
+            100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.3; }
+          }
+        `}</style>
+        {[...Array(10)].map((_, i) => (
+          <div
             key={i}
             className="absolute rounded-full"
             style={{
               left: `${(i * 19 + 7) % 94}%`,
               top: `${(i * 23 + 11) % 90}%`,
-              width: `${10 + (i % 4) * 4}px`,
-              height: `${14 + (i % 4) * 5}px`,
+              width: `${10 + (i % 3) * 4}px`,
+              height: `${14 + (i % 3) * 5}px`,
               background: i % 2 === 0 ? "radial-gradient(ellipse at center, #FB7185 0%, #E11D48 100%)" : "radial-gradient(ellipse at center, #FDA4AF 0%, #F43F5E 100%)",
               borderRadius: "50% 0 50% 50%",
-              opacity: 0.25 + (i % 3) * 0.15,
-              filter: "blur(0.5px)",
-            }}
-            animate={{
-              y: [0, 25, 0],
-              x: [0, (i % 2 === 0 ? 15 : -15), 0],
-              rotate: [0, 45, 90, 0],
-            }}
-            transition={{
-              duration: 5 + (i % 4) * 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: (i * 0.4) % 3,
+              animation: `bvPetalFall ${4 + (i % 3) * 1.8}s infinite ease-in-out`,
+              animationDelay: `${(i * 0.4) % 2.5}s`,
+              willChange: "transform",
             }}
           />
         ))}
@@ -145,8 +142,14 @@ function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) 
     const colors = ["#F43F5E", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899"];
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(16)].map((_, i) => (
-          <m.div
+        <style>{`
+          @keyframes bvConfettiFloat {
+            0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+            50% { transform: translate3d(0, -18px, 0) rotate(180deg); }
+          }
+        `}</style>
+        {[...Array(12)].map((_, i) => (
+          <div
             key={i}
             className="absolute"
             style={{
@@ -156,18 +159,10 @@ function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) 
               height: `${7 + (i % 3) * 3}px`,
               backgroundColor: colors[i % colors.length],
               borderRadius: i % 3 === 0 ? "50%" : i % 3 === 1 ? "2px" : "1px",
-              opacity: 0.35 + (i % 3) * 0.15,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              rotate: [0, 180, 360],
-              scale: [0.9, 1.15, 0.9],
-            }}
-            transition={{
-              duration: 4 + (i % 3) * 1.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: (i * 0.3) % 2.5,
+              opacity: 0.45,
+              animation: `bvConfettiFloat ${3.5 + (i % 3) * 1.2}s infinite ease-in-out`,
+              animationDelay: `${(i * 0.3) % 2}s`,
+              willChange: "transform",
             }}
           />
         ))}
@@ -178,29 +173,19 @@ function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) 
   if (type === "cyber") {
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00F0FF08_1px,transparent_1px),linear-gradient(to_bottom,#00F0FF08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-40" />
-        {[...Array(14)].map((_, i) => (
-          <m.div
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00F0FF08_1px,transparent_1px),linear-gradient(to_bottom,#00F0FF08_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-35" />
+        {[...Array(10)].map((_, i) => (
+          <div
             key={i}
             className="absolute rounded-full"
             style={{
               left: `${(i * 21 + 9) % 92}%`,
               top: `${(i * 31 + 13) % 85}%`,
-              width: `${2 + (i % 3) * 2}px`,
-              height: `${2 + (i % 3) * 2}px`,
+              width: `${3 + (i % 2) * 2}px`,
+              height: `${3 + (i % 2) * 2}px`,
               backgroundColor: i % 2 === 0 ? "#00F0FF" : "#FF007F",
-              boxShadow: i % 2 === 0 ? "0 0 10px #00F0FF, 0 0 20px #00F0FF" : "0 0 10px #FF007F, 0 0 20px #FF007F",
+              boxShadow: i % 2 === 0 ? "0 0 8px #00F0FF" : "0 0 8px #FF007F",
               opacity: 0.6,
-            }}
-            animate={{
-              opacity: [0.3, 1, 0.3],
-              scale: [0.8, 1.4, 0.8],
-            }}
-            transition={{
-              duration: 2 + (i % 3),
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: (i * 0.25) % 2,
             }}
           />
         ))}
@@ -211,29 +196,26 @@ function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) 
   if (type === "emerald") {
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(14)].map((_, i) => (
-          <m.div
+        <style>{`
+          @keyframes bvEmeraldPulse {
+            0%, 100% { transform: scale(0.85) rotate(45deg); opacity: 0.35; }
+            50% { transform: scale(1.15) rotate(45deg); opacity: 0.8; }
+          }
+        `}</style>
+        {[...Array(10)].map((_, i) => (
+          <div
             key={i}
             className="absolute"
             style={{
               left: `${(i * 18 + 8) % 93}%`,
               top: `${(i * 29 + 12) % 87}%`,
-              width: `${4 + (i % 3) * 3}px`,
-              height: `${4 + (i % 3) * 3}px`,
+              width: `${5 + (i % 2) * 2}px`,
+              height: `${5 + (i % 2) * 2}px`,
               backgroundColor: i % 3 === 0 ? "#F59E0B" : "#10B981",
-              transform: "rotate(45deg)",
-              boxShadow: i % 3 === 0 ? "0 0 12px #F59E0B" : "0 0 12px #10B981",
-              opacity: 0.45 + (i % 3) * 0.2,
-            }}
-            animate={{
-              scale: [0.8, 1.3, 0.8],
-              opacity: [0.3, 0.85, 0.3],
-            }}
-            transition={{
-              duration: 3 + (i % 3) * 1.2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: (i * 0.35) % 3,
+              boxShadow: i % 3 === 0 ? "0 0 10px #F59E0B" : "0 0 10px #10B981",
+              animation: `bvEmeraldPulse ${2.8 + (i % 3) * 0.8}s infinite ease-in-out`,
+              animationDelay: `${(i * 0.3) % 2}s`,
+              willChange: "transform, opacity",
             }}
           />
         ))}
@@ -244,28 +226,18 @@ function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) 
   if (type === "disco") {
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(14)].map((_, i) => (
-          <m.div
+        {[...Array(10)].map((_, i) => (
+          <div
             key={i}
             className="absolute rounded-full"
             style={{
               left: `${(i * 23 + 11) % 94}%`,
               top: `${(i * 19 + 7) % 89}%`,
-              width: `${3 + (i % 4) * 2}px`,
-              height: `${3 + (i % 4) * 2}px`,
+              width: `${4 + (i % 3) * 2}px`,
+              height: `${4 + (i % 3) * 2}px`,
               backgroundColor: ["#E11D48", "#A855F7", "#3B82F6", "#F59E0B"][i % 4],
-              boxShadow: "0 0 15px currentColor",
+              boxShadow: "0 0 10px currentColor",
               opacity: 0.5,
-            }}
-            animate={{
-              scale: [0.6, 1.5, 0.6],
-              opacity: [0.2, 0.9, 0.2],
-            }}
-            transition={{
-              duration: 1.8 + (i % 3) * 0.8,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: (i * 0.2) % 2,
             }}
           />
         ))}
@@ -276,43 +248,24 @@ function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) 
   if (type === "bubbles") {
     return (
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(12)].map((_, i) => (
-          <m.div
-            key={i}
-            className="absolute rounded-full border border-pink-300/40 bg-pink-200/10 backdrop-blur-[1px]"
-            style={{
-              left: `${(i * 19 + 10) % 92}%`,
-              top: `${(i * 26 + 15) % 86}%`,
-              width: `${14 + (i % 4) * 8}px`,
-              height: `${14 + (i % 4) * 8}px`,
-              boxShadow: "inset -2px -2px 6px rgba(244,114,182,0.3), 0 0 10px rgba(244,114,182,0.15)",
-            }}
-            animate={{
-              y: [0, -25, 0],
-              x: [0, (i % 2 === 0 ? 10 : -10), 0],
-            }}
-            transition={{
-              duration: 5 + (i % 3) * 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: (i * 0.4) % 3,
-            }}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  if (type === "minimal") {
-    return (
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+        <style>{`
+          @keyframes bvBubbleFloat {
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(8px, -20px, 0); }
+          }
+        `}</style>
         {[...Array(8)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1.5 h-1.5 bg-neutral-400 rounded-full"
+            className="absolute rounded-full border border-pink-300/40 bg-pink-200/10"
             style={{
-              left: `${(i * 27 + 13) % 92}%`,
-              top: `${(i * 33 + 17) % 86}%`,
+              left: `${(i * 19 + 10) % 92}%`,
+              top: `${(i * 26 + 15) % 86}%`,
+              width: `${16 + (i % 3) * 6}px`,
+              height: `${16 + (i % 3) * 6}px`,
+              animation: `bvBubbleFloat ${4.5 + (i % 3) * 1.5}s infinite ease-in-out`,
+              animationDelay: `${(i * 0.4) % 2.5}s`,
+              willChange: "transform",
             }}
           />
         ))}
@@ -320,15 +273,14 @@ function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) 
     );
   }
 
-  // Default: gold-dust or starlight
+  // Default / Minimal / Gold-Dust
   return (
     <div className="absolute inset-0 pointer-events-none opacity-40 z-0">
-      <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-[#E0A842] rounded-full animate-ping" />
-      <div className="absolute top-3/4 left-4/5 w-1.5 h-1.5 bg-[#8E72F0] rounded-full animate-pulse" />
-      <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full animate-ping" />
-      <div className="absolute top-1/5 right-1/4 w-1 h-1 bg-[#C495C8] rounded-full animate-pulse" />
-      <div className="absolute top-1/2 right-1/6 w-1 h-1 bg-[#FDE68A] rounded-full animate-ping" />
-      <div className="absolute bottom-1/4 left-1/2 w-1.5 h-1.5 bg-[#E0A842] rounded-full animate-pulse" />
+      <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-[#E0A842] rounded-full" />
+      <div className="absolute top-3/4 left-4/5 w-1.5 h-1.5 bg-[#8E72F0] rounded-full" />
+      <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full" />
+      <div className="absolute top-1/5 right-1/4 w-1 h-1 bg-[#C495C8] rounded-full" />
+      <div className="absolute top-1/2 right-1/6 w-1 h-1 bg-[#FDE68A] rounded-full" />
     </div>
   );
 }
@@ -477,15 +429,15 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
     setScene(1);
   };
 
-  // Auto-advance scenes with timer
+  // Auto-advance scenes with timer (fast and snappy)
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (scene === 1) {
-      // Scene 1: Preface -> Scene 2: Name reveal after 4s
-      timer = setTimeout(() => setScene(2), 4000);
+      // Scene 1: Preface -> Scene 2: Name reveal after 3s
+      timer = setTimeout(() => setScene(2), 3000);
     } else if (scene === 2) {
-      // Scene 2: Name reveal -> Scene 3: Letter after 4.5s
-      timer = setTimeout(() => setScene(3), 4500);
+      // Scene 2: Name reveal -> Scene 3: Letter after 3.2s
+      timer = setTimeout(() => setScene(3), 3200);
     }
     return () => clearTimeout(timer);
   }, [scene]);
@@ -545,7 +497,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       particleCount: 100,
       spread: 100,
       origin: { x: 0.5, y: 0.5 },
-      colors: ["#E0A842", "#7659E4", "#C495C8", "#8E72F0"],
+      colors: [effectiveAccent, "#E0A842", "#FFD700", "#FF6B8A", "#8E72F0"],
     });
 
     // Advance to final screen after 2.5s
@@ -579,8 +531,13 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   return (
     <div className={`relative min-h-screen w-full ${activeTemplate.pageBg} text-[#F9F7FD] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none font-sans`}>
       
-      {/* Thematic Atmospheric Ambient Lighting */}
-      <div className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br ${activeTemplate.ambientOrb} rounded-full filter blur-[140px] pointer-events-none`} />
+      {/* Thematic Atmospheric Ambient Lighting (Hardware-accelerated zero-lag radial glow) */}
+      <div 
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none"
+        style={{
+          background: `radial-gradient(circle, ${effectiveAccent}30 0%, ${effectiveAccent}10 45%, transparent 70%)`,
+        }}
+      />
 
       {/* Dynamic Thematic Atmosphere Particles */}
       <ThematicAtmosphere type={activeTemplate.particleType} />
@@ -664,10 +621,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           {scene === 0 && (
             <m.div
               key="scene-0"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-              transition={{ duration: 0.6 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               className="space-y-8 max-w-md w-full px-4"
             >
               <div className="space-y-2">
@@ -726,10 +683,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           {scene === 1 && (
             <m.div
               key="scene-1"
-              initial={{ opacity: 0, filter: "blur(20px)" }}
-              animate={{ opacity: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, filter: "blur(15px)" }}
-              transition={{ duration: 1.5 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               onClick={() => setScene(2)}
               className="space-y-4 max-w-lg cursor-pointer px-4"
             >
@@ -746,10 +703,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           {scene === 2 && (
             <m.div
               key="scene-2"
-              initial={{ opacity: 0, scale: 0.85, filter: "blur(15px)" }}
-              animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
-              transition={{ duration: 1.2 }}
+              initial={{ opacity: 0, scale: 0.92, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.05, y: -10 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               onClick={() => setScene(3)}
               className="space-y-4 max-w-xl cursor-pointer px-4"
             >
@@ -771,10 +728,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           {scene === 3 && (
             <m.div
               key="scene-3"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.8 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               className="w-full max-w-xl px-4 space-y-6"
             >
               {/* Luxury Letter Card */}
@@ -822,10 +779,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           {scene === 4 && (
             <m.div
               key="scene-4"
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.6 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               className="space-y-6 max-w-md px-4"
             >
               <div className="space-y-2">
@@ -910,10 +867,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           {scene === 5 && (
             <m.div
               key="scene-5"
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.8 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               className="space-y-6 max-w-sm px-4 w-full"
             >
               <div className="text-center space-y-1">
@@ -971,10 +928,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           {scene === 6 && (
             <m.div
               key="scene-6"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.8 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               className="space-y-8 max-w-md px-4"
             >
               <div className="space-y-2">
@@ -1017,7 +974,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               key="scene-7"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               className="space-y-8 max-w-lg px-4"
             >
               <div className="space-y-3">
