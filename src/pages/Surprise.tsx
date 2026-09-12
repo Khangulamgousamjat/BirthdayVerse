@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
 import { CasinoCardDeck } from "@/components/surprise/CasinoCardDeck";
+import { getTemplateById, VisualTemplate } from "@/lib/templates";
 
 interface ExperienceData {
   name: string;
@@ -102,6 +103,235 @@ export default function Surprise() {
   return <CinematicExperience data={data} surpriseId={id || ""} />;
 }
 
+// ── Dynamic Thematic Atmosphere Particles ────────────────────────────────────
+
+function ThematicAtmosphere({ type }: { type: VisualTemplate["particleType"] }) {
+  if (type === "petals") {
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {[...Array(14)].map((_, i) => (
+          <m.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${(i * 19 + 7) % 94}%`,
+              top: `${(i * 23 + 11) % 90}%`,
+              width: `${10 + (i % 4) * 4}px`,
+              height: `${14 + (i % 4) * 5}px`,
+              background: i % 2 === 0 ? "radial-gradient(ellipse at center, #FB7185 0%, #E11D48 100%)" : "radial-gradient(ellipse at center, #FDA4AF 0%, #F43F5E 100%)",
+              borderRadius: "50% 0 50% 50%",
+              opacity: 0.25 + (i % 3) * 0.15,
+              filter: "blur(0.5px)",
+            }}
+            animate={{
+              y: [0, 25, 0],
+              x: [0, (i % 2 === 0 ? 15 : -15), 0],
+              rotate: [0, 45, 90, 0],
+            }}
+            transition={{
+              duration: 5 + (i % 4) * 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: (i * 0.4) % 3,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "confetti") {
+    const colors = ["#F43F5E", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6", "#EC4899"];
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {[...Array(16)].map((_, i) => (
+          <m.div
+            key={i}
+            className="absolute"
+            style={{
+              left: `${(i * 17 + 5) % 95}%`,
+              top: `${(i * 27 + 8) % 88}%`,
+              width: `${7 + (i % 3) * 3}px`,
+              height: `${7 + (i % 3) * 3}px`,
+              backgroundColor: colors[i % colors.length],
+              borderRadius: i % 3 === 0 ? "50%" : i % 3 === 1 ? "2px" : "1px",
+              opacity: 0.35 + (i % 3) * 0.15,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 180, 360],
+              scale: [0.9, 1.15, 0.9],
+            }}
+            transition={{
+              duration: 4 + (i % 3) * 1.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: (i * 0.3) % 2.5,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "cyber") {
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00F0FF08_1px,transparent_1px),linear-gradient(to_bottom,#00F0FF08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-40" />
+        {[...Array(14)].map((_, i) => (
+          <m.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${(i * 21 + 9) % 92}%`,
+              top: `${(i * 31 + 13) % 85}%`,
+              width: `${2 + (i % 3) * 2}px`,
+              height: `${2 + (i % 3) * 2}px`,
+              backgroundColor: i % 2 === 0 ? "#00F0FF" : "#FF007F",
+              boxShadow: i % 2 === 0 ? "0 0 10px #00F0FF, 0 0 20px #00F0FF" : "0 0 10px #FF007F, 0 0 20px #FF007F",
+              opacity: 0.6,
+            }}
+            animate={{
+              opacity: [0.3, 1, 0.3],
+              scale: [0.8, 1.4, 0.8],
+            }}
+            transition={{
+              duration: 2 + (i % 3),
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: (i * 0.25) % 2,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "emerald") {
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {[...Array(14)].map((_, i) => (
+          <m.div
+            key={i}
+            className="absolute"
+            style={{
+              left: `${(i * 18 + 8) % 93}%`,
+              top: `${(i * 29 + 12) % 87}%`,
+              width: `${4 + (i % 3) * 3}px`,
+              height: `${4 + (i % 3) * 3}px`,
+              backgroundColor: i % 3 === 0 ? "#F59E0B" : "#10B981",
+              transform: "rotate(45deg)",
+              boxShadow: i % 3 === 0 ? "0 0 12px #F59E0B" : "0 0 12px #10B981",
+              opacity: 0.45 + (i % 3) * 0.2,
+            }}
+            animate={{
+              scale: [0.8, 1.3, 0.8],
+              opacity: [0.3, 0.85, 0.3],
+            }}
+            transition={{
+              duration: 3 + (i % 3) * 1.2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: (i * 0.35) % 3,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "disco") {
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {[...Array(14)].map((_, i) => (
+          <m.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              left: `${(i * 23 + 11) % 94}%`,
+              top: `${(i * 19 + 7) % 89}%`,
+              width: `${3 + (i % 4) * 2}px`,
+              height: `${3 + (i % 4) * 2}px`,
+              backgroundColor: ["#E11D48", "#A855F7", "#3B82F6", "#F59E0B"][i % 4],
+              boxShadow: "0 0 15px currentColor",
+              opacity: 0.5,
+            }}
+            animate={{
+              scale: [0.6, 1.5, 0.6],
+              opacity: [0.2, 0.9, 0.2],
+            }}
+            transition={{
+              duration: 1.8 + (i % 3) * 0.8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: (i * 0.2) % 2,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "bubbles") {
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        {[...Array(12)].map((_, i) => (
+          <m.div
+            key={i}
+            className="absolute rounded-full border border-pink-300/40 bg-pink-200/10 backdrop-blur-[1px]"
+            style={{
+              left: `${(i * 19 + 10) % 92}%`,
+              top: `${(i * 26 + 15) % 86}%`,
+              width: `${14 + (i % 4) * 8}px`,
+              height: `${14 + (i % 4) * 8}px`,
+              boxShadow: "inset -2px -2px 6px rgba(244,114,182,0.3), 0 0 10px rgba(244,114,182,0.15)",
+            }}
+            animate={{
+              y: [0, -25, 0],
+              x: [0, (i % 2 === 0 ? 10 : -10), 0],
+            }}
+            transition={{
+              duration: 5 + (i % 3) * 2,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: (i * 0.4) % 3,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "minimal") {
+    return (
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1.5 h-1.5 bg-neutral-400 rounded-full"
+            style={{
+              left: `${(i * 27 + 13) % 92}%`,
+              top: `${(i * 33 + 17) % 86}%`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // Default: gold-dust or starlight
+  return (
+    <div className="absolute inset-0 pointer-events-none opacity-40 z-0">
+      <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-[#E0A842] rounded-full animate-ping" />
+      <div className="absolute top-3/4 left-4/5 w-1.5 h-1.5 bg-[#8E72F0] rounded-full animate-pulse" />
+      <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full animate-ping" />
+      <div className="absolute top-1/5 right-1/4 w-1 h-1 bg-[#C495C8] rounded-full animate-pulse" />
+      <div className="absolute top-1/2 right-1/6 w-1 h-1 bg-[#FDE68A] rounded-full animate-ping" />
+      <div className="absolute bottom-1/4 left-1/2 w-1.5 h-1.5 bg-[#E0A842] rounded-full animate-pulse" />
+    </div>
+  );
+}
+
 // ── Cinematic Experience Engine ──────────────────────────────────────────────
 
 function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpriseId: string }) {
@@ -128,7 +358,8 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   let photosList: string[] = [];
   let accentColor = "#7659E4"; // Default to signature BirthdayVerse Lavender
   let vibe = "elegant";
-  let theme = "midnight";
+  let theme = "elegant";
+  let templateId = "";
 
   try {
     const parsed = JSON.parse(data.message);
@@ -144,6 +375,8 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       if (parsed.accentColor) accentColor = parsed.accentColor;
       if (parsed.vibe) vibe = parsed.vibe;
       if (parsed.theme) theme = parsed.theme;
+      if (parsed.selectedTemplate) templateId = parsed.selectedTemplate;
+      if (parsed.templateId) templateId = parsed.templateId;
       if (parsed.selectedMusic && parsed.selectedMusic !== "custom") {
         customMusic = parsed.selectedMusic;
       } else if (parsed.musicBase64 && !customMusic) {
@@ -153,6 +386,21 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   } catch {
     // Fallback for plain text message
   }
+
+  // Resolve Active Visual Style Template
+  const activeTemplate = getTemplateById(templateId || theme, vibe);
+
+  // If accentColor was default lavender or omitted, adopt activeTemplate.accent
+  const effectiveAccent = accentColor && accentColor.toLowerCase() !== "#7659e4" 
+    ? accentColor 
+    : activeTemplate.accent;
+
+  // Helper for dynamic primary CTA button styling (Lavender default, custom accent if chosen)
+  const isDefaultLavender = !effectiveAccent || effectiveAccent.toLowerCase() === "#7659e4";
+  const dynamicPrimaryButtonStyle: React.CSSProperties | undefined = !isDefaultLavender ? {
+    background: `linear-gradient(135deg, ${effectiveAccent} 0%, ${effectiveAccent}e6 100%)`,
+    boxShadow: `0 10px 25px -5px ${effectiveAccent}66`,
+  } : undefined;
 
   // Ensure primary image and photosList are synced
   if (!imageBase64 && photosList.length > 0) {
@@ -164,13 +412,6 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   if (data.music_path) {
     customMusic = data.music_path;
   }
-
-  // Helper for dynamic primary CTA button styling (Lavender default, custom accent if chosen)
-  const isDefaultLavender = !accentColor || accentColor.toLowerCase() === "#7659e4";
-  const dynamicPrimaryButtonStyle: React.CSSProperties | undefined = !isDefaultLavender ? {
-    background: `linear-gradient(135deg, ${accentColor} 0%, ${accentColor}e6 100%)`,
-    boxShadow: `0 10px 25px -5px ${accentColor}66`,
-  } : undefined;
 
   // Audio lifecycle
   useEffect(() => {
@@ -326,18 +567,13 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-b from-[#0F0C18] via-[#161122] to-[#0D0A14] text-[#F9F7FD] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none font-sans">
+    <div className={`relative min-h-screen w-full ${activeTemplate.pageBg} text-[#F9F7FD] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none font-sans`}>
       
-      {/* Subtle Atmospheric Ambient Lighting */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-[#7659E4]/12 via-[#E0A842]/08 to-transparent rounded-full filter blur-[140px] pointer-events-none" />
+      {/* Thematic Atmospheric Ambient Lighting */}
+      <div className={`absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-gradient-to-br ${activeTemplate.ambientOrb} rounded-full filter blur-[140px] pointer-events-none`} />
 
-      {/* Floating Starlight Dust Particles */}
-      <div className="absolute inset-0 pointer-events-none opacity-40">
-        <div className="absolute top-1/4 left-1/5 w-1 h-1 bg-[#E0A842] rounded-full animate-ping" />
-        <div className="absolute top-3/4 left-4/5 w-1.5 h-1.5 bg-[#8E72F0] rounded-full animate-pulse" />
-        <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full animate-ping" />
-        <div className="absolute top-1/5 right-1/4 w-1 h-1 bg-[#C495C8] rounded-full animate-pulse" />
-      </div>
+      {/* Dynamic Thematic Atmosphere Particles */}
+      <ThematicAtmosphere type={activeTemplate.particleType} />
 
       {/* Persistent Audio Controller */}
       {scene > 0 && customMusic !== "none" && (
@@ -424,21 +660,21 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               {/* Luxury Sealed Envelope Card */}
               <div 
                 onClick={handleOpenGift}
-                className="relative mx-auto w-72 sm:w-80 h-48 sm:h-52 rounded-3xl bg-gradient-to-br from-[#1B1428] to-[#261B3B] border border-[#E0A842]/30 shadow-[0_15px_45px_rgba(118,89,228,0.12)] flex flex-col items-center justify-center p-6 cursor-pointer group hover:scale-[1.02] hover:border-[#E0A842]/60 transition-all"
+                className={`relative mx-auto w-72 sm:w-80 h-48 sm:h-52 rounded-3xl bg-gradient-to-br from-[#1B1428]/90 to-[#261B3B]/90 border ${activeTemplate.envelopeBorder} ${activeTemplate.envelopeGlow} backdrop-blur-md flex flex-col items-center justify-center p-6 cursor-pointer group hover:scale-[1.02] transition-all`}
               >
-                {/* Gold foil border inner */}
-                <div className="absolute inset-2 rounded-2xl border border-[#E0A842]/15 pointer-events-none" />
+                {/* Foil border inner */}
+                <div className="absolute inset-2 rounded-2xl border border-white/10 pointer-events-none" />
 
                 {/* Wax Seal Emblem */}
                 <div 
                   className="w-16 h-16 rounded-full p-0.5 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform"
                   style={{
-                    background: `linear-gradient(135deg, ${accentColor}, #8E72F0)`,
-                    boxShadow: `0 8px 24px ${accentColor}40`,
+                    background: `linear-gradient(135deg, ${effectiveAccent}, #8E72F0)`,
+                    boxShadow: `0 8px 24px ${effectiveAccent}40`,
                   }}
                 >
                   <div className="w-full h-full rounded-full bg-[#1B1428] flex items-center justify-center border border-white/20">
-                    <Sparkles className="w-7 h-7" style={{ color: accentColor }} />
+                    <Sparkles className="w-7 h-7" style={{ color: effectiveAccent }} />
                   </div>
                 </div>
 
@@ -500,7 +736,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 Celebrating the one and only
               </span>
               
-              <h1 className="text-5xl sm:text-7xl md:text-8xl font-serif italic font-bold tracking-tight bg-gradient-to-r from-[#FFFBEB] via-[#E0A842] to-[#D97706] bg-clip-text text-transparent drop-shadow-[0_10px_30px_rgba(224,168,66,0.25)]">
+              <h1 className={`text-5xl sm:text-7xl md:text-8xl font-serif italic font-bold tracking-tight bg-gradient-to-r ${activeTemplate.titleGradient} bg-clip-text text-transparent drop-shadow-[0_10px_30px_rgba(0,0,0,0.35)]`}>
                 {nickname ? `${data.name} (${nickname})` : data.name}
               </h1>
 
@@ -768,10 +1004,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="space-y-8 max-w-lg px-4"
             >
               <div className="space-y-3">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
+                <span className="text-xs font-bold tracking-widest uppercase" style={{ color: effectiveAccent }}>
                   Celebration Keepsake
                 </span>
-                <h1 className="text-3xl sm:text-5xl font-serif italic font-bold tracking-tight text-white leading-tight">
+                <h1 className={`text-3xl sm:text-5xl font-serif italic font-bold tracking-tight bg-gradient-to-r ${activeTemplate.titleGradient} bg-clip-text text-transparent leading-tight drop-shadow-[0_8px_24px_rgba(0,0,0,0.3)]`}>
                   {finaleText}
                 </h1>
                 <p className="text-xs sm:text-sm text-[#A89EC0] max-w-md mx-auto leading-relaxed">

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Play, Pause, Smartphone, Monitor, Sparkles, Heart, Music, ChevronLeft, ChevronRight, Lock } from "lucide-react";
+import { getTemplateById } from "@/lib/templates";
 
 interface LivePhonePreviewProps {
   name: string;
@@ -53,70 +54,9 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
 
   const artistName = selectedMusic.includes("Coldplay") ? "Coldplay" : "Birthdayverse Mix";
 
-  // Vibe styling palettes for preview
-  const vibeThemes: Record<string, { bg: string; accent: string; text: string; balloon1: string; balloon2: string }> = {
-    elegant: {
-      bg: "from-[#F5F1FD] via-[#ECE5FC] to-[#F2ECFE]",
-      accent: "#7659E4",
-      text: "#211A30",
-      balloon1: "#8E72F0",
-      balloon2: "#C495C8"
-    },
-    fun: {
-      bg: "from-[#FDF8EC] via-[#F8EDF8] to-[#EDE9FE]",
-      accent: "#D97706",
-      text: "#211A30",
-      balloon1: "#E0A842",
-      balloon2: "#C495C8"
-    },
-    romantic: {
-      bg: "from-[#FAF0F5] via-[#F5EBF5] to-[#EDE9FE]",
-      accent: "#A83868",
-      text: "#3B1225",
-      balloon1: "#DE7A9E",
-      balloon2: "#A28DF8"
-    },
-    cute: {
-      bg: "from-[#F7F2FD] via-[#EDE7FD] to-[#F5EDF5]",
-      accent: "#9333EA",
-      text: "#211A30",
-      balloon1: "#C495C8",
-      balloon2: "#8E72F0"
-    },
-    dreamy: {
-      bg: "from-[#EDE9FE] via-[#E8E2FC] to-[#F3EBFC]",
-      accent: "#7659E4",
-      text: "#1E182A",
-      balloon1: "#8E72F0",
-      balloon2: "#A28DF8"
-    },
-    party: {
-      bg: "from-[#1B1428] via-[#261B3B] to-[#341F48]",
-      accent: "#C495C8",
-      text: "#F9F7FD",
-      balloon1: "#8E72F0",
-      balloon2: "#E0A842"
-    },
-    pastel: {
-      bg: "from-[#F7F2FD] via-[#EDE9FE] to-[#F5EFFE]",
-      accent: "#8E72F0",
-      text: "#211A30",
-      balloon1: "#C495C8",
-      balloon2: "#A28DF8"
-    },
-    midnight: {
-      bg: "from-[#13101C] via-[#1E182A] to-[#261F36]",
-      accent: "#A28DF8",
-      text: "#F9F7FD",
-      balloon1: "#7659E4",
-      balloon2: "#C495C8"
-    },
-  };
-
-  const activeThemeKey = (theme && vibeThemes[theme.toLowerCase()])
-    ? theme.toLowerCase()
-    : (vibeThemes[vibe.toLowerCase()] ? vibe.toLowerCase() : "elegant");
-  const currentVibe = vibeThemes[activeThemeKey];
+  // Get active template styling
+  const activeTemplate = getTemplateById(theme, vibe);
+  const effectiveAccent = accentColor || activeTemplate.accent;
 
   // Render Inner Interactive Screen Content
   const renderScreenContent = () => (
@@ -125,56 +65,56 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div 
           className="absolute -top-4 -left-4 w-28 h-36 rounded-full opacity-60 blur-[1px] animate-pulse"
-          style={{ backgroundColor: currentVibe.balloon1, filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))" }}
+          style={{ backgroundColor: activeTemplate.balloon1, filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.25))" }}
         />
         <div 
           className="absolute top-12 -right-6 w-24 h-32 rounded-full opacity-65 blur-[1px] animate-pulse"
-          style={{ backgroundColor: currentVibe.balloon2, animationDelay: "1s" }}
+          style={{ backgroundColor: activeTemplate.balloon2, animationDelay: "1s" }}
         />
         <div 
           className="absolute top-52 -left-5 w-20 h-28 rounded-full opacity-40 blur-[2px]"
-          style={{ backgroundColor: currentVibe.balloon1 }}
+          style={{ backgroundColor: activeTemplate.balloon1 }}
         />
         <div 
           className="absolute bottom-40 -right-4 w-24 h-32 rounded-full opacity-50 blur-[1px]"
-          style={{ backgroundColor: currentVibe.balloon2 }}
+          style={{ backgroundColor: activeTemplate.balloon2 }}
         />
       </div>
 
       {/* Main Interactive Celebration Body */}
       <div className="relative z-10 flex flex-col items-center flex-1">
         {/* Sparkle Header */}
-        <div className="flex items-center justify-center gap-1.5 mb-1 text-[#7659E4] dark:text-[#A28DF8]">
+        <div className="flex items-center justify-center gap-1.5 mb-1" style={{ color: effectiveAccent }}>
           <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "6s" }} />
-          <span className="text-[10px] tracking-widest uppercase font-bold opacity-75">Birthdayverse</span>
+          <span className="text-[10px] tracking-widest uppercase font-bold opacity-85">Birthdayverse</span>
           <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: "6s" }} />
         </div>
 
         {/* Happy Birthday Heading */}
-        <h2 className="text-xl font-display font-bold tracking-tight text-gray-900 leading-tight">
+        <h2 className="text-xl font-display font-bold tracking-tight leading-tight" style={{ color: activeTemplate.phoneText }}>
           Happy
         </h2>
-        <h1 className="text-2xl font-display font-black tracking-tight text-gray-900 -mt-1 leading-tight">
+        <h1 className="text-2xl font-display font-black tracking-tight -mt-1 leading-tight" style={{ color: activeTemplate.phoneText }}>
           Birthday
         </h1>
 
         {/* Recipient Name in Signature Style */}
         <div className="relative my-1">
-          <span className="font-serif italic text-3xl font-bold bg-gradient-to-r from-[#7659E4] via-[#8E72F0] to-[#C495C8] bg-clip-text text-transparent px-2">
+          <span className={`font-serif italic text-3xl font-bold bg-gradient-to-r ${activeTemplate.titleGradient} bg-clip-text text-transparent px-2 drop-shadow-sm`}>
             {displayName}
           </span>
           <div className="flex justify-center -mt-1">
-            <Heart className="w-3.5 h-3.5 text-[#C495C8] fill-[#C495C8] animate-bounce" />
+            <Heart className="w-3.5 h-3.5 animate-bounce" style={{ color: effectiveAccent, fill: effectiveAccent }} />
           </div>
         </div>
 
         {/* Emotional Subtitle Message Card with Sign-off */}
-        <div className="w-full max-w-[260px] mx-auto mt-1 mb-2 bg-white/60 dark:bg-black/30 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/70 dark:border-white/10 shadow-xs text-left">
-          <p className="text-[11px] leading-relaxed text-gray-800 dark:text-gray-200 font-medium text-center">
+        <div className={`w-full max-w-[260px] mx-auto mt-1 mb-2 ${activeTemplate.cardOverlayBg} backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/20 shadow-xs text-left`}>
+          <p className="text-[11px] leading-relaxed font-medium text-center" style={{ color: activeTemplate.phoneText }}>
             {displayMessage}
           </p>
-          <div className="mt-1.5 pt-1 border-t border-black/10 dark:border-white/10 text-right">
-            <span className="text-[9px] font-serif italic text-gray-500 dark:text-gray-400 block truncate">
+          <div className="mt-1.5 pt-1 border-t border-white/15 text-right">
+            <span className="text-[9px] font-serif italic opacity-70 block truncate" style={{ color: activeTemplate.phoneText }}>
               {displaySignOff}
             </span>
           </div>
@@ -359,7 +299,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
             </div>
 
             {/* Mobile Screen Content */}
-            <div className={`phone-mockup-screen bg-gradient-to-b ${currentVibe.bg} select-none relative flex flex-col justify-between overflow-y-auto no-scrollbar`}>
+            <div className={`phone-mockup-screen bg-gradient-to-b ${activeTemplate.phoneBg} select-none relative flex flex-col justify-between overflow-y-auto no-scrollbar`}>
               {renderScreenContent()}
             </div>
           </div>
@@ -383,7 +323,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
             </div>
 
             {/* Desktop Screen Content */}
-            <div className={`flex-1 rounded-2xl bg-gradient-to-b ${currentVibe.bg} select-none relative flex flex-col justify-between overflow-y-auto no-scrollbar mt-2 border border-black/10`}>
+            <div className={`flex-1 rounded-2xl bg-gradient-to-b ${activeTemplate.phoneBg} select-none relative flex flex-col justify-between overflow-y-auto no-scrollbar mt-2 border border-black/10`}>
               {renderScreenContent()}
             </div>
           </div>

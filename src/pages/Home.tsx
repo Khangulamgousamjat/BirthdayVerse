@@ -38,6 +38,7 @@ import { Sidebar, NavView } from "@/components/layout/Sidebar";
 import { MainDashboardView } from "@/components/dashboard/MainDashboardView";
 import { LivePhonePreview } from "@/components/preview/LivePhonePreview";
 import { TemplatesView, TEMPLATES_DATA } from "@/components/templates/TemplatesView";
+import { getTemplateById, VisualTemplate } from "@/lib/templates";
 import { MyWishesView, WishCardData } from "@/components/wishes/MyWishesView";
 import { CalendarView } from "@/components/calendar/CalendarView";
 import { ExploreView } from "@/components/explore/ExploreView";
@@ -213,6 +214,13 @@ export default function Home() {
       setIsPlayingMusic(true);
       setSelectedMusic(src);
     }
+  };
+
+  // Synchronize visual style template across all controls
+  const applyTemplate = (tmpl: VisualTemplate) => {
+    setSelectedTemplate(tmpl.id);
+    setVibe(tmpl.id);
+    setAccentColor(tmpl.accent);
   };
 
   // Combined active photos array
@@ -431,7 +439,8 @@ export default function Home() {
               onViewWishes={() => setActiveNav("wishes")}
               onExploreTemplatesClick={() => setActiveNav("templates")}
               onSelectTemplate={(tmplId) => {
-                setSelectedTemplate(tmplId);
+                const tmpl = getTemplateById(tmplId);
+                applyTemplate(tmpl);
                 setActiveNav("create");
                 setCurrentStep(2);
               }}
@@ -577,43 +586,28 @@ export default function Home() {
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {TEMPLATES_DATA.slice(0, 6).map((tmpl) => {
+                          {TEMPLATES_DATA.map((tmpl) => {
                             const isSelected = selectedTemplate === tmpl.id;
                             return (
                               <div
                                 key={tmpl.id}
-                                onClick={() => {
-                                  setSelectedTemplate(tmpl.id);
-                                  // Sync vibe and accent color with the selected template
-                                  if (tmpl.id === "romantic") {
-                                    setVibe("romantic");
-                                    setAccentColor("#C495C8");
-                                  } else if (tmpl.id === "fun") {
-                                    setVibe("fun");
-                                    setAccentColor("#D8A854");
-                                  } else if (tmpl.id === "dreamy") {
-                                    setVibe("dreamy");
-                                    setAccentColor("#7659E4");
-                                  } else if (tmpl.id === "party" || tmpl.id === "midnight") {
-                                    setVibe("party");
-                                    setAccentColor("#8E72F0");
-                                  } else if (tmpl.id === "cute" || tmpl.id === "pastel") {
-                                    setVibe("cute");
-                                    setAccentColor("#D4B2D8");
-                                  } else {
-                                    setVibe("elegant");
-                                    setAccentColor("#7659E4");
-                                  }
-                                }}
+                                onClick={() => applyTemplate(tmpl)}
                                 className={`rounded-2xl border overflow-hidden transition-all cursor-pointer text-left ${
                                   isSelected
-                                    ? "border-[#7659E4] ring-2 ring-[#7659E4]/40 shadow-lg shadow-[#7659E4]/20"
-                                    : "border-[#E8DFFA] dark:border-[#282038] hover:border-[#8E72F0]/40"
+                                    ? "border-[#7659E4] ring-2 ring-[#7659E4]/40 shadow-lg shadow-[#7659E4]/20 scale-[1.01]"
+                                    : "border-[#E8DFFA] dark:border-[#282038] hover:border-[#8E72F0]/40 hover:scale-[1.005]"
                                 }`}
                               >
-                                <div className={`h-20 ${tmpl.previewBg} p-3 flex items-center justify-between text-white`}>
-                                  <span className="text-xs font-bold">{tmpl.name}</span>
-                                  {isSelected && <CheckCircle2 className="w-4 h-4 text-white" />}
+                                <div className={`h-20 ${tmpl.previewBg} p-3 flex items-center justify-between text-white relative`}>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold">{tmpl.name}</span>
+                                    {tmpl.badge && (
+                                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/25 backdrop-blur-xs text-white">
+                                        {tmpl.badge}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {isSelected && <CheckCircle2 className="w-4 h-4 text-white shrink-0" />}
                                 </div>
                                 <div className="p-3 bg-white dark:bg-[#181323]">
                                   <p className="text-[11px] text-[#736886] dark:text-[#ACA2BE] line-clamp-1">
@@ -1325,7 +1319,7 @@ export default function Home() {
           {activeNav === "templates" && (
             <TemplatesView
               onSelectTemplate={(template) => {
-                setSelectedTemplate(template.id);
+                applyTemplate(template);
                 setActiveNav("create");
                 setCurrentStep(2);
               }}
