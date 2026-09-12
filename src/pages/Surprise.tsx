@@ -429,15 +429,15 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
     setScene(1);
   };
 
-  // Auto-advance scenes with timer (fast and snappy)
+  // Auto-advance scenes with timer (generous reading time for introductory messages & name reveal)
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (scene === 1) {
-      // Scene 1: Preface -> Scene 2: Name reveal after 3s
-      timer = setTimeout(() => setScene(2), 3000);
+      // Scene 1: Preface quote — generous time to read comfortably (6.5s)
+      timer = setTimeout(() => setScene(2), 6500);
     } else if (scene === 2) {
-      // Scene 2: Name reveal -> Scene 3: Letter after 3.2s
-      timer = setTimeout(() => setScene(3), 3200);
+      // Scene 2: Name reveal — generous time to celebrate and absorb (6.0s)
+      timer = setTimeout(() => setScene(3), 6000);
     }
     return () => clearTimeout(timer);
   }, [scene]);
@@ -679,16 +679,16 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
             </m.div>
           )}
 
-          {/* ── SCENE 1: Soft Cinematic Transition ── */}
+          {/* ── SCENE 1: Soft Cinematic Transition (Graceful & Legible) ── */}
           {scene === 1 && (
             <m.div
               key="scene-1"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              transition={{ duration: 0.75, ease: "easeOut" }}
               onClick={() => setScene(2)}
-              className="space-y-4 max-w-lg cursor-pointer px-4"
+              className="space-y-4 max-w-lg cursor-pointer px-4 select-none"
             >
               <span className="text-xs font-bold tracking-widest uppercase" style={{ color: effectiveAccent }}>
                 Today is your day
@@ -696,19 +696,22 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               <h2 className="text-2xl sm:text-4xl font-display font-light text-white leading-relaxed">
                 Some people make the world brighter simply by being in it...
               </h2>
+              <span className="text-[11px] text-white/35 block pt-2">
+                Tap anywhere to continue &rarr;
+              </span>
             </m.div>
           )}
 
-          {/* ── SCENE 2: The Name Reveal ── */}
+          {/* ── SCENE 2: The Name Reveal (Graceful & Legible) ── */}
           {scene === 2 && (
             <m.div
               key="scene-2"
-              initial={{ opacity: 0, scale: 0.92, y: 10 }}
+              initial={{ opacity: 0, scale: 0.94, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.05, y: -10 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
+              exit={{ opacity: 0, scale: 1.02, y: -10 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               onClick={() => setScene(3)}
-              className="space-y-4 max-w-xl cursor-pointer px-4"
+              className="space-y-4 max-w-xl cursor-pointer px-4 select-none"
             >
               <span className="text-xs font-serif italic tracking-wider text-[#A89EC0]">
                 Celebrating the one and only
@@ -721,6 +724,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               <p className="text-xs sm:text-sm text-[#A89EC0] font-light max-w-sm mx-auto">
                 Here is a special message written from the heart.
               </p>
+
+              <span className="text-[11px] text-white/35 block pt-2">
+                Tap anywhere to continue &rarr;
+              </span>
             </m.div>
           )}
 
