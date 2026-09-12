@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import confetti from "canvas-confetti";
 import { CasinoCardDeck } from "@/components/surprise/CasinoCardDeck";
+import { RealisticCake } from "@/components/surprise/RealisticCake";
 import { getTemplateById, VisualTemplate } from "@/lib/templates";
 
 interface ExperienceData {
@@ -395,12 +396,12 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
     ? accentColor 
     : activeTemplate.accent;
 
-  // Helper for dynamic primary CTA button styling (Lavender default, custom accent if chosen)
-  const isDefaultLavender = !effectiveAccent || effectiveAccent.toLowerCase() === "#7659e4";
-  const dynamicPrimaryButtonStyle: React.CSSProperties | undefined = !isDefaultLavender ? {
-    background: `linear-gradient(135deg, ${effectiveAccent} 0%, ${effectiveAccent}e6 100%)`,
-    boxShadow: `0 10px 25px -5px ${effectiveAccent}66`,
-  } : undefined;
+  // Helper for dynamic primary CTA button styling (strictly matching active template color)
+  const dynamicPrimaryButtonStyle: React.CSSProperties = {
+    background: `linear-gradient(135deg, ${effectiveAccent} 0%, ${effectiveAccent}dd 100%)`,
+    boxShadow: `0 10px 25px -5px ${effectiveAccent}66, 0 4px 12px ${effectiveAccent}33`,
+    border: `1px solid ${effectiveAccent}88`,
+  };
 
   // Ensure primary image and photosList are synced
   if (!imageBase64 && photosList.length > 0) {
@@ -456,8 +457,17 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play();
-      setIsPlaying(true);
+      if (audioRef.current.volume === 0) {
+        audioRef.current.volume = 0.85;
+      }
+      audioRef.current
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.warn("Audio play prevented:", err);
+        });
     }
   };
 
@@ -580,12 +590,20 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
         <div className="fixed top-5 right-5 z-50">
           <button
             onClick={toggleMusic}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 dark:bg-[#1E182A]/80 backdrop-blur-md border border-white/15 text-white text-xs font-semibold hover:bg-white/20 transition-all shadow-lg cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 dark:bg-[#1E182A]/80 backdrop-blur-md text-white text-xs font-semibold hover:bg-white/20 transition-all shadow-lg cursor-pointer"
+            style={
+              isPlaying
+                ? {
+                    border: `1px solid ${effectiveAccent}80`,
+                    boxShadow: `0 0 16px ${effectiveAccent}30`,
+                  }
+                : { border: "1px solid rgba(255,255,255,0.15)" }
+            }
             aria-label="Toggle music"
           >
             {isPlaying ? (
               <>
-                <Music className="w-3.5 h-3.5 text-[#E0A842] animate-bounce" />
+                <Music className="w-3.5 h-3.5 animate-bounce" style={{ color: effectiveAccent }} />
                 <span className="text-[11px] hidden sm:inline">Playing Soundtrack</span>
               </>
             ) : (
@@ -605,7 +623,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
             initial={{ opacity: 0, y: -20, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#7659E4] to-[#C495C8] text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-white/25 backdrop-blur-md"
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-white/25 backdrop-blur-md"
+            style={{
+              background: `linear-gradient(135deg, ${effectiveAccent}, #F43F5E)`,
+              boxShadow: `0 10px 30px ${effectiveAccent}50`,
+            }}
           >
             <Heart className="w-4 h-4 fill-white animate-ping" />
             <span>Your love was sent to {data.name}! ❤️</span>
@@ -649,7 +671,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="space-y-8 max-w-md w-full px-4"
             >
               <div className="space-y-2">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
+                <span className="text-xs font-bold tracking-widest uppercase" style={{ color: effectiveAccent }}>
                   A personal celebration awaits
                 </span>
                 <h1 className="text-3xl sm:text-4xl font-display font-bold text-white tracking-tight">
@@ -669,7 +691,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 <div 
                   className="w-16 h-16 rounded-full p-0.5 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform"
                   style={{
-                    background: `linear-gradient(135deg, ${effectiveAccent}, #8E72F0)`,
+                    background: `linear-gradient(135deg, ${effectiveAccent}, ${effectiveAccent}cc)`,
                     boxShadow: `0 8px 24px ${effectiveAccent}40`,
                   }}
                 >
@@ -689,7 +711,6 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               </div>
 
               <Button
-                variant={isDefaultLavender ? "primary" : undefined}
                 size="lg"
                 onClick={handleOpenGift}
                 className="w-full max-w-xs mx-auto text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
@@ -712,7 +733,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               onClick={() => setScene(2)}
               className="space-y-4 max-w-lg cursor-pointer px-4"
             >
-              <span className="text-xs font-bold tracking-widest uppercase text-[#8E72F0]">
+              <span className="text-xs font-bold tracking-widest uppercase" style={{ color: effectiveAccent }}>
                 Today is your day
               </span>
               <h2 className="text-2xl sm:text-4xl font-display font-light text-white leading-relaxed">
@@ -757,12 +778,21 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="w-full max-w-xl px-4 space-y-6"
             >
               {/* Luxury Letter Card */}
-              <div className="p-6 sm:p-10 rounded-3xl bg-[#1E182A]/90 border border-[#E0A842]/25 shadow-2xl backdrop-blur-xl text-left space-y-4">
-                <div className="flex items-center justify-between border-b border-[#282038] pb-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#E0A842]">
+              <div 
+                className="p-6 sm:p-10 rounded-3xl bg-[#1E182A]/90 shadow-2xl backdrop-blur-xl text-left space-y-4 border transition-all"
+                style={{
+                  borderColor: `${effectiveAccent}40`,
+                  boxShadow: `0 20px 50px -10px rgba(0,0,0,0.5), 0 0 35px ${effectiveAccent}15`,
+                }}
+              >
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <span 
+                    className="text-[11px] font-bold uppercase tracking-wider"
+                    style={{ color: effectiveAccent }}
+                  >
                     Personal Birthday Message
                   </span>
-                  <Sparkles className="w-3.5 h-3.5 text-[#E0A842]" />
+                  <Sparkles className="w-3.5 h-3.5" style={{ color: effectiveAccent }} />
                 </div>
 
                 <div className="text-base sm:text-lg font-serif leading-relaxed text-[#F9F7FD] whitespace-pre-wrap">
@@ -777,11 +807,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               </div>
 
               <Button
-                variant="primary"
                 size="md"
                 onClick={() => setScene(4)}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
-                className="mx-auto"
+                className="mx-auto text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                style={dynamicPrimaryButtonStyle}
               >
                 Continue &rarr;
               </Button>
@@ -815,18 +845,28 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                   onClick={handleSendLove}
                   className={`w-32 h-32 rounded-full p-1 flex items-center justify-center mx-auto transition-all cursor-pointer group active:scale-90 ${
                     hasSentLove
-                      ? "bg-gradient-to-tr from-[#A83868] via-[#C495C8] to-[#A28DF8] shadow-[0_0_60px_rgba(196,149,200,0.6)] scale-105 animate-pulse"
-                      : "bg-gradient-to-tr from-[#A83868] via-[#C495C8] to-[#A28DF8] shadow-[0_0_40px_rgba(196,149,200,0.3)] hover:scale-110"
+                      ? "scale-105 animate-pulse"
+                      : "hover:scale-110"
                   }`}
+                  style={{
+                    background: `linear-gradient(135deg, ${effectiveAccent}, #F43F5E)`,
+                    boxShadow: hasSentLove 
+                      ? `0 0 60px ${effectiveAccent}80, 0 0 30px rgba(244,63,94,0.6)` 
+                      : `0 0 40px ${effectiveAccent}40`,
+                  }}
                   aria-label="Send love"
                 >
                   <div className="w-full h-full rounded-full bg-[#1E182A] flex flex-col items-center justify-center gap-1">
                     <Heart
                       className={`w-12 h-12 transition-transform ${
                         hasSentLove
-                          ? "text-[#FF6B8A] fill-[#FF6B8A] scale-110"
-                          : "text-[#C495C8] fill-[#C495C8] group-hover:scale-110"
+                          ? "scale-110"
+                          : "group-hover:scale-110"
                       }`}
+                      style={{
+                        color: hasSentLove ? "#FF6B8A" : effectiveAccent,
+                        fill: hasSentLove ? "#FF6B8A" : effectiveAccent,
+                      }}
                     />
                     {hasSentLove && loveCount > 0 && (
                       <span className="text-[11px] font-bold text-[#FF6B8A]">
@@ -840,7 +880,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                   <m.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="px-4 py-2 rounded-full bg-gradient-to-r from-[#7659E4]/30 to-[#C495C8]/30 border border-[#C495C8]/40 text-sm font-semibold text-white"
+                    className="px-4 py-2 rounded-full border text-sm font-semibold text-white backdrop-blur-md"
+                    style={{
+                      background: `linear-gradient(135deg, ${effectiveAccent}30, #F43F5E30)`,
+                      borderColor: `${effectiveAccent}60`,
+                    }}
                   >
                     ❤️ Love sent to {data.name}!
                   </m.div>
@@ -849,10 +893,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
 
               <div className="pt-4">
                 <Button
-                  variant="secondary"
                   size="md"
                   onClick={() => setScene(5)}
                   rightIcon={<ArrowRight className="w-4 h-4" />}
+                  className="mx-auto text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                  style={dynamicPrimaryButtonStyle}
                 >
                   Continue to Memories &rarr;
                 </Button>
@@ -874,7 +919,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               <div className="text-center space-y-1">
                 <span 
                   className="text-xs font-bold tracking-widest uppercase"
-                  style={{ color: accentColor }}
+                  style={{ color: effectiveAccent }}
                 >
                   Cherished Moments
                 </span>
@@ -884,7 +929,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 <CasinoCardDeck
                   photos={photosList}
                   name={data.name}
-                  accentColor={accentColor}
+                  accentColor={effectiveAccent}
                 />
               ) : (
                 /* No photos — monogram card */
@@ -893,8 +938,8 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                     <div 
                       className="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-serif font-bold text-white shadow-lg"
                       style={{
-                        background: `linear-gradient(135deg, ${accentColor}, #E0A842)`,
-                        boxShadow: `0 10px 25px ${accentColor}40`,
+                        background: `linear-gradient(135deg, ${effectiveAccent}, ${effectiveAccent}cc)`,
+                        boxShadow: `0 10px 25px ${effectiveAccent}40`,
                       }}
                     >
                       {data.name.charAt(0).toUpperCase()}
@@ -911,7 +956,6 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               )}
 
               <Button
-                variant={isDefaultLavender ? "primary" : undefined}
                 size="md"
                 onClick={() => setScene(6)}
                 rightIcon={<ArrowRight className="w-4 h-4" />}
@@ -934,7 +978,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
               className="space-y-8 max-w-md px-4"
             >
               <div className="space-y-2">
-                <span className="text-xs font-bold tracking-widest uppercase text-[#E0A842]">
+                <span className="text-xs font-bold tracking-widest uppercase" style={{ color: effectiveAccent }}>
                   Make a Wish
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-display font-bold text-white">
@@ -945,44 +989,17 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 </p>
               </div>
 
-              {/* Handcrafted Cake Visual with Flickering Candles */}
-              <div
-                onClick={handleBlowCandles}
-                className="relative mx-auto w-64 h-56 flex flex-col items-center justify-end cursor-pointer group"
-              >
-                {/* 3 Candles */}
-                <div className="flex items-end justify-center gap-6 mb-1 z-20">
-                  {[0, 1, 2].map((candleIndex) => (
-                    <div key={candleIndex} className="flex flex-col items-center">
-                      {/* Flame */}
-                      {!candlesBlown ? (
-                        <div className="w-3.5 h-6 rounded-full bg-gradient-to-t from-amber-500 via-yellow-400 to-amber-200 animate-pulse shadow-[0_0_15px_#F59E0B]" />
-                      ) : (
-                        <div className="w-1.5 h-3 bg-gray-400/50 rounded-full animate-ping" />
-                      )}
-                      {/* Candle Stick */}
-                      <div className="w-2.5 h-10 bg-gradient-to-b from-white to-purple-200 rounded-sm border border-purple-300/40" />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Cake Tier 1 (Top) */}
-                <div className="w-36 h-12 bg-gradient-to-r from-[#8E72F0] to-[#7659E4] rounded-t-2xl border-t-2 border-white/40 shadow-md z-10 flex items-center justify-center text-[10px] font-bold text-white/80">
-                  &bull; &bull; &bull; &bull;
-                </div>
-
-                {/* Cake Tier 2 (Middle) */}
-                <div className="w-48 h-14 bg-gradient-to-r from-[#54448C] via-[#7659E4] to-[#54448C] rounded-t-xl border-t border-white/20 shadow-md flex items-center justify-center text-xs font-bold text-white">
-                  {data.name}
-                </div>
-
-                {/* Cake Plate */}
-                <div className="w-60 h-4 bg-gradient-to-r from-[#E0A842] via-[#FDE68A] to-[#C8922C] rounded-full shadow-lg" />
-              </div>
+              {/* Realistic 3D Handcrafted Cake with Wax Candles & Smoke Emitter */}
+              <RealisticCake
+                name={data.name}
+                accentColor={effectiveAccent}
+                templateId={activeTemplate.id}
+                candlesBlown={candlesBlown}
+                onBlowCandles={handleBlowCandles}
+              />
 
               <div className="pt-2">
                 <Button
-                  variant={isDefaultLavender ? "primary" : undefined}
                   size="md"
                   onClick={handleBlowCandles}
                   className="mx-auto text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
@@ -1027,11 +1044,11 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 </Button>
 
                 <Button
-                  variant="primary"
                   size="md"
                   onClick={handleSendLove}
-                  leftIcon={<Heart className={`w-4 h-4 text-[#C495C8] ${loveCount > 0 ? "fill-[#C495C8] animate-pulse" : ""}`} />}
-                  className="shadow-md shadow-[#7659E4]/20 active:scale-95 transition-all"
+                  leftIcon={<Heart className={`w-4 h-4 text-rose-300 ${loveCount > 0 ? "fill-rose-300 animate-pulse" : ""}`} />}
+                  className="text-white font-semibold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                  style={dynamicPrimaryButtonStyle}
                 >
                   {loveCount > 0 ? `Love Sent! ❤️ (${loveCount})` : "Send Love ❤️"}
                 </Button>
@@ -1053,11 +1070,16 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
                 </p>
                 <a
                   href="/"
-                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full border border-[#7659E4] bg-gradient-to-r from-[#7659E4]/20 via-[#8E72F0]/25 to-[#C495C8]/20 hover:from-[#7659E4]/30 hover:to-[#C495C8]/30 text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-[0_4px_20px_rgba(118,89,228,0.25)] hover:shadow-[0_6px_28px_rgba(118,89,228,0.35)] hover:scale-105 active:scale-95 cursor-pointer group"
+                  className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-white font-bold text-xs sm:text-sm tracking-wide transition-all shadow-lg hover:scale-105 active:scale-95 cursor-pointer group"
+                  style={{
+                    border: `1px solid ${effectiveAccent}`,
+                    background: `linear-gradient(135deg, ${effectiveAccent}35, ${effectiveAccent}15)`,
+                    boxShadow: `0 4px 25px ${effectiveAccent}35`,
+                  }}
                 >
-                  <Sparkles className="w-4 h-4 text-[#E0A842] group-hover:rotate-12 transition-transform" />
+                  <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform" style={{ color: effectiveAccent }} />
                   <span>Create your own Birthday Verse</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-[#A28DF8] group-hover:translate-x-0.5 transition-transform" />
+                  <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" style={{ color: effectiveAccent }} />
                 </a>
               </div>
             </m.div>

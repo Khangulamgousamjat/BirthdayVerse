@@ -144,10 +144,10 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
       {/* Header Info & Casino Indicator */}
       <div className="text-center space-y-1 mb-4">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-bold text-white shadow-xs">
-          <Layers className="w-3.5 h-3.5 text-amber-400" />
+          <Layers className="w-3.5 h-3.5" style={{ color: accentColor }} />
           <span>Casino Card Deck</span>
           {!isFinished && photos.length > 0 && (
-            <span className="ml-1 text-amber-300 font-mono">
+            <span className="ml-1 font-mono font-bold" style={{ color: accentColor }}>
               {activeCardIndex + 1} / {photos.length}
             </span>
           )}
@@ -174,10 +174,11 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
             initial={{ opacity: 0, scale: 0.9, rotate: -2 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 0.5, type: "spring" }}
-            className="w-full h-full rounded-[28px] bg-gradient-to-b from-[#261E38] to-[#171224] border-2 border-amber-400/40 p-6 flex flex-col items-center justify-between text-center shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+            className="w-full h-full rounded-[28px] bg-gradient-to-b from-[#201830] to-[#120D1D] border-2 p-6 flex flex-col items-center justify-between text-center shadow-[0_20px_50px_rgba(0,0,0,0.6)]"
+            style={{ borderColor: `${accentColor}50` }}
           >
             {/* Playing Card Top Corner Pip */}
-            <div className="w-full flex items-center justify-between text-amber-400/80 text-xs font-serif font-bold">
+            <div className="w-full flex items-center justify-between text-xs font-serif font-bold" style={{ color: accentColor }}>
               <span>★ A</span>
               <span>♠</span>
             </div>
@@ -206,18 +207,13 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
                 onClick={resetDeck}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold text-white shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer"
                 style={{
-                  background: `linear-gradient(135deg, ${accentColor}, #8E72F0)`,
+                  background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)`,
+                  boxShadow: `0 8px 20px ${accentColor}40`,
                 }}
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Shuffle &amp; Deal Again
               </button>
-            </div>
-
-            {/* Playing Card Bottom Corner Pip */}
-            <div className="w-full flex items-center justify-between text-amber-400/80 text-xs font-serif font-bold rotate-180">
-              <span>★ A</span>
-              <span>♠</span>
             </div>
           </m.div>
         ) : (
@@ -233,7 +229,10 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
                   filter: "brightness(0.78)",
                 }}
               >
-                <div className="w-full h-full p-2.5 rounded-[28px] bg-gradient-to-b from-[#2B2142] via-[#1E1630] to-[#150F22] border border-amber-400/30 shadow-2xl">
+                <div
+                  className="w-full h-full p-2.5 rounded-[28px] bg-gradient-to-b from-[#261E38] via-[#1A1428] to-[#120D1D] border shadow-2xl"
+                  style={{ borderColor: `${accentColor}35` }}
+                >
                   <div className="w-full h-full rounded-[20px] overflow-hidden bg-black/40">
                     <img
                       src={card2}
@@ -259,7 +258,10 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
                   filter: "brightness(0.90)",
                 }}
               >
-                <div className="w-full h-full p-2.5 rounded-[28px] bg-gradient-to-b from-[#32274D] via-[#211836] to-[#171026] border border-amber-400/40 shadow-2xl">
+                <div
+                  className="w-full h-full p-2.5 rounded-[28px] bg-gradient-to-b from-[#2B2142] via-[#1E1730] to-[#140E20] border shadow-2xl"
+                  style={{ borderColor: `${accentColor}50` }}
+                >
                   <div className="w-full h-full rounded-[20px] overflow-hidden bg-black/40">
                     <img
                       src={card1}
@@ -299,11 +301,14 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
                 className="absolute inset-0 rounded-[28px] overflow-hidden shadow-[0_22px_45px_rgba(0,0,0,0.65)]"
               >
                 {/* Authentic Playing Card Frame */}
-                <div className="w-full h-full p-2.5 rounded-[28px] bg-gradient-to-b from-[#3E2F5E] via-[#251B3D] to-[#19112B] border-2 border-amber-400/60 flex flex-col justify-between relative">
+                <div
+                  className="w-full h-full p-2.5 rounded-[28px] bg-gradient-to-b from-[#30254A] via-[#201834] to-[#161025] border-2 flex flex-col justify-between relative"
+                  style={{ borderColor: `${accentColor}70` }}
+                >
                   
                   {/* Playing Card Top Corner Pip & Crown */}
-                  <div className="flex items-center justify-between px-2 pt-1 z-10">
-                    <div className="flex items-center gap-1 text-amber-300 font-serif font-bold text-xs">
+                  <div className="flex items-center justify-between px-2 pt-1 pb-1 z-10">
+                    <div className="flex items-center gap-1 font-serif font-bold text-xs" style={{ color: accentColor }}>
                       <span>★</span>
                       <span>#{activeCardIndex + 1}</span>
                     </div>
@@ -313,7 +318,7 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
                   </div>
 
                   {/* High Quality Photo Canvas */}
-                  <div className="w-full flex-1 my-1.5 rounded-[20px] overflow-hidden relative shadow-inner bg-black/40">
+                  <div className="w-full flex-1 my-1 rounded-[20px] overflow-hidden relative shadow-inner bg-black/40">
                     <img
                       src={card0}
                       alt={`${name} memory ${activeCardIndex + 1}`}
@@ -338,15 +343,9 @@ export const CasinoCardDeck: React.FC<CasinoCardDeckProps> = ({
                     )}
                   </div>
 
-                  {/* Playing Card Bottom Foil Accent */}
-                  <div className="flex items-center justify-between px-2 pb-0.5 text-[10px] font-serif text-amber-300/80 italic z-10">
-                    <span>Celebration Deck</span>
-                    <span className="rotate-180 font-bold">★ #{activeCardIndex + 1}</span>
-                  </div>
-
                   {/* Interactive Swipe Pill on First Card */}
                   {activeCardIndex === 0 && !isDragging && (
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/25 text-[10px] font-semibold text-white whitespace-nowrap shadow-lg animate-pulse">
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/25 text-[10px] font-semibold text-white whitespace-nowrap shadow-lg animate-pulse z-20">
                       👈 Swipe card to flip 👉
                     </div>
                   )}
