@@ -2,8 +2,6 @@
 
 <div align="center">
 
-![BirthdayVerse Banner](https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1200&auto=format&fit=crop)
-
 ### *Make Every Birthday Magical, Emotional & Unforgettable ✨*
 
 [![React 19](https://img.shields.io/badge/React-19.2.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
