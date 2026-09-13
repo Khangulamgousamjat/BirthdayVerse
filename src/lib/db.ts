@@ -86,59 +86,106 @@ export async function deleteStorageFile(fileUrlOrPath?: string | null): Promise<
   }
 }
 
-export async function getSurpriseData(short_id: string): Promise<SurpriseData | null> {
+export function getCachedSurprise(short_id: string): SurpriseData | null {
+  if (typeof window === "undefined") return null;
   try {
-    const docRef = doc(db, 'surprises', short_id);
-    const docSnap = await withTimeout(
-      getDoc(docRef),
-      10000,
-      "Reading database timed out. Please check your Firebase connection."
-    );
-
-    if (!docSnap.exists()) {
-      return null;
+    const raw = localStorage.getItem(`birthdayverse_cache_${short_id}`);
+    if (raw) {
+      return JSON.parse(raw);
     }
+  } catch {}
+  return null;
+}
 
-    const data = docSnap.data();
+export function setCachedSurprise(short_id: string, data: SurpriseData): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(`birthdayverse_cache_${short_id}`, JSON.stringify(data));
+  } catch {}
+}
 
-    // Check if creator selected "Keep forever" in message JSON
-    let isKeptForever = false;
+export function removeCachedSurprise(short_id: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(`birthdayverse_cache_${short_id}`);
+  } catch {}
+}
+
+export async function getSurpriseData(short_id: string, retries: number = 3): Promise<SurpriseData | null> {
+  // If cached locally on this device, check it first as instant fallback
+  const cached = getCachedSurprise(short_id);
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const parsed = JSON.parse(data.message);
-      if (parsed?.retentionMode === "forever" || parsed?.keepForever === true) {
-        isKeptForever = true;
-      }
-    } catch {
-      // Plain text message
-    }
+      const docRef = doc(db, 'surprises', short_id);
+      const docSnap = await withTimeout(
+        getDoc(docRef),
+        8000,
+        "Reading database timed out. Please check your Firebase connection."
+      );
 
-    // 72-Hour Ephemeral Link Auto-Purge Check (unless Kept Forever)
-    if (!isKeptForever && data.created_at) {
-      const createdTime = new Date(data.created_at).getTime();
-      const now = Date.now();
-      const seventyTwoHoursMs = 72 * 60 * 60 * 1000;
-      if (now - createdTime > seventyTwoHoursMs) {
-        // Document has passed 72h ephemeral lifetime - purge doc and storage
-        deleteSurprise(short_id).catch((err) => console.error("Error purging expired document and storage:", err));
-        return null;
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+
+        // Check if creator selected "Keep forever" in message JSON
+        let isKeptForever = false;
+        try {
+          const parsed = JSON.parse(data.message);
+          if (parsed?.retentionMode === "forever" || parsed?.keepForever === true) {
+            isKeptForever = true;
+          }
+        } catch {
+          // Plain text message
+        }
+
+        // 72-Hour Ephemeral Link Auto-Purge Check (unless Kept Forever)
+        if (!isKeptForever && data.created_at) {
+          const createdTime = new Date(data.created_at).getTime();
+          const now = Date.now();
+          const seventyTwoHoursMs = 72 * 60 * 60 * 1000;
+          if (now - createdTime > seventyTwoHoursMs) {
+            // Document has passed 72h ephemeral lifetime - purge doc and storage
+            deleteSurprise(short_id).catch((err) => console.error("Error purging expired document and storage:", err));
+            return null;
+          }
+        }
+
+        const surpriseResult: SurpriseData = {
+          id: docSnap.id,
+          short_id: data.short_id,
+          name: data.name,
+          message: data.message,
+          image_path: data.image_path || undefined,
+          music_path: data.music_path || undefined,
+          created_at: data.created_at,
+          view_count: data.view_count || 0,
+          reactions: data.reactions || 0,
+        };
+
+        // Cache locally for instant loading across reloads and same-device sessions
+        setCachedSurprise(short_id, surpriseResult);
+        return surpriseResult;
+      }
+
+      // If document does not exist yet (e.g. slight cross-region propagation delay after creation),
+      // wait and retry before declaring not found
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, 650 * (attempt + 1)));
+      }
+    } catch (error: any) {
+      console.warn(`Attempt ${attempt + 1} error fetching surprise data from Firestore:`, error);
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, 650 * (attempt + 1)));
       }
     }
-
-    return {
-      id: docSnap.id,
-      short_id: data.short_id,
-      name: data.name,
-      message: data.message,
-      image_path: data.image_path || undefined,
-      music_path: data.music_path || undefined,
-      created_at: data.created_at,
-      view_count: data.view_count || 0,
-      reactions: data.reactions || 0,
-    };
-  } catch (error: any) {
-    console.error("Error fetching surprise data from Firestore:", error);
-    return null;
   }
+
+  // Fallback to local device cache if Firestore is still propagating or network has temporary glitch
+  if (cached) {
+    return cached;
+  }
+
+  return null;
 }
 
 export async function saveSurpriseData(record: {
@@ -239,6 +286,8 @@ export async function saveSurpriseData(record: {
       image_path = null;
     }
 
+    const createdAt = new Date().toISOString();
+
     // Save surprise details in Firestore surprises collection
     await withTimeout(
       setDoc(doc(db, 'surprises', short_id), {
@@ -247,13 +296,26 @@ export async function saveSurpriseData(record: {
         message: finalMessage,
         image_path: image_path || null,
         music_path: music_path || null,
-        created_at: new Date().toISOString(),
+        created_at: createdAt,
         view_count: 0,
         reactions: 0
       }),
       10000,
       "Database save timed out. Please check your Firestore database setup and internet connection."
     );
+
+    // Immediately cache in local storage so this browser can load it with zero latency
+    setCachedSurprise(short_id, {
+      id: short_id,
+      short_id,
+      name: record.name,
+      message: finalMessage,
+      image_path: image_path || undefined,
+      music_path: music_path || undefined,
+      created_at: createdAt,
+      view_count: 0,
+      reactions: 0
+    });
 
     return short_id;
   } catch (err: any) {
@@ -286,6 +348,7 @@ export async function incrementReactions(short_id: string): Promise<void> {
 
 export async function deleteSurprise(short_id: string): Promise<void> {
   try {
+    removeCachedSurprise(short_id);
     const docRef = doc(db, 'surprises', short_id);
     const snap = await getDoc(docRef);
     if (snap.exists()) {
@@ -311,6 +374,25 @@ export async function deleteSurprise(short_id: string): Promise<void> {
   } catch (error) {
     console.error("Error deleting surprise document and storage:", error);
     throw error;
+  }
+}
+
+export async function purgeAllSurprises(): Promise<number> {
+  try {
+    const surprisesColl = collection(db, 'surprises');
+    const snapshot = await getDocs(surprisesColl);
+    let count = 0;
+    for (const docItem of snapshot.docs) {
+      await deleteSurprise(docItem.id);
+      count++;
+    }
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("birthdayverse_my_wishes");
+    }
+    return count;
+  } catch (err) {
+    console.error("Failed to purge all surprises:", err);
+    throw err;
   }
 }
 

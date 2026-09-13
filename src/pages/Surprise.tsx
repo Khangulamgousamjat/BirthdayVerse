@@ -32,19 +32,44 @@ interface ExperienceData {
 export default function Surprise() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [data, setData] = useState<ExperienceData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+
+  // Instant local cache hydration for creator or same-browser views (zero loading delay)
+  const [data, setData] = useState<ExperienceData | null>(() => {
+    if (typeof window !== "undefined" && id) {
+      try {
+        const cachedRaw = localStorage.getItem(`birthdayverse_cache_${id}`);
+        if (cachedRaw) {
+          const parsed = JSON.parse(cachedRaw);
+          if (parsed && parsed.name && parsed.message) {
+            return {
+              name: parsed.name,
+              message: parsed.message,
+              image_path: parsed.image_path,
+              music_path: parsed.music_path,
+            };
+          }
+        }
+      } catch {}
+    }
+    return null;
+  });
+
+  const [isLoading, setIsLoading] = useState<boolean>(() => !data);
+  const [retryKey, setRetryKey] = useState<number>(0);
 
   useEffect(() => {
     if (!id) {
       navigate("/");
       return;
     }
-    // Increment view count in Firestore
-    incrementViewCount(id);
+
+    let isMounted = true;
 
     const fetchData = async () => {
-      const result = await getSurpriseData(id);
+      // getSurpriseData already has 3 retries with progressive backoff built in
+      const result = await getSurpriseData(id, 3);
+      if (!isMounted) return;
+
       if (result) {
         setData({ 
           name: result.name, 
@@ -52,11 +77,25 @@ export default function Surprise() {
           image_path: result.image_path,
           music_path: result.music_path
         });
+        setIsLoading(false);
+        // Safely record view count only after confirming the document exists
+        incrementViewCount(id);
+      } else {
+        // Fall back only if not already hydrated from local cache
+        setData((current) => {
+          if (current) return current;
+          return null;
+        });
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
+
     fetchData();
-  }, [id, navigate]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id, navigate, retryKey]);
 
   if (isLoading) {
     return (
@@ -84,6 +123,17 @@ export default function Surprise() {
           <div className="flex flex-col gap-3 pt-2">
             <Button
               variant="primary"
+              size="md"
+              onClick={() => {
+                setIsLoading(true);
+                setRetryKey((k) => k + 1);
+              }}
+              className="w-full"
+            >
+              Retry Loading Celebration
+            </Button>
+            <Button
+              variant="secondary"
               size="md"
               onClick={() => navigate("/")}
               className="w-full"
@@ -292,6 +342,8 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   const [scene, setScene] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const isUserMutedRef = useRef<boolean>(false);
+  const hasStartedAudioRef = useRef<boolean>(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
   const [hasSentLove, setHasSentLove] = useState<boolean>(false);
@@ -419,8 +471,10 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
   // Audio unlock safe for mobile browsers
   const unlockAudio = () => {
     if (!audioRef.current || !resolvedTrackUrl) return;
+    if (isUserMutedRef.current) return;
     try {
       audioRef.current.volume = 0.85;
+      audioRef.current.muted = false;
     } catch {
       // ignore
     }
@@ -429,6 +483,8 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       playPromise
         .then(() => {
           setIsPlaying(true);
+          setIsMuted(false);
+          hasStartedAudioRef.current = true;
         })
         .catch((err) => {
           console.warn("Autoplay deferred or prevented on mobile:", err);
@@ -437,9 +493,25 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
     }
   };
 
-  const toggleMusic = () => {
+  const toggleMusic = (e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!audioRef.current || !resolvedTrackUrl) return;
-    if (audioRef.current.paused) {
+
+    if (isPlaying && !isMuted) {
+      // User explicitly clicked to mute the music
+      isUserMutedRef.current = true;
+      setIsMuted(true);
+      setIsPlaying(false);
+      audioRef.current.pause();
+      audioRef.current.muted = true;
+    } else {
+      // User clicked to unmute and play
+      isUserMutedRef.current = false;
+      setIsMuted(false);
+      audioRef.current.muted = false;
       try {
         audioRef.current.volume = 0.85;
       } catch {
@@ -449,42 +521,54 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
         .play()
         .then(() => {
           setIsPlaying(true);
+          hasStartedAudioRef.current = true;
         })
         .catch((err) => {
           console.warn("Audio play error on user toggle:", err);
         });
-    } else {
-      audioRef.current.pause();
-      setIsPlaying(false);
     }
   };
 
   // On mobile browsers, if autoplay was prevented at Scene 0,
-  // allow the next user tap anywhere on the screen to unlock music
+  // allow the next user tap anywhere on the screen to unlock music (unless explicitly muted)
   useEffect(() => {
+    if (scene === 0 || hasStartedAudioRef.current || isUserMutedRef.current || !resolvedTrackUrl) {
+      return;
+    }
+
     const handleFirstUserInteraction = () => {
+      if (isUserMutedRef.current) return;
       if (scene > 0 && resolvedTrackUrl && audioRef.current && audioRef.current.paused) {
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-        }).catch(() => {});
+        audioRef.current.muted = false;
+        try {
+          audioRef.current.volume = 0.85;
+        } catch {}
+        audioRef.current
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+            setIsMuted(false);
+            hasStartedAudioRef.current = true;
+          })
+          .catch(() => {});
       }
       window.removeEventListener("touchstart", handleFirstUserInteraction);
       window.removeEventListener("click", handleFirstUserInteraction);
     };
 
-    if (scene > 0 && !isPlaying) {
-      window.addEventListener("touchstart", handleFirstUserInteraction, { once: true });
-      window.addEventListener("click", handleFirstUserInteraction, { once: true });
-    }
+    window.addEventListener("touchstart", handleFirstUserInteraction, { once: true, passive: true });
+    window.addEventListener("click", handleFirstUserInteraction, { once: true });
 
     return () => {
       window.removeEventListener("touchstart", handleFirstUserInteraction);
       window.removeEventListener("click", handleFirstUserInteraction);
     };
-  }, [scene, isPlaying, resolvedTrackUrl]);
+  }, [scene, resolvedTrackUrl]);
 
   // Scene 0 -> Scene 1 Transition (The Opening)
   const handleOpenGift = () => {
+    isUserMutedRef.current = false;
+    setIsMuted(false);
     unlockAudio();
     setScene(1);
   };
@@ -604,29 +688,34 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
 
       {/* Persistent Audio Controller */}
       {scene > 0 && Boolean(resolvedTrackUrl) && (
-        <div className="fixed top-5 right-5 z-50">
+        <div className="fixed top-5 right-5 z-[9999]">
           <button
             onClick={toggleMusic}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 dark:bg-[#1E182A]/80 backdrop-blur-md text-white text-xs font-semibold hover:bg-white/20 transition-all shadow-lg cursor-pointer"
+            onTouchStart={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#1E182A]/90 backdrop-blur-md text-white text-xs font-semibold hover:bg-[#282038] transition-all shadow-xl cursor-pointer pointer-events-auto select-none"
             style={
-              isPlaying
+              isPlaying && !isMuted
                 ? {
                     border: `1px solid ${effectiveAccent}80`,
                     boxShadow: `0 0 16px ${effectiveAccent}30`,
                   }
-                : { border: "1px solid rgba(255,255,255,0.15)" }
+                : { 
+                    border: "1px solid rgba(244,63,94,0.4)",
+                    background: "rgba(30, 24, 42, 0.95)"
+                  }
             }
-            aria-label="Toggle music"
+            aria-label={isPlaying && !isMuted ? "Mute soundtrack" : "Unmute soundtrack"}
+            title={isPlaying && !isMuted ? "Click to mute soundtrack" : "Click to unmute soundtrack"}
           >
-            {isPlaying ? (
+            {isPlaying && !isMuted ? (
               <>
                 <Music className="w-3.5 h-3.5 animate-bounce" style={{ color: effectiveAccent }} />
-                <span className="text-[11px] hidden sm:inline">Playing Soundtrack</span>
+                <span className="text-[11px] hidden sm:inline font-medium">Playing Soundtrack</span>
               </>
             ) : (
               <>
-                <VolumeX className="w-3.5 h-3.5 opacity-60" />
-                <span className="text-[11px] opacity-60 hidden sm:inline">Music Paused</span>
+                <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                <span className="text-[11px] text-rose-300 hidden sm:inline font-medium">Music Muted</span>
               </>
             )}
           </button>

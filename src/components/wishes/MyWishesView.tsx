@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Plus, Gift, Eye, Copy, ExternalLink, Trash2, Calendar, Sparkles, Check, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { getSurpriseData } from "@/lib/db";
+import { getSurpriseData, deleteSurprise } from "@/lib/db";
 
 export interface WishCardData {
   id: string;
@@ -88,8 +88,40 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this birthday verse from the database?")) {
+      return;
+    }
+    try {
+      await deleteSurprise(id);
+    } catch (e) {
+      console.warn("Could not delete from database, cleaning up locally:", e);
+    }
+    try {
+      localStorage.removeItem(`birthdayverse_cache_${id}`);
+    } catch {}
     setWishes((prev) => prev.filter((w) => w.id !== id));
+  };
+
+  const handleClearAll = async () => {
+    if (!window.confirm("Are you sure you want to delete ALL your created birthday verses from the database and this device? This cannot be undone.")) {
+      return;
+    }
+    setIsSyncing(true);
+    try {
+      for (const wish of wishes) {
+        if (wish.id) {
+          try {
+            await deleteSurprise(wish.id);
+            localStorage.removeItem(`birthdayverse_cache_${wish.id}`);
+          } catch {}
+        }
+      }
+      setWishes([]);
+      localStorage.removeItem("birthdayverse_my_wishes");
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const handleCopyLink = (url?: string, id?: string) => {
@@ -116,7 +148,19 @@ export const MyWishesView: React.FC<MyWishesViewProps> = ({ onCreateNew }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {wishes.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleClearAll}
+              disabled={isSyncing}
+              leftIcon={<Trash2 className="w-3.5 h-3.5 text-rose-400" />}
+              className="text-xs text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50"
+            >
+              Clear All Verses
+            </Button>
+          )}
           <button
             onClick={syncLiveStats}
             disabled={isSyncing}
