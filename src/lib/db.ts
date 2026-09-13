@@ -165,6 +165,12 @@ export async function getSurpriseData(short_id: string, retries: number = 3): Pr
         // Cache locally for instant loading across reloads and same-device sessions
         setCachedSurprise(short_id, surpriseResult);
         return surpriseResult;
+      } else {
+        // Document does not exist in Firestore (purged or deleted)
+        if (attempt >= retries) {
+          removeCachedSurprise(short_id);
+          return null;
+        }
       }
 
       // If document does not exist yet (e.g. slight cross-region propagation delay after creation),
@@ -180,7 +186,7 @@ export async function getSurpriseData(short_id: string, retries: number = 3): Pr
     }
   }
 
-  // Fallback to local device cache if Firestore is still propagating or network has temporary glitch
+  // Fallback to local device cache only if Firestore network timed out / unreachable
   if (cached) {
     return cached;
   }
@@ -347,9 +353,9 @@ export async function incrementReactions(short_id: string): Promise<void> {
 }
 
 export async function deleteSurprise(short_id: string): Promise<void> {
+  removeCachedSurprise(short_id);
+  const docRef = doc(db, 'surprises', short_id);
   try {
-    removeCachedSurprise(short_id);
-    const docRef = doc(db, 'surprises', short_id);
     const snap = await getDoc(docRef);
     if (snap.exists()) {
       const data = snap.data();
@@ -367,12 +373,17 @@ export async function deleteSurprise(short_id: string): Promise<void> {
           }
         }
       } catch {
-        // ignore
+        // ignore JSON parse error
       }
     }
+  } catch (storageErr) {
+    console.warn("Storage inspection error while deleting surprise:", storageErr);
+  }
+  // Guarantee document deletion even if storage inspection failed or timed out
+  try {
     await deleteDoc(docRef);
   } catch (error) {
-    console.error("Error deleting surprise document and storage:", error);
+    console.error("Error deleting surprise document:", error);
     throw error;
   }
 }
@@ -382,13 +393,39 @@ export async function purgeAllSurprises(): Promise<number> {
     const surprisesColl = collection(db, 'surprises');
     const snapshot = await getDocs(surprisesColl);
     let count = 0;
-    for (const docItem of snapshot.docs) {
-      await deleteSurprise(docItem.id);
+
+    // Parallel deletions with fallback to direct doc deletion
+    const tasks = snapshot.docs.map(async (docItem) => {
+      try {
+        await deleteSurprise(docItem.id);
+      } catch (err) {
+        console.warn(`Fallback direct delete for ${docItem.id}:`, err);
+        try {
+          await deleteDoc(doc(db, 'surprises', docItem.id));
+        } catch {}
+      }
       count++;
-    }
+    });
+
+    await Promise.all(tasks);
+
+    // Clean up all local caches and stored wish lists
     if (typeof window !== "undefined") {
-      localStorage.removeItem("birthdayverse_my_wishes");
+      try {
+        localStorage.removeItem("birthdayverse_my_wishes");
+        const keysToRemove: string[] = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && (key.startsWith("birthdayverse_cache_") || key === "birthdayverse_my_wishes")) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach((k) => localStorage.removeItem(k));
+      } catch (storageCleanErr) {
+        console.warn("Could not clean local storage caches:", storageCleanErr);
+      }
     }
+
     return count;
   } catch (err) {
     console.error("Failed to purge all surprises:", err);

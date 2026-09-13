@@ -14,6 +14,7 @@ import {
   ExternalLink, 
   CheckCircle2, 
   AlertCircle, 
+  AlertTriangle, 
   Activity, 
   Layers, 
   Heart, 
@@ -265,17 +266,30 @@ export default function AdminPage() {
     }
   };
 
-  // Handle Purge All Verses
-  const handlePurgeAll = async () => {
-    if (!window.confirm("CRITICAL WARNING: Are you sure you want to permanently purge ALL celebration records and media from the database? This cannot be undone.")) {
-      return;
-    }
+  // State for Purge Modal
+  const [showPurgeModal, setShowPurgeModal] = useState<boolean>(false);
+  const [isPurging, setIsPurging] = useState<boolean>(false);
+  const [purgeError, setPurgeError] = useState<string | null>(null);
+  const [purgeSuccess, setPurgeSuccess] = useState<string | null>(null);
+
+  // Handle Purge All Verses with verification
+  const handleExecutePurgeAll = async () => {
+    setIsPurging(true);
+    setPurgeError(null);
+    setPurgeSuccess(null);
     try {
-      await purgeAllSurprises();
-      alert("All celebration records have been permanently purged from the database.");
-      loadMetrics();
-    } catch (err) {
-      alert("Failed to purge all records from database.");
+      const purgedCount = await purgeAllSurprises();
+      setPurgeSuccess(`Successfully purged ${purgedCount} generated celebration link${purgedCount === 1 ? '' : 's'} and cleared all media.`);
+      await loadMetrics();
+      setTimeout(() => {
+        setShowPurgeModal(false);
+        setPurgeSuccess(null);
+      }, 1800);
+    } catch (err: any) {
+      console.error("Purge error:", err);
+      setPurgeError(err.message || "Failed to purge celebration records from database.");
+    } finally {
+      setIsPurging(false);
     }
   };
 
@@ -424,6 +438,23 @@ export default function AdminPage() {
               leftIcon={<RefreshCw className="w-3.5 h-3.5" />}
             >
               <span className="hidden sm:inline">Refresh</span>
+            </Button>
+
+            {/* Master Key: Delete All Generated Links */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPurgeError(null);
+                setPurgeSuccess(null);
+                setShowPurgeModal(true);
+              }}
+              leftIcon={<Trash2 className="w-3.5 h-3.5 text-rose-400" />}
+              className="border-rose-900/60 bg-rose-950/30 text-rose-300 hover:bg-rose-900/50 hover:text-white transition-all shadow-xs"
+              title="Permanently delete all generated links from database"
+            >
+              <span className="hidden md:inline">Delete All Links</span>
+              <span className="md:hidden">Delete All</span>
             </Button>
 
             <Button
@@ -619,7 +650,11 @@ export default function AdminPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handlePurgeAll}
+                    onClick={() => {
+                      setPurgeError(null);
+                      setPurgeSuccess(null);
+                      setShowPurgeModal(true);
+                    }}
                     leftIcon={<Trash2 className="w-3.5 h-3.5 text-rose-400" />}
                     className="text-xs text-rose-400 hover:text-rose-200 border-rose-900/60 bg-rose-950/40 hover:bg-rose-900/50"
                   >
@@ -761,6 +796,44 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+
+            {/* Master Database Purge Control Card */}
+            <div className="md:col-span-2 p-6 rounded-3xl bg-[#1E182A] border border-[#282038] space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 rounded-xl bg-rose-950/70 text-rose-400 border border-rose-900/40">
+                    <Trash2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">Master Database Purge Control</h3>
+                    <p className="text-xs text-[#A89EC0]">One-click deletion of all generated celebrations and associated media</p>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setPurgeError(null);
+                    setPurgeSuccess(null);
+                    setShowPurgeModal(true);
+                  }}
+                  leftIcon={<Trash2 className="w-4 h-4 text-rose-400" />}
+                  className="border-rose-900/60 bg-rose-950/40 text-rose-300 hover:bg-rose-900/60 hover:text-white transition-all"
+                >
+                  Delete All Generated Links
+                </Button>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-[#161220] border border-[#282038] text-xs text-[#A89EC0] space-y-2">
+                <p>
+                  This administrative key allows you to permanently clean and reset all generated celebration links from the <span className="font-mono text-[#C495C8]">surprises</span> Firestore collection, remove user-uploaded media files from Firebase Storage, and reset real-time traffic view counters.
+                </p>
+                <p className="text-[#736886]">
+                  Admin authentication and platform configurations remain safe and unaffected.
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -827,6 +900,81 @@ export default function AdminPage() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Purge All Links Confirmation Modal */}
+      <Modal
+        isOpen={showPurgeModal}
+        onClose={() => !isPurging && setShowPurgeModal(false)}
+        title={
+          <div className="flex items-center gap-2 text-rose-400 font-bold">
+            <AlertTriangle className="w-5 h-5 text-rose-500" />
+            <span>Delete All Generated Links</span>
+          </div>
+        }
+        description="Permanently delete all celebration links and associated media from the database."
+        maxWidth="md"
+      >
+        <div className="space-y-4 pt-2">
+          <div className="p-4 rounded-2xl bg-rose-950/40 border border-rose-900/50 space-y-2">
+            <p className="text-xs text-rose-200 font-medium leading-relaxed">
+              <strong>CRITICAL WARNING:</strong> This action will permanently delete all celebration records from the Firestore database and purge all uploaded photos and custom soundtracks from Firebase Storage.
+            </p>
+            <div className="pt-2 text-xs text-rose-300/80 space-y-1">
+              <div className="flex items-center justify-between">
+                <span>Stored Links to be Removed:</span>
+                <span className="font-bold text-white">{metrics?.recentVerses.length || 0} Records</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>View Counts & Reactions:</span>
+                <span className="font-bold text-white">Reset to 0</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Admin Login & Master Keys:</span>
+                <span className="font-bold text-emerald-400">Safe & Untouched</span>
+              </div>
+            </div>
+          </div>
+
+          <p className="text-xs text-[#A89EC0] leading-relaxed">
+            Anyone visiting an old celebration link after deletion will see a friendly &quot;Celebration Expired or Removed&quot; message and will be invited to create a new celebration.
+          </p>
+
+          {purgeError && (
+            <div className="p-3 rounded-xl bg-rose-950 border border-rose-900 text-xs text-rose-400 font-medium flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+              <span>{purgeError}</span>
+            </div>
+          )}
+
+          {purgeSuccess && (
+            <div className="p-3 rounded-xl bg-emerald-950/60 border border-emerald-900 text-xs text-emerald-400 font-medium flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{purgeSuccess}</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-end gap-3 pt-3">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setShowPurgeModal(false)}
+              disabled={isPurging}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleExecutePurgeAll}
+              isLoading={isPurging}
+              leftIcon={<Trash2 className="w-4 h-4" />}
+              className="bg-rose-600 hover:bg-rose-700 text-white font-bold border-rose-700"
+            >
+              {isPurging ? "Deleting Records..." : "Yes, Delete All Links Now"}
+            </Button>
+          </div>
+        </div>
       </Modal>
 
     </div>
