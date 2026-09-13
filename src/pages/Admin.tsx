@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { StatCard } from "@/components/ui/StatCard";
-import { getAdminMetrics, AdminMetrics, deleteSurprise, verifyAdminPassword, updateAdminPasswordInDb } from "@/lib/db";
+import { getAdminMetrics, AdminMetrics, deleteSurprise, purgeAllSurprises, verifyAdminPassword, updateAdminPasswordInDb } from "@/lib/db";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -262,6 +262,20 @@ export default function AdminPage() {
       loadMetrics();
     } catch (err) {
       alert("Failed to delete verse from database.");
+    }
+  };
+
+  // Handle Purge All Verses
+  const handlePurgeAll = async () => {
+    if (!window.confirm("CRITICAL WARNING: Are you sure you want to permanently purge ALL celebration records and media from the database? This cannot be undone.")) {
+      return;
+    }
+    try {
+      await purgeAllSurprises();
+      alert("All celebration records have been permanently purged from the database.");
+      loadMetrics();
+    } catch (err) {
+      alert("Failed to purge all records from database.");
     }
   };
 
@@ -594,12 +608,25 @@ export default function AdminPage() {
         {/* Tab 2: Recent Verses List */}
         {activeTab === "verses" && (
           <div className="p-6 rounded-3xl bg-[#1E182A] border border-[#282038] space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h2 className="text-base font-bold text-white">Live Celebrations in Database</h2>
                 <p className="text-xs text-[#A89EC0]">Real Firestore records in the `surprises` collection</p>
               </div>
-              <Badge variant="secondary">{metrics?.recentVerses.length || 0} Records</Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">{metrics?.recentVerses.length || 0} Records</Badge>
+                {metrics && metrics.recentVerses.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePurgeAll}
+                    leftIcon={<Trash2 className="w-3.5 h-3.5 text-rose-400" />}
+                    className="text-xs text-rose-400 hover:text-rose-200 border-rose-900/60 bg-rose-950/40 hover:bg-rose-900/50"
+                  >
+                    Purge All Records
+                  </Button>
+                )}
+              </div>
             </div>
 
             {metrics && metrics.recentVerses.length > 0 ? (
