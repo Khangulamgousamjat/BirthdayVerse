@@ -12,7 +12,7 @@ import {
   orderBy,
   limit
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { dataUrlToBlob, optimizePhotoBatch } from './imageOptimizer';
 
 export type SurpriseData = {
@@ -62,7 +62,7 @@ async function uploadFile(file: File | Blob, path: string): Promise<string | nul
     const storageRef = ref(storage, `surprises/${path}`);
     const snapshot = await withTimeout(
       uploadBytes(storageRef, file),
-      15000,
+      35000,
       "File upload timed out. Please check your Firebase Storage setup and connection."
     );
     const downloadURL = await getDownloadURL(snapshot.ref);
@@ -70,6 +70,19 @@ async function uploadFile(file: File | Blob, path: string): Promise<string | nul
   } catch (error: any) {
     console.error("Storage upload error:", error);
     throw new Error(`Failed to upload file: ${error.message}`);
+  }
+}
+
+export async function deleteStorageFile(fileUrlOrPath?: string | null): Promise<void> {
+  if (!fileUrlOrPath) return;
+  try {
+    if (fileUrlOrPath.includes("firebasestorage.googleapis.com") || fileUrlOrPath.startsWith("surprises/")) {
+      const fileRef = ref(storage, fileUrlOrPath);
+      await deleteObject(fileRef);
+    }
+  } catch (err) {
+    // File may already have been deleted or expired, which is safe to ignore
+    console.warn("Storage file deletion skipped or not found:", err);
   }
 }
 
@@ -105,8 +118,8 @@ export async function getSurpriseData(short_id: string): Promise<SurpriseData | 
       const now = Date.now();
       const seventyTwoHoursMs = 72 * 60 * 60 * 1000;
       if (now - createdTime > seventyTwoHoursMs) {
-        // Document has passed 72h ephemeral lifetime
-        deleteDoc(docRef).catch((err) => console.error("Error purging expired document:", err));
+        // Document has passed 72h ephemeral lifetime - purge doc and storage
+        deleteSurprise(short_id).catch((err) => console.error("Error purging expired document and storage:", err));
         return null;
       }
     }
@@ -274,9 +287,29 @@ export async function incrementReactions(short_id: string): Promise<void> {
 export async function deleteSurprise(short_id: string): Promise<void> {
   try {
     const docRef = doc(db, 'surprises', short_id);
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.music_path) {
+        await deleteStorageFile(data.music_path);
+      }
+      if (data.image_path) {
+        await deleteStorageFile(data.image_path);
+      }
+      try {
+        const parsed = JSON.parse(data.message);
+        if (Array.isArray(parsed?.photos)) {
+          for (const photoUrl of parsed.photos) {
+            await deleteStorageFile(photoUrl);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
     await deleteDoc(docRef);
   } catch (error) {
-    console.error("Error deleting surprise document:", error);
+    console.error("Error deleting surprise document and storage:", error);
     throw error;
   }
 }

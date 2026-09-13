@@ -20,6 +20,7 @@ import confetti from "canvas-confetti";
 import { CasinoCardDeck } from "@/components/surprise/CasinoCardDeck";
 import { RealisticCake } from "@/components/surprise/RealisticCake";
 import { getTemplateById, VisualTemplate } from "@/lib/templates";
+import { resolveSoundtrackUrl } from "@/lib/soundtracks";
 
 interface ExperienceData {
   name: string;
@@ -366,51 +367,83 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
     customMusic = data.music_path;
   }
 
-  // Audio lifecycle
-  useEffect(() => {
-    if (customMusic === "none") return;
-    const trackSrc = customMusic || "/Happy Birthday Song.mp3";
-    audioRef.current = new Audio(trackSrc);
-    audioRef.current.loop = true;
-    audioRef.current.preload = "auto";
+  // Resolve valid playable audio URL
+  const resolvedTrackUrl = resolveSoundtrackUrl(customMusic);
 
-    return () => {
+  // Audio lifecycle with mobile event binding
+  useEffect(() => {
+    if (!resolvedTrackUrl) {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
         audioRef.current = null;
       }
-    };
-  }, [customMusic]);
+      setIsPlaying(false);
+      return;
+    }
 
-  // Audio unlock and progressive volume ramp
+    const audio = new Audio(resolvedTrackUrl);
+    audio.loop = true;
+    audio.preload = "auto";
+    try {
+      audio.volume = 0.85;
+    } catch {
+      // Ignored on iOS where volume is hardware-controlled
+    }
+
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onError = (e: Event) => {
+      console.warn("Audio playback error:", e);
+      setIsPlaying(false);
+    };
+
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("error", onError);
+    audio.addEventListener("ended", onPause);
+
+    audioRef.current = audio;
+
+    return () => {
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("error", onError);
+      audio.removeEventListener("ended", onPause);
+      audio.pause();
+      audio.src = "";
+      audioRef.current = null;
+    };
+  }, [resolvedTrackUrl]);
+
+  // Audio unlock safe for mobile browsers
   const unlockAudio = () => {
-    if (customMusic === "none" || !audioRef.current) return;
-    audioRef.current.volume = 0;
-    audioRef.current.play().then(() => {
-      setIsPlaying(true);
-      let vol = 0;
-      const ramp = setInterval(() => {
-        vol += 0.05;
-        if (vol >= 0.85) {
-          vol = 0.85;
-          clearInterval(ramp);
-        }
-        if (audioRef.current) audioRef.current.volume = vol;
-      }, 100);
-    }).catch(() => {
-      // Autoplay policy restrictions
-    });
+    if (!audioRef.current || !resolvedTrackUrl) return;
+    try {
+      audioRef.current.volume = 0.85;
+    } catch {
+      // ignore
+    }
+    const playPromise = audioRef.current.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((err) => {
+          console.warn("Autoplay deferred or prevented on mobile:", err);
+          setIsPlaying(false);
+        });
+    }
   };
 
   const toggleMusic = () => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      if (audioRef.current.volume === 0) {
+    if (!audioRef.current || !resolvedTrackUrl) return;
+    if (audioRef.current.paused) {
+      try {
         audioRef.current.volume = 0.85;
+      } catch {
+        // ignore
       }
       audioRef.current
         .play()
@@ -418,10 +451,37 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
           setIsPlaying(true);
         })
         .catch((err) => {
-          console.warn("Audio play prevented:", err);
+          console.warn("Audio play error on user toggle:", err);
         });
+    } else {
+      audioRef.current.pause();
+      setIsPlaying(false);
     }
   };
+
+  // On mobile browsers, if autoplay was prevented at Scene 0,
+  // allow the next user tap anywhere on the screen to unlock music
+  useEffect(() => {
+    const handleFirstUserInteraction = () => {
+      if (scene > 0 && resolvedTrackUrl && audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().then(() => {
+          setIsPlaying(true);
+        }).catch(() => {});
+      }
+      window.removeEventListener("touchstart", handleFirstUserInteraction);
+      window.removeEventListener("click", handleFirstUserInteraction);
+    };
+
+    if (scene > 0 && !isPlaying) {
+      window.addEventListener("touchstart", handleFirstUserInteraction, { once: true });
+      window.addEventListener("click", handleFirstUserInteraction, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener("touchstart", handleFirstUserInteraction);
+      window.removeEventListener("click", handleFirstUserInteraction);
+    };
+  }, [scene, isPlaying, resolvedTrackUrl]);
 
   // Scene 0 -> Scene 1 Transition (The Opening)
   const handleOpenGift = () => {
@@ -543,7 +603,7 @@ function CinematicExperience({ data, surpriseId }: { data: ExperienceData; surpr
       <ThematicAtmosphere type={activeTemplate.particleType} />
 
       {/* Persistent Audio Controller */}
-      {scene > 0 && customMusic !== "none" && (
+      {scene > 0 && Boolean(resolvedTrackUrl) && (
         <div className="fixed top-5 right-5 z-50">
           <button
             onClick={toggleMusic}

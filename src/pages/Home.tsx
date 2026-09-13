@@ -30,9 +30,11 @@ import {
   Users,
   Clock,
   Volume2,
-  Download
+  Download,
+  AlertCircle
 } from "lucide-react";
 import QRCode from "qrcode";
+import { SOUNDTRACKS, SOUNDTRACK_CATEGORIES, resolveSoundtrackUrl } from "@/lib/soundtracks";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar, NavView } from "@/components/layout/Sidebar";
 import { MainDashboardView } from "@/components/dashboard/MainDashboardView";
@@ -82,27 +84,7 @@ const VIBES = [
   { id: "party", name: "Party", icon: <Music className="w-4 h-4 text-indigo-500" /> },
 ];
 
-// Soundtracks
-const SOUNDTRACK_CATEGORIES = ["Popular", "Happy", "Romantic", "Calm", "Energetic", "Party", "Upload"];
 
-const SOUNDTRACKS = [
-  { id: "Coldplay - A Sky Full of Stars", file: "/funky groovin.mp3", title: "A Sky Full of Stars", artist: "Coldplay", duration: "4:28", category: "Popular" },
-  { id: "/Happy Birthday Song.mp3", file: "/Happy Birthday Song.mp3", title: "Classic Happy Birthday", artist: "Birthdayverse Mix", duration: "2:54", category: "Happy" },
-  { id: "/happy birthday slowed.mp3", file: "/happy birthday slowed.mp3", title: "Happy Birthday (Lo-Fi Slowed)", artist: "Chill Midnight Mix", duration: "1:23", category: "Calm" },
-  { id: "/pianocafe.mp3", file: "/pianocafe.mp3", title: "Acoustic Piano Cafe", artist: "Acoustic Cafe", duration: "3:10", category: "Calm" },
-  { id: "/romantic.mp3", file: "/romantic.mp3", title: "Romantic Strings & Cello", artist: "Sweet Melodies", duration: "3:45", category: "Romantic" },
-  { id: "/funky groovin.mp3", file: "/funky groovin.mp3", title: "Funky Groovin Disco", artist: "Groove Party", duration: "2:15", category: "Energetic" },
-  { id: "/playhouse.mp3", file: "/playhouse.mp3", title: "Playhouse Celebration", artist: "Playful Pop", duration: "2:30", category: "Happy" },
-  { id: "golden_sunset", file: "/pianocafe.mp3", title: "Golden Sunset Chords", artist: "Acoustic Warmth", duration: "3:15", category: "Calm" },
-  { id: "dreamy_starlight", file: "/happy birthday slowed.mp3", title: "Dreamy Starlight Lullaby", artist: "Celestial Music Box", duration: "2:40", category: "Romantic" },
-  { id: "confetti_pop", file: "/playhouse.mp3", title: "Celebration Confetti Pop", artist: "Festival Beats", duration: "2:50", category: "Happy" },
-  { id: "sweet_serenade", file: "/romantic.mp3", title: "Sweet Rose Serenade", artist: "Violin Ensemble", duration: "3:20", category: "Romantic" },
-  { id: "neon_dance", file: "/funky groovin.mp3", title: "Neon Midnight Dance", artist: "Club Party Remix", duration: "2:45", category: "Party" },
-  { id: "bollywood_dhol", file: "/Happy Birthday Song.mp3", title: "Bollywood Dhol Celebration", artist: "Desi Festive Mix", duration: "3:30", category: "Party" },
-  { id: "peaceful_morning", file: "/pianocafe.mp3", title: "Peaceful Morning Light", artist: "Zen Meditation Piano", duration: "3:05", category: "Calm" },
-  { id: "joyful_ukulele", file: "/playhouse.mp3", title: "Joyful Ukulele Whistle", artist: "Sunshine Acoustic", duration: "2:25", category: "Energetic" },
-  { id: "none", file: "none", title: "No Music (Silent Experience)", artist: "Muted Experience", duration: "—", category: "Calm" },
-];
 
 // AI Tone Presets
 const AI_TONE_PRESETS = [
@@ -158,6 +140,9 @@ export default function Home() {
   const [activeMusicTab, setActiveMusicTab] = useState<string>("Popular");
   const [isPlayingMusic, setIsPlayingMusic] = useState<boolean>(false);
   const [musicFile, setMusicFile] = useState<File | null>(null);
+  const [customMusicUrl, setCustomMusicUrl] = useState<string>("");
+  const [musicUploadError, setMusicUploadError] = useState<string>("");
+  const musicInputRef = useRef<HTMLInputElement | null>(null);
 
   // Theme & Publish States
   const [themeMode, setThemeMode] = useState<"auto" | "light" | "dark">("dark");
@@ -172,6 +157,31 @@ export default function Home() {
   const [error, setError] = useState<string>("");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Stop music preview helper
+  const stopMusicPreview = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current.src = "";
+    }
+    setIsPlayingMusic(false);
+  };
+
+  // Automatically stop preview whenever step or active navigation changes
+  useEffect(() => {
+    stopMusicPreview();
+  }, [currentStep, activeNav]);
+
+  // Clean up audio on unmount or when custom blob url changes
+  useEffect(() => {
+    return () => {
+      stopMusicPreview();
+      if (customMusicUrl && customMusicUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(customMusicUrl);
+      }
+    };
+  }, [customMusicUrl]);
 
   // Generate offline QR code Data URL whenever link changes or modal opens
   useEffect(() => {
@@ -188,32 +198,87 @@ export default function Home() {
       .catch((err) => console.error("QR Code generation error:", err));
   }, [generatedLink, shortId, showQrModal]);
 
-  // Handle soundtrack toggle
+  // Handle soundtrack preview toggle
   const toggleMusicPreview = (src: string) => {
     if (src === "none") {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        setIsPlayingMusic(false);
-      }
+      stopMusicPreview();
       setSelectedMusic("none");
       return;
     }
 
     if (selectedMusic === src && isPlayingMusic) {
-      if (audioRef.current) audioRef.current.pause();
-      setIsPlayingMusic(false);
+      stopMusicPreview();
     } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-      const trackObj = SOUNDTRACKS.find((s) => s.id === src);
-      let realSrc = trackObj?.file || src;
-      if (src.includes("Coldplay")) realSrc = "/funky groovin.mp3";
-      audioRef.current = new Audio(realSrc);
-      audioRef.current.play().catch(() => {});
+      stopMusicPreview();
+      const realSrc = src === "custom" ? customMusicUrl : resolveSoundtrackUrl(src);
+      if (!realSrc) return;
+      const audio = new Audio(realSrc);
+      audio.loop = true;
+      audioRef.current = audio;
+      audio.play().catch(() => {});
       setIsPlayingMusic(true);
       setSelectedMusic(src);
     }
+  };
+
+  // Handle track selection (stops audio immediately as requested)
+  const handleSelectMusic = (trackId: string) => {
+    setSelectedMusic(trackId);
+    stopMusicPreview();
+  };
+
+  // Custom audio file upload handler (strictly max 10MB)
+  const handleCustomMusicUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    e.target.value = "";
+
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > MAX_SIZE) {
+      setMusicUploadError(`Audio file is ${(file.size / (1024 * 1024)).toFixed(1)}MB. Maximum allowed size is 10MB.`);
+      return;
+    }
+
+    const validTypes = [
+      "audio/mpeg", 
+      "audio/mp3", 
+      "audio/wav", 
+      "audio/ogg", 
+      "audio/aac", 
+      "audio/x-m4a", 
+      "audio/m4a", 
+      "audio/mp4", 
+      "audio/flac"
+    ];
+    const hasAudioExt = /\.(mp3|wav|ogg|aac|m4a|flac)$/i.test(file.name);
+    if (!validTypes.includes(file.type) && !hasAudioExt && !file.type.startsWith("audio/")) {
+      setMusicUploadError("Please select a supported audio file (.mp3, .wav, .m4a, .aac, .ogg).");
+      return;
+    }
+
+    setMusicUploadError("");
+    stopMusicPreview();
+
+    if (customMusicUrl && customMusicUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(customMusicUrl);
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setMusicFile(file);
+    setCustomMusicUrl(objectUrl);
+    setSelectedMusic("custom");
+  };
+
+  // Remove custom uploaded music
+  const handleRemoveCustomMusic = () => {
+    stopMusicPreview();
+    if (customMusicUrl && customMusicUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(customMusicUrl);
+    }
+    setMusicFile(null);
+    setCustomMusicUrl("");
+    setSelectedMusic("/Happy Birthday Song.mp3");
   };
 
   // Synchronize visual style template across all controls
@@ -496,7 +561,10 @@ export default function Home() {
                     return (
                       <button
                         key={s.number}
-                        onClick={() => setCurrentStep(s.number)}
+                        onClick={() => {
+                          stopMusicPreview();
+                          setCurrentStep(s.number);
+                        }}
                         className={`flex items-center gap-2 px-3.5 py-2 rounded-2xl text-xs font-semibold transition-all cursor-pointer ${
                           isActive
                             ? "bg-[#7659E4] text-white shadow-md shadow-[#7659E4]/25 font-bold"
@@ -889,77 +957,221 @@ export default function Home() {
                             Soundtrack & Audio
                           </h2>
                           <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-1">
-                            Set the mood with curated background melodies.
+                            Set the mood with curated background melodies or upload your own song (max 10MB).
                           </p>
                         </div>
 
+                        {/* Hidden Audio File Input */}
+                        <input
+                          type="file"
+                          ref={musicInputRef}
+                          onChange={handleCustomMusicUpload}
+                          accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg"
+                          className="hidden"
+                        />
+
+                        {/* Error Banner */}
+                        {musicUploadError && (
+                          <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-300 text-xs flex items-center gap-2">
+                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                            <span>{musicUploadError}</span>
+                          </div>
+                        )}
+
                         {/* Category Filter Pills */}
-                        <div className="flex flex-wrap gap-1.5 pb-2">
+                        <div className="flex flex-wrap gap-1.5 pb-1">
                           {SOUNDTRACK_CATEGORIES.map((cat) => (
                             <button
                               key={cat}
                               type="button"
-                              onClick={() => setActiveMusicTab(cat)}
+                              onClick={() => {
+                                stopMusicPreview();
+                                setActiveMusicTab(cat);
+                              }}
                               className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                                 activeMusicTab === cat
                                   ? "bg-[#7659E4] text-white font-bold shadow-xs"
                                   : "bg-[#EFEAFB] dark:bg-[#261F36] text-[#736886] dark:text-[#ACA2BE]"
                               }`}
                             >
-                              {cat}
+                              {cat === "Upload" ? "Upload Custom" : cat}
                             </button>
                           ))}
                         </div>
 
-                        {/* Tracks List */}
-                        <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                          {SOUNDTRACKS.filter(
-                            (s) => activeMusicTab === "Popular" || s.category === activeMusicTab || activeMusicTab === "Upload"
-                          ).map((track) => {
-                            const isSelected = selectedMusic === track.id;
-                            return (
-                              <div
-                                key={track.id}
-                                className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
-                                  isSelected
-                                    ? "bg-[#EFEAFB]/80 dark:bg-[#261F36] border-[#7659E4]"
-                                    : "border-[#E8DFFA] dark:border-[#282038] hover:bg-white dark:hover:bg-[#181323]"
-                                }`}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() => toggleMusicPreview(track.id)}
-                                    className="w-8 h-8 rounded-full bg-[#7659E4] text-white flex items-center justify-center shadow-xs cursor-pointer hover:scale-105 transition-transform"
-                                  >
-                                    {selectedMusic === track.id && isPlayingMusic ? (
-                                      <Pause className="w-3.5 h-3.5" />
-                                    ) : (
-                                      <Play className="w-3.5 h-3.5 ml-0.5" />
-                                    )}
-                                  </button>
-                                  <div>
-                                    <h4 className="text-xs font-bold text-[#211A30] dark:text-[#F7F5FC]">
-                                      {track.title}
+                        {/* Custom Upload Card - If file already selected */}
+                        {musicFile && (
+                          <div className="p-4 rounded-2xl border bg-[#FAF8FE] dark:bg-[#1E182A] border-[#7659E4] shadow-sm space-y-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleMusicPreview("custom")}
+                                  className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#7659E4] to-[#A28DF8] text-white flex items-center justify-center shadow-xs cursor-pointer hover:scale-105 transition-transform flex-shrink-0"
+                                >
+                                  {selectedMusic === "custom" && isPlayingMusic ? (
+                                    <Pause className="w-4 h-4" />
+                                  ) : (
+                                    <Play className="w-4 h-4 ml-0.5" />
+                                  )}
+                                </button>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <h4 className="text-xs font-bold text-[#211A30] dark:text-[#F7F5FC] truncate max-w-[180px] sm:max-w-xs">
+                                      {musicFile.name}
                                     </h4>
-                                    <span className="text-[10px] text-[#736886] dark:text-[#ACA2BE]">
-                                      {track.artist} &bull; {track.duration}
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#7659E4]/15 text-[#7659E4] dark:text-[#C7BAFA]">
+                                      Custom
                                     </span>
                                   </div>
+                                  <span className="text-[10px] text-[#736886] dark:text-[#ACA2BE]">
+                                    {(musicFile.size / (1024 * 1024)).toFixed(2)} MB &bull; Max 10MB
+                                  </span>
                                 </div>
+                              </div>
 
+                              <div className="flex items-center gap-1.5 flex-shrink-0">
                                 <Button
-                                  variant={isSelected ? "primary" : "secondary"}
+                                  variant={selectedMusic === "custom" ? "primary" : "secondary"}
                                   size="sm"
-                                  onClick={() => setSelectedMusic(track.id)}
+                                  onClick={() => handleSelectMusic("custom")}
                                   className="text-[11px] h-7 px-3"
                                 >
-                                  {isSelected ? "Selected ✓" : "Choose"}
+                                  {selectedMusic === "custom" ? "Selected ✓" : "Choose"}
                                 </Button>
+                                <button
+                                  type="button"
+                                  onClick={() => musicInputRef.current?.click()}
+                                  className="text-[11px] text-[#7659E4] dark:text-[#C7BAFA] hover:underline px-2 py-1 cursor-pointer font-medium"
+                                  title="Replace song"
+                                >
+                                  Replace
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={handleRemoveCustomMusic}
+                                  className="text-[#736886] hover:text-rose-500 p-1.5 rounded-lg transition-colors cursor-pointer"
+                                  title="Remove song"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
                               </div>
-                            );
-                          })}
-                        </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 pt-2 text-[10px] text-[#736886] dark:text-[#A89EC0] border-t border-[#E8DFFA] dark:border-[#282038]">
+                              <Clock className="w-3 h-3 text-[#7659E4] dark:text-[#C7BAFA] flex-shrink-0" />
+                              <span>Privacy Protected: Custom uploaded audio auto-purges from cloud storage after 72 hours.</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Custom Upload Dropzone / Button when no file uploaded */}
+                        {!musicFile && activeMusicTab === "Upload" && (
+                          <div
+                            onClick={() => musicInputRef.current?.click()}
+                            className="border-2 border-dashed border-[#7659E4]/50 hover:border-[#7659E4] rounded-3xl p-6 text-center cursor-pointer transition-all bg-[#FAF8FE] dark:bg-[#1A1526] hover:bg-[#F3EEFC] dark:hover:bg-[#211A30] group space-y-2.5"
+                          >
+                            <div className="w-12 h-12 mx-auto rounded-full bg-[#7659E4]/10 dark:bg-[#7659E4]/25 flex items-center justify-center text-[#7659E4] group-hover:scale-110 transition-transform">
+                              <Upload className="w-6 h-6" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-[#211A30] dark:text-[#F7F5FC]">
+                                Upload Your Own Audio Track
+                              </p>
+                              <p className="text-xs text-[#736886] dark:text-[#ACA2BE] mt-0.5">
+                                Select an MP3, WAV, M4A, AAC, or OGG file up to 10MB
+                              </p>
+                            </div>
+                            <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
+                              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#EFEAFB] dark:bg-[#261F36] text-[#7659E4] dark:text-[#C7BAFA]">
+                                Maximum 10MB
+                              </span>
+                              <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                <Clock className="w-3 h-3" /> Auto-deletes after 72h
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Helpful quick upload banner when in preset tabs and no custom file */}
+                        {!musicFile && activeMusicTab !== "Upload" && (
+                          <div className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF8FE] dark:bg-[#1C1728] border border-[#E8DFFA] dark:border-[#282038]">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className="w-7 h-7 rounded-full bg-[#7659E4]/10 dark:bg-[#7659E4]/20 flex items-center justify-center text-[#7659E4] flex-shrink-0">
+                                <Upload className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="text-xs font-bold text-[#211A30] dark:text-[#F7F5FC] block truncate">
+                                  Want to use your own song?
+                                </span>
+                                <span className="text-[10px] text-[#736886] dark:text-[#ACA2BE] block truncate">
+                                  Upload any audio file (max 10MB &bull; auto-purged in 72h)
+                                </span>
+                              </div>
+                            </div>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => musicInputRef.current?.click()}
+                              className="text-[11px] h-7 px-3 flex-shrink-0"
+                              leftIcon={<Upload className="w-3 h-3" />}
+                            >
+                              Upload File
+                            </Button>
+                          </div>
+                        )}
+
+                        {/* Tracks List (Curated) */}
+                        {activeMusicTab !== "Upload" && (
+                          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                            {SOUNDTRACKS.filter(
+                              (s) => activeMusicTab === "Popular" || s.category === activeMusicTab
+                            ).map((track) => {
+                              const isSelected = selectedMusic === track.id;
+                              return (
+                                <div
+                                  key={track.id}
+                                  className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                                    isSelected
+                                      ? "bg-[#EFEAFB]/80 dark:bg-[#261F36] border-[#7659E4]"
+                                      : "border-[#E8DFFA] dark:border-[#282038] hover:bg-white dark:hover:bg-[#181323]"
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <button
+                                      type="button"
+                                      onClick={() => toggleMusicPreview(track.id)}
+                                      className="w-8 h-8 rounded-full bg-[#7659E4] text-white flex items-center justify-center shadow-xs cursor-pointer hover:scale-105 transition-transform"
+                                    >
+                                      {selectedMusic === track.id && isPlayingMusic ? (
+                                        <Pause className="w-3.5 h-3.5" />
+                                      ) : (
+                                        <Play className="w-3.5 h-3.5 ml-0.5" />
+                                      )}
+                                    </button>
+                                    <div>
+                                      <h4 className="text-xs font-bold text-[#211A30] dark:text-[#F7F5FC]">
+                                        {track.title}
+                                      </h4>
+                                      <span className="text-[10px] text-[#736886] dark:text-[#ACA2BE]">
+                                        {track.artist} &bull; {track.duration}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <Button
+                                    variant={isSelected ? "primary" : "secondary"}
+                                    size="sm"
+                                    onClick={() => handleSelectMusic(track.id)}
+                                    className="text-[11px] h-7 px-3"
+                                  >
+                                    {isSelected ? "Selected ✓" : "Choose"}
+                                  </Button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -1243,7 +1455,10 @@ export default function Home() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setCurrentStep((s) => Math.max(1, s - 1))}
+                          onClick={() => {
+                            stopMusicPreview();
+                            setCurrentStep((s) => Math.max(1, s - 1));
+                          }}
                           leftIcon={<ArrowLeft className="w-3.5 h-3.5" />}
                         >
                           Previous
@@ -1256,7 +1471,10 @@ export default function Home() {
                         <Button
                           variant="primary"
                           size="md"
-                          onClick={() => setCurrentStep((s) => Math.min(8, s + 1))}
+                          onClick={() => {
+                            stopMusicPreview();
+                            setCurrentStep((s) => Math.min(8, s + 1));
+                          }}
                           rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
                         >
                           Continue
@@ -1281,6 +1499,7 @@ export default function Home() {
                       profilePhoto={profilePhoto}
                       photos={extraPhotos}
                       selectedMusic={selectedMusic}
+                      customMusicName={musicFile?.name}
                       isPlayingMusic={isPlayingMusic}
                       onToggleMusic={() => toggleMusicPreview(selectedMusic)}
                     />

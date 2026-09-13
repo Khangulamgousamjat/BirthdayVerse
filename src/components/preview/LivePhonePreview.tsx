@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Play, Pause, Smartphone, Monitor, Sparkles, Heart, Music, ChevronLeft, ChevronRight, Lock } from "lucide-react";
 import { getTemplateById } from "@/lib/templates";
+import { getSoundtrackMeta } from "@/lib/soundtracks";
 
 interface LivePhonePreviewProps {
   name: string;
@@ -13,6 +14,7 @@ interface LivePhonePreviewProps {
   profilePhoto?: string | null;
   photos?: string[];
   selectedMusic?: string;
+  customMusicName?: string;
   isPlayingMusic: boolean;
   onToggleMusic: () => void;
   onChangeTemplateClick?: () => void;
@@ -29,6 +31,7 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
   profilePhoto,
   photos = [],
   selectedMusic = "/Happy Birthday Song.mp3",
+  customMusicName,
   isPlayingMusic,
   onToggleMusic,
   onChangeTemplateClick,
@@ -45,14 +48,15 @@ export const LivePhonePreview: React.FC<LivePhonePreviewProps> = ({
   const userPhotos = [profilePhoto, ...photos].filter(Boolean) as string[];
   const activePhotos = userPhotos; // empty means show placeholder
 
-  // Format song title from filename or path
-  const songTitle = selectedMusic === "custom" 
-    ? "Special Birthday Track" 
-    : selectedMusic.includes("Coldplay") 
-      ? "A Sky Full of Stars"
-      : selectedMusic.replace(/^\//, "").replace(/\.mp3$/, "").replace(/_/g, " ");
+  // Format song title from metadata or custom upload
+  const meta = getSoundtrackMeta(selectedMusic);
+  const songTitle = selectedMusic === "custom"
+    ? (customMusicName || "Custom Uploaded Song")
+    : meta.title;
 
-  const artistName = selectedMusic.includes("Coldplay") ? "Coldplay" : "Birthdayverse Mix";
+  const artistName = selectedMusic === "custom"
+    ? "Your Uploaded Song"
+    : meta.artist;
 
   // Get active template styling
   const activeTemplate = getTemplateById(theme, vibe);
